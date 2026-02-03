@@ -26,13 +26,12 @@ class Drive(Subsystem):
 
     self._modules = tuple(SwerveModule(c) for c in self._constants.SWERVE_MODULE_CONFIGS)
     self._modulesStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Robot/Drive/Modules/States", SwerveModuleState).publish()
+    self._modulesLockPosition = Position.Unlocked
 
     self._driftCorrectionState = State.Stopped
     self._driftCorrectionController = PIDController(*self._constants.DRIFT_CORRECTION_CONSTANTS.rotationPID)
     self._driftCorrectionController.setTolerance(self._constants.DRIFT_CORRECTION_CONSTANTS.rotationPositionTolerance)
     self._driftCorrectionController.enableContinuousInput(-180.0, 180.0)
-
-    self._targetPose: Pose3d | None = None
 
     self._targetLockState = State.Stopped
     self._targetLockController = PIDController(*self._constants.TARGET_LOCK_CONSTANTS.rotationPID)
@@ -41,46 +40,26 @@ class Drive(Subsystem):
     self._targetLockRotationInput: units.percent = 0
 
     self._targetAlignmentState = State.Stopped
-    self._targetAlignmentTranslationXController = ProfiledPIDController(
-      *self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID, 
-      TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxAcceleration)
-    )
-    self._targetAlignmentTranslationXController.setTolerance(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationVelocityTolerance)
-    self._targetAlignmentTranslationYController = ProfiledPIDController(
-      *self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID, 
-      TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxAcceleration)
-    )
-    self._targetAlignmentTranslationYController.setTolerance(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationVelocityTolerance)
-    self._targetAlignmentRotationController = ProfiledPIDController(
-      *self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPID, 
-      TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxAcceleration)
-    )
-    self._targetAlignmentRotationController.setTolerance(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPositionTolerance, self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationVelocityTolerance)
-    self._targetAlignmentRotationController.enableContinuousInput(-180.0, 180.0)
-
-    self._targetAlignmentHolonomicDriveController = HolonomicDriveController(
+    self._targetAlignmentController = HolonomicDriveController(
       PIDController(*self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID),
       PIDController(*self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID),
       ProfiledPIDControllerRadians(
-        *self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPID,
+        *self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPID, 
         TrapezoidProfileRadians.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxAcceleration)
       )
     )
-    self._targetAlignmentHolonomicDriveController.setTolerance(
-      Pose2d(
-        self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, 
-        self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance,
-        Rotation2d.fromDegrees(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPositionTolerance))
+    self._targetAlignmentController.setTolerance(Pose2d(
+      self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, 
+      self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, 
+      Rotation2d.fromDegrees(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPositionTolerance))
     )
-    self._targetAlignmentHolonomicDriveController.getThetaController().enableContinuousInput(units.degreesToRadians(-180.0), units.degreesToRadians(180.0))
+    self._targetAlignmentController.getThetaController().enableContinuousInput(units.degreesToRadians(-180.0), units.degreesToRadians(180.0))
 
-    self._useHolonomicDriveControllerForTargetAlignment: bool = False
+    self._targetPose: Pose3d | None = None
 
     self._translationXInputLimiter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
     self._translationYInputLimiter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
     self._rotationInputLimiter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
-
-    self._swerveModulesLockPosition = Position.Unlocked
 
     self._speedMode: SpeedMode = SpeedMode.Competition
     speedMode = SendableChooser()
@@ -116,7 +95,7 @@ class Drive(Subsystem):
     return self.run(
       lambda: self._runDrive(getTranslationXInput(), getTranslationYInput(), getRotationInput())
     ).onlyIf(
-      lambda: self._swerveModulesLockPosition == Position.Unlocked
+      lambda: self._modulesLockPosition == Position.Unlocked
     ).withName("Drive:Drive")
 
   def _runDrive(self, translationXInput: units.percent, translationYInput: units.percent, rotationInput: units.percent) -> None:
@@ -195,7 +174,7 @@ class Drive(Subsystem):
     ).withName("Drive:LockSwerveModules")
   
   def _setSwerveModuleLockPosition(self, position: Position) -> None:
-    self._swerveModulesLockPosition = position
+    self._modulesLockPosition = position
     if position == Position.Locked:
       for index, module in enumerate(self._modules): 
         module.setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45 if index in { 0, 3 } else -45)))
@@ -235,48 +214,15 @@ class Drive(Subsystem):
       lambda end: self._endTargetAlignment()
     ).withName("Drive:AlignToTarget")
   
-  def _initTargetAlignment(self, robotPose: Pose2d, targetPose: Pose3d) -> None:
-    if not self._useHolonomicDriveControllerForTargetAlignment:
-      self._targetAlignmentTranslationXController.reset(0)
-      self._targetAlignmentTranslationXController.setGoal(0)
-      self._targetAlignmentTranslationYController.reset(0)
-      self._targetAlignmentTranslationYController.setGoal(0)
-      self._targetAlignmentRotationController.reset(robotPose.rotation().degrees())
-      self._targetAlignmentRotationController.setGoal(targetPose.toPose2d().rotation().degrees())
+  def _initTargetAlignment(self, targetPose: Pose3d) -> None:
     self._targetPose = targetPose
     self._targetAlignmentState = State.Running
 
   def _runTargetAlignment(self, robotPose: Pose2d) -> None:
-    if self._useHolonomicDriveControllerForTargetAlignment:
-      if not self._targetAlignmentHolonomicDriveController.atReference():
-        self._setModuleStates(self._targetAlignmentHolonomicDriveController.calculate(robotPose, self._targetPose.toPose2d(), 0, self._targetPose.toPose2d().rotation()))
-      else:
-        self._targetAlignmentState = State.Completed
-    else:
-      if (
-        not self._targetAlignmentTranslationXController.atGoal() or
-        not self._targetAlignmentTranslationYController.atGoal() or
-        not self._targetAlignmentRotationController.atGoal()
-      ):
-        targetTranslation = self._targetPose.toPose2d() - robotPose
-        translationXVelocity = -utils.clampValue(
-          self._targetAlignmentTranslationXController.calculate(targetTranslation.X()),
-          -self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity,
-          self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity
-        )
-        translationYVelocity = -utils.clampValue(
-          self._targetAlignmentTranslationYController.calculate(targetTranslation.Y()),
-          -self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity,
-          self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity
-        )
-        rotationVelocity = utils.clampValue(
-          self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees()),
-          -self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity,
-          self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity
-        )
-        self._setModuleStates(ChassisSpeeds(translationXVelocity, translationYVelocity, units.degreesToRadians(rotationVelocity)))
-      else:
-        self._targetAlignmentState = State.Completed
+    # TODO: try applying relative/percentage speed limiters to translational velocity (rotational velocity is already being constrained in controller setup)
+    self._setModuleStates(self._targetAlignmentController.calculate(robotPose, self._targetPose.toPose2d(), 0, self._targetPose.toPose2d().rotation()))
+    if self._targetAlignmentController.atReference():
+      self._targetAlignmentState = State.Completed
 
   def _endTargetAlignment(self) -> None:
     self._setModuleStates(ChassisSpeeds())
@@ -298,4 +244,4 @@ class Drive(Subsystem):
     SmartDashboard.putBoolean("Robot/Drive/IsLockedToTarget", self.isLockedToTarget())
     SmartDashboard.putBoolean("Robot/Drive/IsAlignedToTarget", self.isAlignedToTarget())
     SmartDashboard.putString("Robot/Drive/TargetAlignmentState", self._targetAlignmentState.name)
-    SmartDashboard.putString("Robot/Drive/Modules/LockPosition", self._swerveModulesLockPosition.name)
+    SmartDashboard.putString("Robot/Drive/Modules/LockPosition", self._modulesLockPosition.name)
