@@ -9,7 +9,14 @@ from core.commands.auto import Auto
 from core.commands.game import Game
 from core.subsystems.drive import Drive
 from core.subsystems.turret import Turret
+from core.subsystems.launcher import Launcher
+from core.subsystems.elevator import Elevator
+from core.subsystems.feeder import Feeder
+from core.subsystems.indexer import Indexer
+from core.subsystems.intake import Intake
+from core.subsystems.climber import Climber
 from core.services.localization import Localization
+from core.services.lights import Lights
 from core.classes import Target
 import core.constants as constants
 
@@ -18,8 +25,8 @@ class RobotCore:
     self._initSensors()
     self._initSubsystems()
     self._initServices()
-    self._initControllers()
     self._initCommands()
+    self._initControllers()
     self._initTriggers()
     self._initTelemetry()
     utils.addRobotPeriodic(self._periodic)
@@ -31,6 +38,12 @@ class RobotCore:
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
     self.turret = Turret()
+    self.launcher = Launcher()
+    self.elevator = Elevator()
+    self.feeder = Feeder()
+    self.indexer = Indexer()
+    self.intake = Intake()
+    self.climber = Climber()
     
   def _initServices(self) -> None:
     self.localization = Localization(
@@ -38,16 +51,21 @@ class RobotCore:
       self.drive.getModulePositions, 
       self.poseSensors
     )
+    self.lights = Lights(
+      self._isHomed,
+      self.localization.hasValidVisionTarget,
+      lambda: self.game.isLaunchReady()
+    )
+
+  def _initCommands(self) -> None:
+    self.game = Game(self)
+    self.auto = Auto(self)
 
   def _initControllers(self) -> None:
     DriverStation.silenceJoystickConnectionWarning(not utils.isCompetitionMode())
     self.driver = XboxController(constants.Controllers.DRIVER_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
     self.operator = XboxController(constants.Controllers.OPERATOR_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
     self.homingButton = ButtonController(constants.Controllers.HOMING_BUTTON_CONFIG)
-    
-  def _initCommands(self) -> None:
-    self.game = Game(self)
-    self.auto = Auto(self)
 
   def _initTriggers(self) -> None:
     self._setupDriver()
@@ -76,7 +94,7 @@ class RobotCore:
   def _setupOperator(self) -> None:
     self.turret.setDefaultCommand(self.turret.setSpeed(self.operator.getLeftX))
     # self.operator.leftTrigger().whileTrue(cmd.none())
-    # self.operator.rightTrigger().whileTrue(cmd.none())
+    self.operator.rightTrigger().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
     # self.operator.leftBumper().whileTrue(cmd.none())
     # self.operator.rightBumper().whileTrue(cmd.none())
     # self.operator.povUp().whileTrue(cmd.none())
@@ -125,9 +143,8 @@ class RobotCore:
     self.drive.reset()
 
   def _isHomed(self) -> bool:
-    #TODO: configure real logic
     return (
-      True
+      self.turret.isHomed()
       if not utils.isCompetitionMode() else 
       True
     )

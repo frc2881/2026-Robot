@@ -31,6 +31,18 @@ class Game:
   
   def isRobotAlignedToTargetHeading(self) -> bool:
     return self._robot.drive.isAlignedToTargetHeading()
+  
+  def alignTurretToTargetHeading(self, target: Target) -> Command:
+    return (
+      self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
+      .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
+    )
+
+  def isTurretAlignedToTargetHeading(self) -> bool:
+    return self._robot.turret.isAlignedToTargetHeading() and not self._robot.turret.isAtSoftLimit() # TODO: validate conditions for setting turret position relative to reaching soft limit
+
+  def isLaunchReady(self) -> bool:
+    return self.isTurretAlignedToTargetHeading() # TODO: add all other sensor/subsystem readiness validation checks
 
   def rumbleControllers(
     self, 

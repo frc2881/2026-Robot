@@ -111,6 +111,24 @@ class Subsystems:
 
     INPUT_LIMIT: units.percent = 0.5
 
+  class Launcher:
+    pass
+
+  class Elevator:
+    pass
+
+  class Feeder:
+    pass
+
+  class Indexer:
+    pass
+
+  class Intake:
+    pass
+
+  class Climber:
+    pass
+
 class Services:
   class Localization:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
@@ -146,7 +164,7 @@ class Controllers:
 class Game:
   class Robot:
     TYPE = RobotType.Competition
-    NAME: str = "2026-Robot" #TODO: configure real value
+    NAME: str = "2026-Robot" #TODO: configure selected robot name
 
   class Commands:
     AUTO_ALIGNMENT_TIMEOUT: units.seconds = 1.5 #TODO: configure real value
@@ -157,6 +175,7 @@ class Game:
     BOUNDS = (Translation2d(0, 0), Translation2d(LENGTH, WIDTH))
 
     class Targets:
+      # TODO: properly configure and tune all target poses (rough/temp placeholders for now)
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Red: {
           Target.Hub: Pose3d(11.918, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(180))),

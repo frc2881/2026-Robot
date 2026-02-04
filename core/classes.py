@@ -10,3 +10,10 @@ class Target(Enum):
   CornerRight = auto()
   Outpost = auto()
   Depot = auto()
+
+class LightsMode(Enum):
+  Default = auto()
+  RobotNotConnected = auto()
+  RobotNotHomed = auto()
+  VisionNotReady = auto()
+  LaunchReady = auto()
