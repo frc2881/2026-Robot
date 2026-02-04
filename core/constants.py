@@ -11,14 +11,19 @@ from lib import logger, utils
 from lib.classes import (
   RobotType,
   Alliance, 
-  PID, 
+  PID,
+  Range,
+  Value, 
   MotorModel,
+  FeedForwardGains,
   SwerveModuleGearKit,
   SwerveModuleConstants, 
   SwerveModuleConfig, 
   SwerveModuleLocation, 
-  TargetAlignmentConstants,
-  RotationAlignmentConstants,
+  PoseAlignmentConstants,
+  HeadingAlignmentConstants,
+  RelativePositionControlModuleConstants,
+  RelativePositionControlModuleConfig,
   PoseSensorConfig
 )
 from core.classes import Target
@@ -33,20 +38,20 @@ class Subsystems:
     WHEEL_BASE: units.meters = units.inchesToMeters(9.125) #TODO: configure real value
     TRACK_WIDTH: units.meters = units.inchesToMeters(9.125) #TODO: configure real value
     
-    TRANSLATION_MAX_VELOCITY: units.meters_per_second = 4.46 #TODO: configure real value
-    ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0 #TODO: configure real value
+    TRANSLATION_MAX_VELOCITY: units.meters_per_second = 5.74
+    ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0
 
     _swerveModuleConstants = SwerveModuleConstants(
       wheelDiameter = units.inchesToMeters(3.0),
-      drivingMotorControllerType = SparkLowLevel.SparkModel.kSparkMax, #TODO: configure real value
+      drivingMotorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       drivingMotorType = SparkLowLevel.MotorType.kBrushless,
-      drivingMotorFreeSpeed = lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO], #TODO: configure real value
-      drivingMotorReduction = lib.constants.Drive.SWERVE_MODULE_GEAR_RATIOS[SwerveModuleGearKit.Medium], #TODO: configure real value
+      drivingMotorFreeSpeed = lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex],
+      drivingMotorReduction = lib.constants.Drive.SWERVE_MODULE_GEAR_RATIOS[SwerveModuleGearKit.High],
       drivingMotorCurrentLimit = 80,
       drivingMotorPID = PID(0.04, 0, 0),
       turningMotorCurrentLimit = 20,
       turningMotorPID = PID(1.0, 0, 0),
-      turningMotorAbsoluteEncoderConfig = AbsoluteEncoderConfig.Presets.REV_ThroughBoreEncoder #TODO: configure real value
+      turningMotorAbsoluteEncoderConfig = AbsoluteEncoderConfig.Presets.REV_ThroughBoreEncoder #TODO: update if/when V2 installed
     )
 
     SWERVE_MODULE_CONFIGS: tuple[SwerveModuleConfig, ...] = (
@@ -61,7 +66,7 @@ class Subsystems:
     PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
     PATHPLANNER_CONTROLLER = PPHolonomicDriveController(PIDConstants(5.0, 0, 0), PIDConstants(5.0, 0, 0))
 
-    TARGET_ALIGNMENT_CONSTANTS = TargetAlignmentConstants(
+    TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0),
       translationMaxVelocity = 1.5, #TODO: configure real value
       translationMaxAcceleration = 0.75, #TODO: configure real value
@@ -69,21 +74,41 @@ class Subsystems:
       rotationPID = PID(2.0, 0, 0), #TODO: configure real value
       rotationMaxVelocity = 720.0, #TODO: configure real value
       rotationMaxAcceleration = 360.0, #TODO: configure real value
-      rotationPositionTolerance = 0.5 #TODO: configure real value
+      rotationPositionTolerance = 0.5
     )
 
-    TARGET_LOCK_CONSTANTS = RotationAlignmentConstants(
+    TARGET_HEADING_ALIGNMENT_CONSTANTS = HeadingAlignmentConstants(
       rotationPID = PID(0.01, 0, 0), 
-      rotationPositionTolerance = 0.5 #TODO: configure real value
+      rotationPositionTolerance = 0.5
     )
 
-    DRIFT_CORRECTION_CONSTANTS = RotationAlignmentConstants(
+    DRIFT_CORRECTION_CONSTANTS = HeadingAlignmentConstants(
       rotationPID = PID(0.01, 0, 0), 
-      rotationPositionTolerance = 0.5 #TODO: configure real value
+      rotationPositionTolerance = 0.5
     )
 
     INPUT_LIMIT_DEMO: units.percent = 0.5
     INPUT_RATE_LIMIT_DEMO: units.percent = 0.5
+
+  class Turret:
+    TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80,
+      motorRelativeEncoderPositionConversionFactor = 360.0 / 21.0,
+      motorPID = PID(0.025, 0, 0.0025),
+      motorOutputRange = Range(-0.5, 0.5), # TODO: update to 100% output range and adjust velocity/acceleration/PID values in relation
+      motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionCruiseVelocity = 40000.0,
+      motorMotionMaxAcceleration = 80000.0,
+      motorMotionAllowedProfileError = 0.25,
+      motorSoftLimitForward = 170.0,
+      motorSoftLimitReverse = -160.0,
+      motorHomingSpeed = 0.1,
+      motorHomedPosition = -170
+    ))
+
+    INPUT_LIMIT: units.percent = 0.5
 
 class Services:
   class Localization:
@@ -98,11 +123,12 @@ class Sensors:
       COM_TYPE = AHRS.NavXComType.kUSB1
   
   class Pose:
+    # TODO: configure for installed cameras
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
-        name = "Front", #TODO: configure real value
-        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)), #TODO: configure real value
-        stream = "http://10.28.81.6:1182/?action=stream", #TODO: configure real value
+        name = "Front",
+        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
     )
@@ -121,7 +147,7 @@ class Game:
     NAME: str = "2026-Robot" #TODO: configure real value
 
   class Commands:
-    AUTO_TARGET_ALIGNMENT_TIMEOUT: units.seconds = 1.5 #TODO: configure real value
+    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 1.5 #TODO: configure real value
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()
