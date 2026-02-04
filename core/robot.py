@@ -85,7 +85,7 @@ class RobotCore:
     # self.operator.y().whileTrue(cmd.none())
     # self.operator.x().whileTrue(cmd.none())
     # self.operator.start().whileTrue(cmd.none())
-    # self.operator.back().whileTrue(cmd.none())
+    self.operator.back().whileTrue(self.turret.resetToHome())
 
   def _initTelemetry(self) -> None:
     SmartDashboard.putString("Game/Robot/Type", constants.Game.Robot.TYPE.name)
