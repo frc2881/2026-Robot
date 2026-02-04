@@ -2,6 +2,7 @@ from commands2 import cmd
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.controllers.xbox import XboxController
+from lib.controllers.button import ButtonController
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
 from core.commands.auto import Auto
@@ -42,6 +43,7 @@ class RobotCore:
     DriverStation.silenceJoystickConnectionWarning(not utils.isCompetitionMode())
     self.driver = XboxController(constants.Controllers.DRIVER_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
     self.operator = XboxController(constants.Controllers.OPERATOR_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
+    self.homingButton = ButtonController(constants.Controllers.HOMING_BUTTON_CONFIG)
     
   def _initCommands(self) -> None:
     self.game = Game(self)
@@ -50,6 +52,7 @@ class RobotCore:
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
+    self.homingButton.pressed().whileTrue(self.turret.resetToHome()).debounce(0.5)
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
@@ -68,7 +71,7 @@ class RobotCore:
     # self.driver.y().whileTrue(cmd.none())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     # self.driver.start().whileTrue(cmd.none())
-    self.driver.back().whileTrue(cmd.waitSeconds(0.5).andThen(self.gyro.reset())) # TODO: update to use built-in debounce mod
+    self.driver.back().whileTrue(self.gyro.reset()).debounce(0.5)
 
   def _setupOperator(self) -> None:
     self.turret.setDefaultCommand(self.turret.setSpeed(self.operator.getLeftX))

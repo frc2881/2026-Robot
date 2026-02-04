@@ -24,6 +24,7 @@ from lib.classes import (
   HeadingAlignmentConstants,
   RelativePositionControlModuleConstants,
   RelativePositionControlModuleConfig,
+  ButtonControllerConfig,
   PoseSensorConfig
 )
 from core.classes import Target
@@ -140,6 +141,7 @@ class Controllers:
   DRIVER_CONTROLLER_PORT: int = 0
   OPERATOR_CONTROLLER_PORT: int = 1
   INPUT_DEADBAND: units.percent = 0.1
+  HOMING_BUTTON_CONFIG = ButtonControllerConfig(name = "Homing", channel = 0)
 
 class Game:
   class Robot:
