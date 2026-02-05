@@ -9,6 +9,8 @@ from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 from lib import logger, utils
 from lib.classes import (
+  FollowerModuleConfig,
+  FollowerModuleConstants,
   RobotType,
   Alliance, 
   PID,
@@ -25,7 +27,9 @@ from lib.classes import (
   RelativePositionControlModuleConstants,
   RelativePositionControlModuleConfig,
   ButtonControllerConfig,
-  PoseSensorConfig
+  PoseSensorConfig,
+  VelocityControlModuleConfig,
+  VelocityControlModuleConstants
 )
 from core.classes import Target
 import lib.constants
@@ -112,22 +116,115 @@ class Subsystems:
     INPUT_LIMIT: units.percent = 0.5
 
   class Launcher:
-    pass
+    FLYWHEEL_MOTOR_CONFIG = VelocityControlModuleConfig("Launcher/Flywheel", 10, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionMaxVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+    ))
 
-  class Elevator:
-    pass
+    # TODO: Make sure that the two are inverted
+    FLYWHEEL_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/FlywheelFollower", 11, 10, True, FollowerModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120
+    ))
 
-  class Feeder:
-    pass
+    ACCELERATOR_MOTOR_CONFIG = VelocityControlModuleConfig("Launcher/Flywheel", 12, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionMaxVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+    ))
 
   class Indexer:
-    pass
+    MOTOR_CONFIG = VelocityControlModuleConfig("Indexer", 14, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionMaxVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+    ))
+
+  class Feeder:
+    MOTOR_CONFIG = VelocityControlModuleConfig("Feeder", 15, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionMaxVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+    ))
+
+  class Elevator:
+    MOTOR_CONFIG = VelocityControlModuleConfig("Elevator", 16, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionMaxVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+    ))
 
   class Intake:
     pass
 
   class Climber:
-    pass
+    ROTATOR_MOTOR_CONFIG = RelativePositionControlModuleConfig("Climber/Rotator", 19, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionCruiseVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+      motorMotionAllowedProfileError = 0.5,
+      motorRelativeEncoderPositionConversionFactor = 1.0,
+      motorSoftLimitForward = 100.0, # TODO: Tune
+      motorSoftLimitReverse = 0.0, # TODO: Tune
+      motorHomingSpeed = 0.2,
+      motorHomedPosition = 0.0
+    ))
+
+    # TODO: Make sure that the two are inverted
+    ROTATOR_FOLLOWER_CONFIG = FollowerModuleConfig("Climber/RotatorFollower", 20, 19, True, FollowerModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120
+    ))
+
+    DEPLOYER_MOTOR_CONFIG = RelativePositionControlModuleConfig("Climber/Deployer", 21, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 60,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionCruiseVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+      motorMotionAllowedProfileError = 0.5,
+      motorRelativeEncoderPositionConversionFactor = 1.0,
+      motorSoftLimitForward = 100.0, # TODO: Tune
+      motorSoftLimitReverse = 0.0, # TODO: Tune
+      motorHomingSpeed = 0.2,
+      motorHomedPosition = 0.0
+    ))
 
 class Services:
   class Localization:
