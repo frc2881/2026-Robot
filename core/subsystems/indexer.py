@@ -23,4 +23,4 @@ class Indexer(Subsystem):
     self._motor.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Indexer/Velocity", self._motor.getVelocity())
+    pass

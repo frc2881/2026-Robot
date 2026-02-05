@@ -23,4 +23,4 @@ class Elevator(Subsystem):
     self._motor.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Elevator/Velocity", self._motor.getVelocity())
+    pass

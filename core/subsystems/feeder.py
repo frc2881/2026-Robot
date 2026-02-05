@@ -23,4 +23,4 @@ class Feeder(Subsystem):
     self._motor.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Feeder/Velocity", self._motor.getVelocity())
+    pass

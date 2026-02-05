@@ -32,6 +32,5 @@ class Climber(Subsystem):
     self._deployerMotor.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Climber/Rotator/Position", self._rotatorMotor.getPosition())
-    SmartDashboard.putNumber("Robot/Climber/Deployer/Position", self._deployerMotor.getPosition())
+    pass
     

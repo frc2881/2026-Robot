@@ -31,5 +31,4 @@ class Launcher(Subsystem):
     self._acceleratorMotor.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putNumber("Robot/Launcher/Flywheel/Velocity", self._flywheelMotor.getVelocity())
-    SmartDashboard.putNumber("Robot/Launcher/Accelerator/Velocity", self._acceleratorMotor.getVelocity())
+    pass
