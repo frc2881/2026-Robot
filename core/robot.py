@@ -70,7 +70,7 @@ class RobotCore:
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
-    self.homingButton.pressed().whileTrue(self.turret.resetToHome()).debounce(0.5)
+    self.homingButton.pressed().debounce(0.5).whileTrue(self.turret.resetToHome())
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
@@ -89,7 +89,7 @@ class RobotCore:
     # self.driver.y().whileTrue(cmd.none())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     # self.driver.start().whileTrue(cmd.none())
-    self.driver.back().whileTrue(self.gyro.reset()).debounce(0.5)
+    self.driver.back().debounce(0.5).whileTrue(self.gyro.reset())
 
   def _setupOperator(self) -> None:
     self.turret.setDefaultCommand(self.turret.setSpeed(self.operator.getLeftX))
