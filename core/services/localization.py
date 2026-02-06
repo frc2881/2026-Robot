@@ -1,14 +1,14 @@
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 from wpilib import SmartDashboard, Timer
 from wpimath import units
 from wpimath.geometry import Pose2d, Pose3d, Rotation2d, Transform2d
-from wpimath.kinematics import SwerveModulePosition
+if TYPE_CHECKING: from wpimath.kinematics import SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from ntcore import NetworkTableInstance
 from lib import logger, utils
 from lib.classes import RobotState
-from lib.sensors.pose import PoseSensor
-from lib.sensors.object import ObjectSensor
+if TYPE_CHECKING: from lib.sensors.pose import PoseSensor
+if TYPE_CHECKING: from lib.sensors.object import ObjectSensor
 from core.classes import Target
 import core.constants as constants
 
