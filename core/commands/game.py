@@ -20,7 +20,7 @@ class Game:
       .withName(f'Game:AlignRobotToTargetPose:{ target.name }')
     )
   
-  def isRobotAlignedToTargetPose(self) -> bool:
+  def _isRobotAlignedToTargetPose(self) -> bool:
     return self._robot.drive.isAlignedToTargetPose()
 
   def alignRobotToTargetHeading(self, target: Target) -> Command:
@@ -29,20 +29,28 @@ class Game:
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
   
-  def isRobotAlignedToTargetHeading(self) -> bool:
+  def _isRobotAlignedToTargetHeading(self) -> bool:
     return self._robot.drive.isAlignedToTargetHeading()
-  
+
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
       self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
 
-  def isTurretAlignedToTargetHeading(self) -> bool:
+  def _isTurretAlignedToTargetHeading(self) -> bool:
     return self._robot.turret.isAlignedToTargetHeading() and not self._robot.turret.isAtSoftLimit() # TODO: validate conditions for setting turret position relative to reaching soft limit
 
   def isLaunchReady(self) -> bool:
-    return self.isTurretAlignedToTargetHeading() # TODO: add all other sensor/subsystem readiness validation checks
+    return self._isTurretAlignedToTargetHeading() # TODO: add all other sensor/subsystem readiness validation checks
+
+  def alignRobotToNearestFuel(self) -> Command:
+    return (
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getObjectsPose())
+      .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
+      .onlyIf(self._robot.localization.getObjectsCount() >= 10)
+      .withName(f'Game:AlignRobotToNearestFuel')
+    )
 
   def rumbleControllers(
     self, 
