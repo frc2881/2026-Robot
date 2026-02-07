@@ -13,7 +13,7 @@ class Feeder(Subsystem):
 
     self._motor = VelocityControlModule(self._constants.MOTOR_CONFIG)
 
-  def setSpeed(self, speed: units.percent):
+  def setSpeed(self, speed: units.percent) -> None:
     self._motor.setSpeed(speed)
 
   def periodic(self) -> None:

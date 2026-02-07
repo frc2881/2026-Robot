@@ -183,7 +183,40 @@ class Subsystems:
     ))
 
   class Intake:
-    pass
+    ROLLERS_MOTOR_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40, 
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionMaxVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+    ))
+
+    ARM_MOTOR_CONFIG = RelativePositionControlModuleConfig("Intake/Arm", 18, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40,
+      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
+      motorMotionCruiseVelocity = 7000.0, # TODO: Set
+      motorMotionMaxAcceleration = 14000.0, # TODO: Set
+      motorMotionAllowedProfileError = 0.5,
+      motorRelativeEncoderPositionConversionFactor = 1.0,
+      motorSoftLimitForward = 100.0, # TODO: Tune
+      motorSoftLimitReverse = 0.0, # TODO: Tune
+      motorHomingSpeed = 0.2,
+      motorHomedPosition = 0.0
+    ))
+
+    ROLLER_SPEED_FORWARD: units.percent = 0.2
+    ROLLER_SPEED_BACKWARD: units.percent = 0.2
+    ARM_INPUT_LIMIT: units.percent = 0.3
+
+
+
 
   class Climber:
     ROTATOR_MOTOR_CONFIG = RelativePositionControlModuleConfig("Climber/Rotator", 19, False, RelativePositionControlModuleConstants(

@@ -4,28 +4,44 @@ from wpilib import SmartDashboard
 from wpimath import units
 from lib import logger, utils
 import core.constants as constants
+from lib.components.velocity_control_module import VelocityControlModule
+from lib.components.relative_position_control_module import RelativePositionControlModule
 
 class Intake(Subsystem):
   def __init__(self) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Intake
 
-    # TODO: Create a Rollers Velocity Control Module, Vortex, CAN 17
-    # TODO: Create an Arm Position Control Module, Neo/Vortex (ask build), CAN 18
+    self._rollersMotor = VelocityControlModule(self._constants.ROLLERS_MOTOR_CONFIG)
+    self._armMotor = RelativePositionControlModule(self._constants.ARM_MOTOR_CONFIG)
 
   def periodic(self) -> None:
     self._updateTelemetry()
 
-    # TODO: Create functions to run Rollers both directions using SmartMotion Velocity Control
+  def runRollersForward(self, speed: units.percent) -> Command:
+    return self.startEnd(
+      lambda: self._rollersMotor.setSpeed(self._constants.ROLLER_SPEED_FORWARD),
+      lambda: self._rollersMotor.reset()
+    ).withName("Intake:RunRollersForward")
 
-    # TODO: Create function to move Arm up and down using the joystick
-
-    # TODO: Create function to set Arm to a position
+  def runRollersBackward(self, speed: units.percent) -> None:
+    return self.startEnd(
+      lambda: self._rollersMotor.setSpeed(self._constants.ROLLER_SPEED_BACKWARD),
+      lambda: self._rollersMotor.reset()
+    ).withName("Intake:RunRollersBackward")
+    
+  def setArmSpeed(self, getInput: Callable[[], units.percent]) -> Command:
+    return self.runEnd(
+      lambda: self._armMotor.setSpeed(getInput() * self._constants.ARM_INPUT_LIMIT),
+      lambda: self._armMotor.reset()
+    ).withName("Intake:SetArmSpeed")
+  
+  def setArmPosition(self, position: float):
+    self._armMotor.setPosition(position)
 
   def reset(self) -> None:
-    # TODO: Stop motor on Rollers and Arm
-    pass
+    lambda: self._armMotor.reset()
+    lambda: self._rollersMotor.reset()
 
   def _updateTelemetry(self) -> None:
-    # TODO: Add in SmartDashboard calls for the most important data (Rollers velocity, Arm position, etc.)
     pass
