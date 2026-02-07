@@ -218,8 +218,12 @@ class Drive(Subsystem):
     self._targetPoseAlignmentState = State.Running
 
   def _runTargetPoseAlignment(self, robotPose: Pose2d) -> None:
-    # TODO: try applying relative/percentage speed limiters to translational velocity (rotational velocity is already being constrained in controller setup)
-    self._setModuleStates(self._targetPoseAlignmentController.calculate(robotPose, self._targetPose.toPose2d(), 0, self._targetPose.toPose2d().rotation()))
+    self._setModuleStates(
+      utils.clampTranslationVelocity(
+        self._targetPoseAlignmentController.calculate(robotPose, self._targetPose.toPose2d(), 0, self._targetPose.toPose2d().rotation()), 
+        self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationMaxVelocity
+      )
+    )
     if self._targetPoseAlignmentController.atReference():
       self._targetPoseAlignmentState = State.Completed
 

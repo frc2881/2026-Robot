@@ -74,7 +74,7 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0),
-      translationMaxVelocity = 1.5, #TODO: configure real value
+      translationMaxVelocity = 2.0, #TODO: configure real value
       translationMaxAcceleration = 0.75, #TODO: configure real value
       translationPositionTolerance = 0.025, #TODO: configure real value
       rotationPID = PID(2.0, 0, 0), #TODO: configure real value
