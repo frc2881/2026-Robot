@@ -214,9 +214,8 @@ class Subsystems:
     ROLLER_SPEED_FORWARD: units.percent = 0.2
     ROLLER_SPEED_BACKWARD: units.percent = 0.2
     ARM_INPUT_LIMIT: units.percent = 0.3
-
-
-
+    ARM_POSITION_UP: float = 0.0
+    ARM_POSITION_DOWN: float = 100.0 # TODO Tune
 
   class Climber:
     ROTATOR_MOTOR_CONFIG = RelativePositionControlModuleConfig("Climber/Rotator", 19, False, RelativePositionControlModuleConstants(
