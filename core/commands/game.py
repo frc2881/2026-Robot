@@ -52,6 +52,20 @@ class Game:
       .withName(f'Game:AlignRobotToNearestFuel')
     )
 
+  # TODO: Refine/change function AND add to controller
+  def scoreFuel(self) -> Command:
+    return cmd.sequence(
+      cmd.parallel(
+        self._robot.launcher.runLauncher(),
+        self.alignTurretToTargetHeading(Target.Hub)
+      ).withTimeout(2.0),
+      cmd.parallel(
+        self._robot.indexer.runIndexer(),
+        self._robot.feeder.runFeeder(),
+        self._robot.elevator.runElevator()
+      )
+    ).withName("Game:ScoreFuel")
+
   def rumbleControllers(
     self, 
     mode: ControllerRumbleMode = ControllerRumbleMode.Both, 
