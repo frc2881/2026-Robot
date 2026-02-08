@@ -21,11 +21,27 @@ class Climber(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
+
+  # def setRotator TODO make climber go (home, set positions)
+
+
   def setRotatorPosition(self, position: float):
     self._rotatorMotor.setPosition(position)
 
   def setDeployerPosition(self, position: float):
     self._deployerMotor.setPosition(position)
+
+  def resetRotatorToHome(self) -> Command:
+    return self._rotatorMotor.resetToHome(self).withName("Climber:ResetRotatorToHome")
+
+  def isRotatorHomed(self) -> bool:
+    return self._rotatorMotor.isHomed()
+  
+  def resetDeployerToHome(self) -> Command:
+    return self._deployerMotor.resetToHome(self).withName("Climber:ResetDeployerToHome")
+
+  def isDeployerHomed(self) -> bool:
+    return self._deployerMotor.isHomed()
 
   def reset(self) -> None:
     self._rotatorMotor.reset()

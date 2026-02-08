@@ -72,6 +72,12 @@ class Intake(Subsystem):
 
   def isAlignedToPosition(self) -> bool:
     return self._isArmAlignedToPosition
+  
+  def resetArmToHome(self) -> Command:
+    return self._armMotor.resetToHome(self).withName("Intake:ResetArmToHome")
+
+  def isArmHomed(self) -> bool:
+    return self._armMotor.isHomed()
 
   def reset(self) -> None:
     lambda: self._armMotor.reset()

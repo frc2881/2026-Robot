@@ -13,8 +13,11 @@ class Elevator(Subsystem):
 
     self._motor = VelocityControlModule(self._constants.MOTOR_CONFIG)
 
-  def setSpeed(self, speed: units.percent):
-    self._motor.setSpeed(speed)
+  def runElevator(self) -> Command:
+    return self.runEnd(
+      lambda: self._motor.setSpeed(self._constants.ELEVATOR_SPEED),
+      lambda: self._motor.reset()
+    ).withName("Elevator:RunElevator")
 
   def periodic(self) -> None:
     self._updateTelemetry()

@@ -20,6 +20,12 @@ class Launcher(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
+  def runLauncher(self) -> Command:
+    return self.runEnd(
+      lambda: (self.setFlywheelSpeed(self._constants.FLYWHEEL_SPEED), self.setFlywheelSpeed(self._constants.FLYWHEEL_SPEED)),
+      lambda: (self._flywheelMotor.reset(), self._acceleratorMotor.reset())
+    ).withName("Launcher:RunLauncher")
+
   def setFlywheelSpeed(self, speed: units.percent):
     self._flywheelMotor.setSpeed(speed)
 

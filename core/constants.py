@@ -41,8 +41,8 @@ class Subsystems:
   class Drive:
     BUMPER_LENGTH: units.meters = units.inchesToMeters(19.5) #TODO: configure real value
     BUMPER_WIDTH: units.meters = units.inchesToMeters(19.5) #TODO: configure real value
-    WHEEL_BASE: units.meters = units.inchesToMeters(9.125) #TODO: configure real value
-    TRACK_WIDTH: units.meters = units.inchesToMeters(9.125) #TODO: configure real value
+    WHEEL_BASE: units.meters = units.inchesToMeters(20.5)
+    TRACK_WIDTH: units.meters = units.inchesToMeters(26.5)
     
     TRANSLATION_MAX_VELOCITY: units.meters_per_second = 5.74
     ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0
@@ -146,6 +146,10 @@ class Subsystems:
       motorMotionMaxAcceleration = 14000.0, # TODO: Set
     ))
 
+    FLYWHEEL_SPEED: units.percent = 0.2 # TODO: Tune
+    ACCELERATOR_SPEED: units.percent = 0.2 # TODO: Tune
+
+
   class Indexer:
     MOTOR_CONFIG = VelocityControlModuleConfig("Indexer", 14, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
@@ -157,6 +161,15 @@ class Subsystems:
       motorMotionMaxVelocity = 7000.0, # TODO: Set
       motorMotionMaxAcceleration = 14000.0, # TODO: Set
     ))
+
+    INDEXER_SPEED: units.percent = 0.1 # TODO: Tune
+    INDEXER_AGITATE_FAST_SPEED: units.percent = 0.3 # TODO: Tune
+    INDEXER_AGITATE_SLOW_SPEED: units.percent = 0.2 # TODO: Tune
+    INDEXER_AGITATE_FAST_TIME: units.seconds = 3 # TODO: Tune
+    INDEXER_AGITATE_SLOW_TIME: units.seconds = 1 # TODO: Tune
+
+
+
 
   class Feeder:
     MOTOR_CONFIG = VelocityControlModuleConfig("Feeder", 15, False, VelocityControlModuleConstants(
@@ -170,6 +183,8 @@ class Subsystems:
       motorMotionMaxAcceleration = 14000.0, # TODO: Set
     ))
 
+    FEEDER_SPEED: units.percent = 0.1 # TODO: Tune
+
   class Elevator:
     MOTOR_CONFIG = VelocityControlModuleConfig("Elevator", 16, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
@@ -181,6 +196,8 @@ class Subsystems:
       motorMotionMaxVelocity = 7000.0, # TODO: Set
       motorMotionMaxAcceleration = 14000.0, # TODO: Set
     ))
+
+    ELEVATOR_SPEED: units.percent = 0.1 # TODO: Tune
 
   class Intake:
     ROLLERS_MOTOR_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(

@@ -13,8 +13,12 @@ class Feeder(Subsystem):
 
     self._motor = VelocityControlModule(self._constants.MOTOR_CONFIG)
 
-  def setSpeed(self, speed: units.percent) -> None:
-    self._motor.setSpeed(speed)
+  def runFeeder(self) -> Command:
+    return self.runEnd(
+      lambda: self._motor.setSpeed(self._constants.FEEDER_SPEED),
+      lambda: self._motor.reset()
+    ).withName("Feeder:RunFeeder")
+
 
   def periodic(self) -> None:
     self._updateTelemetry()
