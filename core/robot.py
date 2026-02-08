@@ -16,6 +16,7 @@ from core.subsystems.indexer import Indexer
 from core.subsystems.intake import Intake
 from core.subsystems.climber import Climber
 from core.services.localization import Localization
+from core.services.match import Match
 from core.services.lights import Lights
 from core.classes import Target
 import core.constants as constants
@@ -48,6 +49,7 @@ class RobotCore:
     
   def _initServices(self) -> None:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors, self.objectSensor)
+    self.match = Match()
     self.lights = Lights(self._isHomed, self.localization.hasValidVisionTarget, lambda: self.game.isLaunchReady())
 
   def _initCommands(self) -> None:

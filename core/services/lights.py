@@ -12,7 +12,6 @@ class Lights():
       hasValidVisionTarget: Callable[[], bool],
       isLaunchReady: Callable[[], bool]
     ) -> None:
-    super().__init__()
     self._isHomed = isHomed
     self._hasValidVisionTarget = hasValidVisionTarget
     self._isLaunchReady = isLaunchReady
