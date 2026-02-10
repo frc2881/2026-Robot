@@ -1,6 +1,5 @@
 from typing import Callable
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard
 from wpimath import units
 from wpimath.geometry import Pose2d, Pose3d
 from lib import logger, utils
@@ -12,29 +11,15 @@ class Turret(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Turret
 
-    self._hasInitialZeroReset: bool = False
-
     self._turret = RelativePositionControlModule(self._constants.TURRET_CONFIG)
 
   def periodic(self) -> None:
     self._updateTelemetry()
-
-  def setSpeed(self, getInput: Callable[[], units.percent]) -> Command:
-    return self.runEnd(
-      lambda: self._turret.setSpeed(getInput() * self._constants.INPUT_LIMIT),
-      lambda: self.reset()
-    ).withName("Turret:SetSpeed")
   
   def setPosition(self, position: units.degrees) -> Command:
     return self.run(
       lambda: self._turret.setPosition(position)
-    ).withName("Turret:SetPosition")
-  
-  def getPosition(self) -> units.degrees:
-    return self._turret.getPosition()
-
-  def isAtTargetPosition(self) -> bool:
-    return self._turret.isAtTargetPosition()
+    )
 
   def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d]) -> Command:
     return self.startRun(
@@ -53,8 +38,8 @@ class Turret(Subsystem):
   def _endTargetHeadingAlignment(self) -> None:
     self._targetPose = None
 
-  def isAlignedToTargetHeading(self) -> bool:
-    return self.isAtTargetPosition()
+  def isAtTargetPosition(self) -> bool:
+    return self._turret.isAtTargetPosition()
   
   def isAtSoftLimit(self) -> bool:
     return self._turret.isAtSoftLimit()
@@ -69,4 +54,4 @@ class Turret(Subsystem):
     self._turret.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Turret/IsAtTargetPosition", self.isAtTargetPosition())
+    pass

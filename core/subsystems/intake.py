@@ -1,87 +1,66 @@
-from commands2 import cmd
-from typing import Callable
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
-from wpimath import units
 from lib import logger, utils
-import core.constants as constants
-from lib.classes import Position
-from lib.components.velocity_control_module import VelocityControlModule
 from lib.components.relative_position_control_module import RelativePositionControlModule
+from lib.components.velocity_control_module import VelocityControlModule
+import core.constants as constants
 
 class Intake(Subsystem):
   def __init__(self) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Intake
 
-    self._rollersMotor = VelocityControlModule(self._constants.ROLLERS_MOTOR_CONFIG)
-    self._armMotor = RelativePositionControlModule(self._constants.ARM_MOTOR_CONFIG)
+    self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
+    self._roller = VelocityControlModule(self._constants.ROLLER_CONFIG)
 
-    self._armPostion = Position.Unknown
-    self._isArmAlignedToPosition = False
+    self.setDefaultCommand(self.hold())
 
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def runRollersForward(self) -> Command:
-    return self.startEnd(
-      lambda: self._rollersMotor.setSpeed(self._constants.ROLLER_SPEED_FORWARD),
-      lambda: self._rollersMotor.reset()
-    ).withName("Intake:RunRollersForward")
+  def hold(self) -> Command:
+    return self.run(
+      lambda: self._arm.setSpeed(self._constants.ARM_HOLD_SPEED if self._arm.getPosition() > 1 else -self._constants.ARM_HOLD_SPEED)
+    ).withName("Intake:HoldPosition")
+  
+  def extend(self) -> Command:
+    return self.run(
+      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
+    ).withName("Intake:Extend")
+  
+  def retract(self) -> Command:
+    return self.run(
+      lambda: self._arm.setPosition(0)
+    ).withName("Intake:Extend")
 
-  def runRollersBackward(self) -> None:
-    return self.startEnd(
-      lambda: self._rollersMotor.setSpeed(self._constants.ROLLER_SPEED_BACKWARD),
-      lambda: self._rollersMotor.reset()
-    ).withName("Intake:RunRollersBackward")
-    
-  def setArmSpeed(self, getInput: Callable[[], units.percent]) -> Command:
+  def activate(self) -> Command:
     return self.runEnd(
-      lambda: self._armMotor.setSpeed(getInput() * self._constants.ARM_INPUT_LIMIT),
-      lambda: self._armMotor.reset()
-    ).withName("Intake:SetArmSpeed")
-
-  def setArmPosition(self, position: Position) -> Command:
-    return self.startEnd(
       lambda: [
-        self._resetPositionAlignment(),
-        self._armMotor.setPosition(self._constants.ARM_POSITION_UP if position == Position.Up else self._constants.ARM_POSITION_DOWN)
+        self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
+        self._roller.setSpeed(self._constants.ROLLER_INTAKE_SPEED)
       ],
-      lambda: self._armMotor.reset()
-    ).until(
-      lambda: self._armMotor.isAtTargetPosition()
-    ).andThen(
-      cmd.runOnce(lambda: setattr(self, "_armPosition", position))
-    ).withName("Intake:SetArmPosition")
+      lambda: self._roller.reset()
+    ).withName("Intake:Activate")
+
+  def isAtTargetPosition(self) -> bool:
+    return self._arm.isAtTargetPosition()
   
-  def toggleArmPosition(self) -> Command:
-    return cmd.either(
-      self.setArmPosition(Position.Up), 
-      self.setArmPosition(Position.Down), 
-      lambda: self._armPosition != Position.Up
-    ).withName("Intake:ToggleArmPosition")
-
-  def runIntake(self) -> Command:
-    return self.setArmPosition(Position.Down).andThen(
-      self.runRollersForward()
-    ).withName("Intake:RunIntake")
-
-  def _resetPositionAlignment(self) -> None:
-    self._armPosition = Position.Unknown
-    self._isArmAlignedToPosition = False
-
-  def isAlignedToPosition(self) -> bool:
-    return self._isArmAlignedToPosition
+  def isExtended(self) -> bool:
+    return self._arm.isAtTargetPosition() and self._arm.getPosition() > 1
   
-  def resetArmToHome(self) -> Command:
-    return self._armMotor.resetToHome(self).withName("Intake:ResetArmToHome")
+  def isRunning(self) -> bool:
+    return self._roller.getSpeed() > 0
+  
+  def resetToHome(self) -> Command:
+    return self._arm.resetToHome(self).withName("Intake:ResetToHome")
 
-  def isArmHomed(self) -> bool:
-    return self._armMotor.isHomed()
+  def isHomed(self) -> bool:
+    return self._arm.isHomed()
 
   def reset(self) -> None:
-    lambda: self._armMotor.reset()
-    lambda: self._rollersMotor.reset()
+    lambda: self._arm.reset()
+    lambda: self._roller.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Intake/IsAlignedToPosition", self.isAlignedToPosition())
+    SmartDashboard.putBoolean("Robot/Intake/IsExtended", self.isExtended())
+    SmartDashboard.putBoolean("Robot/Intake/IsRunning", self.isRunning())

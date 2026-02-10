@@ -1,40 +1,41 @@
-from typing import Callable
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard
-from wpimath import units
 from lib import logger, utils
-import core.constants as constants
-from lib.components.follower_module import FollowerModule
+from lib.classes import MotorIdleMode
 from lib.components.velocity_control_module import VelocityControlModule
+from lib.components.follower_module import FollowerModule
+import core.constants as constants
 
 class Launcher(Subsystem):
   def __init__(self) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Launcher
 
-    self._flywheelMotor = VelocityControlModule(self._constants.FLYWHEEL_MOTOR_CONFIG)
-    self._flywheelFollower = FollowerModule(self._constants.FLYWHEEL_FOLLOWER_CONFIG)
+    self._launcher = VelocityControlModule(self._constants.LAUNCHER_CONFIG)
+    self._launcherFollower = FollowerModule(self._constants.LAUNCHER_FOLLOWER_CONFIG)
+    self._accelerator = VelocityControlModule(self._constants.ACCELERATOR_CONFIG)
 
-    self._acceleratorMotor = VelocityControlModule(self._constants.ACCELERATOR_MOTOR_CONFIG)
+    self._launcher.setIdleMode(MotorIdleMode.Coast)
+    self._launcherFollower.setIdleMode(MotorIdleMode.Coast)
+    self._accelerator.setIdleMode(MotorIdleMode.Coast)
 
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def runLauncher(self) -> Command:
+  def activate(self) -> Command:
     return self.runEnd(
-      lambda: (self.setFlywheelSpeed(self._constants.FLYWHEEL_SPEED), self.setFlywheelSpeed(self._constants.FLYWHEEL_SPEED)),
-      lambda: (self._flywheelMotor.reset(), self._acceleratorMotor.reset())
-    ).withName("Launcher:RunLauncher")
-
-  def setFlywheelSpeed(self, speed: units.percent):
-    self._flywheelMotor.setSpeed(speed)
-
-  def setAcceleratorSpeed(self, speed: units.percent):
-    self._acceleratorMotor.setSpeed(speed)
+      lambda: [
+        self._launcher.setSpeed(1.0),
+        self._accelerator.setSpeed(1.0 * .75)
+      ],
+      lambda: self.reset()
+    ).withName("Launcher:Activate")
+  
+  def isAtTargetSpeed(self) -> bool:
+    return self._accelerator.isAtTargetSpeed() and self._launcher.isAtTargetSpeed()
 
   def reset(self) -> None:
-    self._flywheelMotor.reset()
-    self._acceleratorMotor.reset()
+    self._launcher.reset()
+    self._accelerator.reset()
 
   def _updateTelemetry(self) -> None:
     pass

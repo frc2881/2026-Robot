@@ -1,3 +1,4 @@
+from commands2 import cmd
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.controllers.xbox import XboxController
@@ -8,12 +9,10 @@ from lib.sensors.object import ObjectSensor
 from core.commands.auto import Auto
 from core.commands.game import Game
 from core.subsystems.drive import Drive
+from core.subsystems.intake import Intake
+from core.subsystems.hopper import Hopper
 from core.subsystems.turret import Turret
 from core.subsystems.launcher import Launcher
-from core.subsystems.elevator import Elevator
-from core.subsystems.feeder import Feeder
-from core.subsystems.indexer import Indexer
-from core.subsystems.intake import Intake
 from core.subsystems.climber import Climber
 from core.services.localization import Localization
 from core.services.match import Match
@@ -39,13 +38,11 @@ class RobotCore:
 
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
-    self.turret = Turret()
-    self.launcher = Launcher()
-    self.elevator = Elevator()
-    self.feeder = Feeder()
-    self.indexer = Indexer()
     self.intake = Intake()
-    self.climber = Climber()
+    self.hopper = Hopper()
+    # self.turret = Turret()
+    self.launcher = Launcher()
+    # self.climber = Climber()
     
   def _initServices(self) -> None:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors, self.objectSensor)
@@ -60,58 +57,50 @@ class RobotCore:
     DriverStation.silenceJoystickConnectionWarning(not utils.isCompetitionMode())
     self.driver = XboxController(constants.Controllers.DRIVER_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
     self.operator = XboxController(constants.Controllers.OPERATOR_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
-    self.homingButton = ButtonController(constants.Controllers.HOMING_BUTTON_CONFIG)
+    # self.homingButton = ButtonController(constants.Controllers.HOMING_BUTTON_CONFIG)
 
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
-    self.homingButton.pressed().debounce(0.5).whileTrue(self.turret.resetToHome())
+    # self.homingButton.pressed().debounce(0.5).whileTrue(cmd.parallel(self.intake.resetToHome(), self.turret.resetToHome()))
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
     self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
-    self.driver.leftTrigger().whileTrue(self.intake.toggleArmPosition())
-    self.driver.rightTrigger().whileTrue(self.intake.runRollersForward()) # TODO Change to RunIntake
-    self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
-    self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.CornerRight))
-    # self.driver.povUp().whileTrue(cmd.none())
-    # self.driver.povDown().and_((self.operator.start()).not_()).whileTrue(cmd.none())
-    self.driver.povLeft().and_((self.driver.start()).not_()).whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
-    self.driver.povRight().and_((self.driver.start()).not_()).whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
-    self.driver.a().whileTrue(self.game.alignRobotToNearestFuel())
-    self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
+    self.driver.leftTrigger().whileTrue(self.intake.retract())
+    self.driver.rightTrigger().whileTrue(self.intake.activate())
+    self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
+    self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
+    # self.driver.povUp().whileTrue(cmd.none()) # TODO: climb up sequence
+    # self.driver.povDown().whileTrue(cmd.none()) # TODO: climb down sequence
+    self.driver.povLeft().whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
+    self.driver.povRight().whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
+    # self.driver.a().whileTrue(cmd.none())
+    self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.CornerRight))
     # self.driver.y().whileTrue(cmd.none())
-    self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
-    # self.operator.start().and_((
-    #   self.operator.povLeft()
-    #   .or_(self.operator.povUp())
-    #   .or_(self.operator.povRight())
-    #   .or_(self.operator.povDown()))
-    #   .not_()).whileTrue(cmd.none())
-    self.driver.start().and_(self.driver.povDown()).whileTrue(self.climber.resetDeployerToHome())
-    self.driver.start().and_(self.driver.povRight()).whileTrue(self.climber.resetRotatorToHome())
-    self.driver.start().and_(self.driver.povLeft()).whileTrue(self.intake.resetArmToHome())
+    self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
+    # self.driver.start().whileTrue(cmd.none())
     self.driver.back().debounce(0.5).whileTrue(self.gyro.reset())
 
   def _setupOperator(self) -> None:
-    self.turret.setDefaultCommand(self.turret.setSpeed(self.operator.getLeftX))
     # self.operator.leftStick().whileTrue(cmd.none())
-    self.intake.setDefaultCommand(self.intake.setArmSpeed(self.operator.getRightY))
-    self.operator.leftTrigger().whileTrue(self.launcher.runLauncher())
-    self.operator.rightTrigger().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
+    # self.operator.rightStick().whileTrue(cmd.none())
+    self.operator.leftTrigger().whileTrue(self.hopper.activate()) # TODO: FOR TESTING ONLY: remove manual testing of hopper for complete fuel scoring cycle game command
+    self.operator.rightTrigger().whileTrue(self.launcher.activate()) # TODO: FOR TESTING ONLY: remove manual testing of launcher for complete fuel scoring cycle game command
     # self.operator.leftBumper().whileTrue(cmd.none())
     # self.operator.rightBumper().whileTrue(cmd.none())
-    # self.operator.povDown().whileTrue(cmd.none())
-    # self.operator.povUp().whileTrue(cmd.none())
-    # self.operator.povRight().whileTrue(cmd.none())
+    # self.operator.povDown().whileTrue(self.indexer.runIndexer())
+    # self.operator.povUp().whileTrue(self.elevator.runElevator())
+    # self.operator.povRight().whileTrue(self.feeder.runFeeder())
     # self.operator.povLeft().whileTrue(cmd.none())
-    self.operator.a().whileTrue(self.indexer.runIndexer())
-    self.operator.b().whileTrue(self.feeder.runFeeder())
-    self.operator.y().whileTrue(self.elevator.runElevator())
+    # self.operator.a().whileTrue(cmd.none())
+    # self.operator.b().whileTrue(cmd.none())
+    # self.operator.y().whileTrue(cmd.none())
     # self.operator.x().whileTrue(cmd.none())
-    # self.operator.start().whileTrue(cmd.none())
-    self.operator.back().whileTrue(self.turret.resetToHome())
+    # self.operator.start().whileTrue(self.turret.resetToHome())
+    self.operator.back().whileTrue(self.intake.resetToHome())
+    pass
 
   def _initTelemetry(self) -> None:
     SmartDashboard.putString("Game/Robot/Type", constants.Game.Robot.TYPE.name)
@@ -149,7 +138,7 @@ class RobotCore:
 
   def _isHomed(self) -> bool:
     return (
-      self.turret.isHomed()
+      self.intake.isHomed() # and self.turret.isHomed()
       if not utils.isCompetitionMode() else 
       True
     )

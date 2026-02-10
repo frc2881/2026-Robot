@@ -15,7 +15,6 @@ from lib.classes import (
   Alliance, 
   PID,
   Range,
-  Value, 
   MotorModel,
   FeedForwardGains,
   SwerveModuleGearKit,
@@ -96,6 +95,39 @@ class Subsystems:
     INPUT_LIMIT_DEMO: units.percent = 0.5
     INPUT_RATE_LIMIT_DEMO: units.percent = 0.5
 
+  class Intake:
+    ARM_CONFIG = RelativePositionControlModuleConfig("Intake/Arm", 18, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40,
+      motorPID = PID(0.001, 0, 0.0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionCruiseVelocity = 3000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 6000.0, # TODO: configure real value
+      motorMotionAllowedProfileError = 0.5,
+      motorRelativeEncoderPositionConversionFactor = 1.0,
+      motorSoftLimitForward = 100.0, # TODO: configure real value
+      motorSoftLimitReverse = 0.0, # TODO: configure real value
+      motorHomingSpeed = 0.2,
+      motorHomedPosition = 0.0
+    ))
+        
+    ROLLER_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40, 
+      motorPID = PID(0.001, 0, 0.0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionMaxVelocity = 1000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 2000.0 # TODO: configure real value
+    ))
+
+    ARM_HOLD_SPEED: units.percent = 0.05 # TODO: configure real value
+    ARM_INTAKE_POSITION: float = 10.0 # TODO: configure real value
+    ROLLER_INTAKE_SPEED: units.percent = 0.5 # TODO: configure real value
+
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
@@ -114,167 +146,79 @@ class Subsystems:
       motorHomedPosition = -170
     ))
 
-    INPUT_LIMIT: units.percent = 0.5
-
-  class Launcher:
-    FLYWHEEL_MOTOR_CONFIG = VelocityControlModuleConfig("Launcher/Flywheel", 10, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionMaxVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-    ))
-
-    # TODO: Make sure that the two are inverted
-    FLYWHEEL_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/FlywheelFollower", 11, 10, True, FollowerModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120
-    ))
-
-    ACCELERATOR_MOTOR_CONFIG = VelocityControlModuleConfig("Launcher/Flywheel", 12, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionMaxVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-    ))
-
-    FLYWHEEL_SPEED: units.percent = 0.2 # TODO: Tune
-    ACCELERATOR_SPEED: units.percent = 0.2 # TODO: Tune
-
-
-  class Indexer:
-    MOTOR_CONFIG = VelocityControlModuleConfig("Indexer", 14, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionMaxVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-    ))
-
-    INDEXER_SPEED: units.percent = 0.1 # TODO: Tune
-    INDEXER_AGITATE_FAST_SPEED: units.percent = 0.3 # TODO: Tune
-    INDEXER_AGITATE_SLOW_SPEED: units.percent = 0.2 # TODO: Tune
-    INDEXER_AGITATE_FAST_TIME: units.seconds = 3 # TODO: Tune
-    INDEXER_AGITATE_SLOW_TIME: units.seconds = 1 # TODO: Tune
-
-
-
-
-  class Feeder:
-    MOTOR_CONFIG = VelocityControlModuleConfig("Feeder", 15, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionMaxVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-    ))
-
-    FEEDER_SPEED: units.percent = 0.1 # TODO: Tune
-
-  class Elevator:
-    MOTOR_CONFIG = VelocityControlModuleConfig("Elevator", 16, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionMaxVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-    ))
-
-    ELEVATOR_SPEED: units.percent = 0.1 # TODO: Tune
-
-  class Intake:
-    ROLLERS_MOTOR_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40, 
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionMaxVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-    ))
-
-    ARM_MOTOR_CONFIG = RelativePositionControlModuleConfig("Intake/Arm", 18, False, RelativePositionControlModuleConstants(
+  class Hopper:
+    INDEXER_CONFIG = VelocityControlModuleConfig("Indexer", 14, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
+      motorPID = PID(0.001, 0, 0), # TODO: configure real value
       motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionCruiseVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-      motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 100.0, # TODO: Tune
-      motorSoftLimitReverse = 0.0, # TODO: Tune
-      motorHomingSpeed = 0.2,
-      motorHomedPosition = 0.0
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionMaxVelocity = 2000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 4000.0 # TODO: configure real value
     ))
 
-    ROLLER_SPEED_FORWARD: units.percent = 0.2
-    ROLLER_SPEED_BACKWARD: units.percent = 0.2
-    ARM_INPUT_LIMIT: units.percent = 0.3
-    ARM_POSITION_UP: float = 0.0
-    ARM_POSITION_DOWN: float = 100.0 # TODO Tune
+    FEEDER_CONFIG = VelocityControlModuleConfig("Feeder", 15, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40,
+      motorPID = PID(0.001, 0, 0.0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionMaxVelocity = 2000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 4000.0 # TODO: configure real value
+    ))
+
+    ELEVATOR_CONFIG = VelocityControlModuleConfig("Elevator", 16, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40,
+      motorPID = PID(0.001, 0, 0),
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionMaxVelocity = 2000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 4000.0 # TODO: configure real value
+    ))
+
+    INDEXER_SPEED: units.percent = 0.1 # TODO: configure real value
+    FEEDER_SPEED: units.percent = 0.1 # TODO: configure real value
+    ELEVATOR_SPEED: units.percent = 0.1 # TODO: configure real value
+
+    INDEXER_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
+    FEEDER_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
+    ELEVATOR_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
+
+  class Launcher:
+    LAUNCHER_CONFIG = VelocityControlModuleConfig("Launcher", 10, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80,
+      motorPID = PID(0.001, 0, 0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionMaxVelocity = 3000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 6000.0 # TODO: configure real value
+    ))
+
+    LAUNCHER_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/Follower", 11, 10, True, FollowerModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80
+    ))
+
+    ACCELERATOR_CONFIG = VelocityControlModuleConfig("Launcher/Accelerator", 12, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80,
+      motorPID = PID(0.001, 0, 0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionMaxVelocity = 2000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 4000.0 # TODO: configure real value
+    ))
 
   class Climber:
-    ROTATOR_MOTOR_CONFIG = RelativePositionControlModuleConfig("Climber/Rotator", 19, False, RelativePositionControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionCruiseVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-      motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 100.0, # TODO: Tune
-      motorSoftLimitReverse = 0.0, # TODO: Tune
-      motorHomingSpeed = 0.2,
-      motorHomedPosition = 0.0
-    ))
-
-    # TODO: Make sure that the two are inverted
-    ROTATOR_FOLLOWER_CONFIG = FollowerModuleConfig("Climber/RotatorFollower", 20, 19, True, FollowerModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 120
-    ))
-
-    DEPLOYER_MOTOR_CONFIG = RelativePositionControlModuleConfig("Climber/Deployer", 21, False, RelativePositionControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 60,
-      motorPID = PID(0.1, 0, 0.0), # TODO: Tune
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(0, 0, 0, 0), # TODO: Tune
-      motorMotionCruiseVelocity = 7000.0, # TODO: Set
-      motorMotionMaxAcceleration = 14000.0, # TODO: Set
-      motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 100.0, # TODO: Tune
-      motorSoftLimitReverse = 0.0, # TODO: Tune
-      motorHomingSpeed = 0.2,
-      motorHomedPosition = 0.0
-    ))
+    pass
 
 class Services:
   class Localization:
