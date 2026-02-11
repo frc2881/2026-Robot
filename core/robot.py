@@ -40,7 +40,7 @@ class RobotCore:
     self.drive = Drive(self.gyro.getHeading)
     self.intake = Intake()
     self.hopper = Hopper()
-    # self.turret = Turret()
+    self.turret = Turret()
     self.launcher = Launcher()
     # self.climber = Climber()
     
@@ -57,19 +57,19 @@ class RobotCore:
     DriverStation.silenceJoystickConnectionWarning(not utils.isCompetitionMode())
     self.driver = XboxController(constants.Controllers.DRIVER_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
     self.operator = XboxController(constants.Controllers.OPERATOR_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
-    # self.homingButton = ButtonController(constants.Controllers.HOMING_BUTTON_CONFIG)
+    self.homingButton = ButtonController(constants.Controllers.HOMING_BUTTON_CONFIG)
 
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
-    # self.homingButton.pressed().debounce(0.5).whileTrue(cmd.parallel(self.intake.resetToHome(), self.turret.resetToHome()))
+    self.homingButton.pressed().debounce(0.5).whileTrue(cmd.parallel(self.intake.resetToHome(), self.turret.resetToHome()))
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
     self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
-    self.driver.leftTrigger().whileTrue(self.intake.retract())
-    self.driver.rightTrigger().whileTrue(self.intake.activate())
+    self.driver.leftTrigger().whileTrue(self.intake.retract()) # TODO: confirm that driver needs "emergency" ability to retract intake/hopper during teleop action
+    self.driver.rightTrigger().whileTrue(self.game.runIntake())
     self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
     # self.driver.povUp().whileTrue(cmd.none()) # TODO: climb up sequence
@@ -86,19 +86,19 @@ class RobotCore:
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    self.operator.leftTrigger().whileTrue(self.hopper.activate()) # TODO: FOR TESTING ONLY: remove manual testing of hopper for complete fuel scoring cycle game command
-    self.operator.rightTrigger().whileTrue(self.launcher.activate()) # TODO: FOR TESTING ONLY: remove manual testing of launcher for complete fuel scoring cycle game command
+    self.operator.leftTrigger().whileTrue(self.game.runHopper()) # TODO: FOR TESTING ONLY: remove manual testing of hopper for complete fuel scoring cycle game command (should only be run while right trigger is also engaged below)
+    self.operator.rightTrigger().whileTrue(self.game.runLauncher(Target.Hub)) # TODO: FOR TESTING ONLY: remove manual testing of launcher for complete fuel scoring cycle game command (should be engaged prior to running hopper above)
     # self.operator.leftBumper().whileTrue(cmd.none())
     # self.operator.rightBumper().whileTrue(cmd.none())
-    # self.operator.povDown().whileTrue(self.indexer.runIndexer())
-    # self.operator.povUp().whileTrue(self.elevator.runElevator())
-    # self.operator.povRight().whileTrue(self.feeder.runFeeder())
+    # self.operator.povDown().whileTrue(cmd.none())
+    # self.operator.povUp().whileTrue(cmd.none())
+    # self.operator.povRight().whileTrue(cmd.none())
     # self.operator.povLeft().whileTrue(cmd.none())
     # self.operator.a().whileTrue(cmd.none())
     # self.operator.b().whileTrue(cmd.none())
     # self.operator.y().whileTrue(cmd.none())
     # self.operator.x().whileTrue(cmd.none())
-    # self.operator.start().whileTrue(self.turret.resetToHome())
+    self.operator.start().whileTrue(self.turret.resetToHome())
     self.operator.back().whileTrue(self.intake.resetToHome())
     pass
 
@@ -138,7 +138,7 @@ class RobotCore:
 
   def _isHomed(self) -> bool:
     return (
-      self.intake.isHomed() # and self.turret.isHomed()
+      self.intake.isHomed() and self.turret.isHomed()
       if not utils.isCompetitionMode() else 
       True
     )

@@ -4,6 +4,7 @@ from wpilib import RobotBase
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
 from core.classes import Target
+import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class Game:
@@ -22,47 +23,53 @@ class Game:
 
   def alignRobotToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
+      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetHeading(target))
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
   
   def _isRobotAlignedToTargetHeading(self) -> bool:
     return self._robot.drive.isAlignedToTargetHeading()
 
-  # def alignTurretToTargetHeading(self, target: Target) -> Command:
-  #   return (
-  #     self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
-  #     .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
-  #   )
+  def alignTurretToTargetHeading(self, target: Target) -> Command:
+    return (
+      self._robot.turret.alignToTargetHeading(lambda: self._robot.localization.getTargetHeading(target))
+      .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
+    )
 
-  # def _isTurretAlignedToTargetHeading(self) -> bool:
-  #   return self._robot.turret.isAlignedToTargetHeading() and not self._robot.turret.isAtSoftLimit() # TODO: validate conditions for setting turret position relative to reaching soft limit
+  def _isTurretAlignedToTargetHeading(self) -> bool:
+    return self._robot.turret.isAlignedToTargetHeading()
 
-  def isLaunchReady(self) -> bool:
-    return True
-    # return self._isTurretAlignedToTargetHeading() # TODO: add all other sensor/subsystem readiness validation checks
+  def _isLaunchReady(self) -> bool: # TODO: add other launch readiness validation checks (sensors indicating fuel in proper locations, etc.)
+    return (
+      self._isTurretAlignedToTargetHeading() and
+      self._robot.launcher.isAtTargetSpeed()
+    ) 
 
-  # def alignRobotToNearestFuel(self) -> Command:
-  #   return (
-  #     self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getObjectsPose())
-  #     .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
-  #     .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 5)
-  #     .withName(f'Game:AlignRobotToNearestFuel')
-  #   )
+  def runIntake(self) -> Command:
+    return (
+      self._robot.intake.run_()
+      .withName("Game:RunIntake")
+    )
+  
+  def runHopper(self) -> Command: # TODO: temporary command for manual testing - will be removed and integrated into single fuel scoring command with validation checks
+    return (
+      self._robot.hopper.run_()
+      .withName("Game:RunHopper")
+    )
 
-  # TODO: Refine/change function AND add to controller
-  # def scoreFuel(self) -> Command:
-  #   return cmd.sequence(
-  #     cmd.parallel(
-  #       self._robot.launcher.runLauncher(),
-  #       self.alignTurretToTargetHeading(Target.Hub)
-  #     ).withTimeout(2.0),
-  #     cmd.parallel(
-  #       self._robot.indexer.runIndexer(),
-  #       self._robot.feeder.runFeeder(),
-  #       self._robot.elevator.runElevator()
-  #     )
-  #   ).withName("Game:ScoreFuel")
+  def runLauncher(self, target: Target) -> Command: # TODO: temporary command for manual testing - will be removed and integrated into single fuel scoring command with validation checks
+    return (
+      self._robot.launcher.run_(lambda: self._robot.localization.getTargetDistance(Target.Hub, constants.Subsystems.Turret.TURRET_TRANSFORM))
+      .withName(f'Game:RunLauncher:{ target.name }')
+    )
+
+  def alignRobotToNearestFuel(self) -> Command:
+    return (
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getObjectsPose())
+      .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
+      .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 5) # TODO: make a constant for and validate minimum fuel count to target if we use this feature on the robot
+      .withName(f'Game:AlignRobotToNearestFuel')
+    )
 
   def rumbleControllers(
     self, 

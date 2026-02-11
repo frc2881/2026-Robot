@@ -1,4 +1,6 @@
 from enum import Enum, auto
+from dataclasses import dataclass
+from wpimath import units
 
 class Target(Enum):
   Hub = auto()
@@ -10,6 +12,11 @@ class Target(Enum):
   CornerRight = auto()
   Outpost = auto()
   Depot = auto()
+
+@dataclass(frozen=True, slots=True)
+class TargetLaunchSpeed:
+  distance: units.meters
+  speed: units.percent
 
 class MatchState(Enum):
   Auto = auto()

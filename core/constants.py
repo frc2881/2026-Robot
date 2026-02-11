@@ -1,6 +1,6 @@
 import wpilib
 from wpimath import units
-from wpimath.geometry import Pose3d, Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
+from wpimath.geometry import Pose3d, Transform3d, Translation3d, Rotation3d, Transform2d, Translation2d, Rotation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
 from robotpy_apriltag import AprilTagFieldLayout
 from navx import AHRS
@@ -31,7 +31,7 @@ from lib.classes import (
   PoseSensorConfig,
   ObjectSensorConfig
 )
-from core.classes import Target
+from core.classes import Target, TargetLaunchSpeed
 import lib.constants
 
 _aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2026-rebuilt-andymark.json')
@@ -113,7 +113,7 @@ class Subsystems:
       motorHomedPosition = 0.0
     ))
         
-    ROLLER_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
+    ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40, 
@@ -126,25 +126,7 @@ class Subsystems:
 
     ARM_HOLD_SPEED: units.percent = 0.05 # TODO: configure real value
     ARM_INTAKE_POSITION: float = 10.0 # TODO: configure real value
-    ROLLER_INTAKE_SPEED: units.percent = 0.5 # TODO: configure real value
-
-  class Turret:
-    TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 80,
-      motorRelativeEncoderPositionConversionFactor = 360.0 / 21.0,
-      motorPID = PID(0.025, 0, 0.0025),
-      motorOutputRange = Range(-0.5, 0.5), # TODO: update to 100% output range and adjust velocity/acceleration/PID values in relation
-      motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 40000.0,
-      motorMotionMaxAcceleration = 80000.0,
-      motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 170.0,
-      motorSoftLimitReverse = -160.0,
-      motorHomingSpeed = 0.1,
-      motorHomedPosition = -170
-    ))
+    ROLLERS_SPEED: units.percent = 0.5 # TODO: configure real value
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Indexer", 14, False, VelocityControlModuleConstants(
@@ -188,8 +170,28 @@ class Subsystems:
     FEEDER_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
     ELEVATOR_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
 
+  class Turret:
+    TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80,
+      motorRelativeEncoderPositionConversionFactor = 360.0 / 21.0,
+      motorPID = PID(0.025, 0, 0.0025),
+      motorOutputRange = Range(-0.5, 0.5), # TODO: update to 100% output range and adjust velocity/acceleration/PID values in relation
+      motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionCruiseVelocity = 40000.0,
+      motorMotionMaxAcceleration = 80000.0,
+      motorMotionAllowedProfileError = 0.25,
+      motorSoftLimitForward = 170.0, # TODO: configure real value
+      motorSoftLimitReverse = -160.0, # TODO: configure real value
+      motorHomingSpeed = 0.1, # TODO: configure real value
+      motorHomedPosition = -170 # TODO: configure real value
+    ))
+
+    TURRET_TRANSFORM = Transform2d(units.inchesToMeters(5.0), units.inchesToMeters(-5.0), Rotation2d()) # TODO: configure real value
+
   class Launcher:
-    LAUNCHER_CONFIG = VelocityControlModuleConfig("Launcher", 10, False, VelocityControlModuleConstants(
+    LAUNCHER_CONFIG = VelocityControlModuleConfig("Launcher/Leader", 10, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
@@ -217,6 +219,20 @@ class Subsystems:
       motorMotionMaxAcceleration = 4000.0 # TODO: configure real value
     ))
 
+    # TODO: configure real values
+    TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
+      TargetLaunchSpeed(0.91, 0.3), # min theoretical distance (~3 feet) for launching fuel into hub (robot directly centered to and bumpers touching base of hub), but turret hood angle doesn't support this min distance
+      TargetLaunchSpeed(1.5, 0.4), # TODO: get minimum achievable distance and speed for scoring into hub at close range
+      TargetLaunchSpeed(2.0, 0.5), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(3.0, 0.6), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(4.0, 0.7), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(5.0, 0.8), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(6.0, 0.9), # TODO: get maxmium practical distance and speed for scoring into hub from either alliance corner
+      TargetLaunchSpeed(6.15, 1.0) # max theoretical distance (~20 feet) for launching fuel to either the hub of passing from neutral zone into alliance zone
+    )
+
+    ACCELERATOR_SPEED_RATIO: units.percent = 0.75 # TODO: configure real value
+
   class Climber:
     pass
 
@@ -233,17 +249,36 @@ class Sensors:
       COM_TYPE = AHRS.NavXComType.kUSB1
   
   class Pose:
-    # TODO: configure for installed cameras
+    # TODO: configure real values for all installed cameras
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
-        name = "Front",
+        name = "FrontLeft",
         transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
+      PoseSensorConfig(
+        name = "FrontRight",
+        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        stream = "http://10.28.81.6:1182/?action=stream",
+        aprilTagFieldLayout = _aprilTagFieldLayout
+      ),
+      PoseSensorConfig(
+        name = "RearLeft",
+        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        stream = "http://10.28.81.6:1182/?action=stream",
+        aprilTagFieldLayout = _aprilTagFieldLayout
+      ),
+      PoseSensorConfig(
+        name = "RearRight",
+        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        stream = "http://10.28.81.6:1182/?action=stream",
+        aprilTagFieldLayout = _aprilTagFieldLayout
+      )
     )
 
   class Object:
+    # TODO: configure real values for installed camera
     OBJECT_SENSOR_CONFIG = ObjectSensorConfig(
       name = "Fuel", 
       transform = Transform3d(Translation3d(units.inchesToMeters(-11.0), units.inchesToMeters(-4.0), units.inchesToMeters(24.0)), Rotation3d(0, units.degreesToRadians(25.0), units.degreesToRadians(0))),
@@ -252,7 +287,7 @@ class Sensors:
     )
 
 class Cameras:
-  DRIVER_STREAM = "http://10.28.81.6:1182/?action=stream" #TODO: configure real value
+  DRIVER_STREAM = "http://10.28.81.6:1182/?action=stream" #TODO: configure real value for installed camera
 
 class Controllers:
   DRIVER_CONTROLLER_PORT: int = 0
@@ -266,7 +301,7 @@ class Game:
     NAME: str = "2026-Robot" #TODO: configure selected robot name
 
   class Commands:
-    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 1.5 #TODO: configure real value
+    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 1.5 # TODO: configure real value (if applicable)
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

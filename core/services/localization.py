@@ -98,6 +98,15 @@ class Localization():
     targetPose = self._targets.get(target)
     return targetPose if targetPose is not None else Pose3d(self._robotPose)
 
+  def getTargetHeading(self, target: Target, transform: Transform2d = Transform2d()) -> units.degrees:
+    return utils.getTargetHeading(self._robotPose, self.getTargetPose(target))
+  
+  def getTargetDistance(self, target: Target, transform: Transform2d = Transform2d()) -> units.meters:
+    return utils.getTargetDistance(self._robotPose.transformBy(transform), self.getTargetPose(target))
+  
+  def getTargetPitch(self, target: Target, transform: Transform2d = Transform2d()) -> units.degrees:
+    return utils.getTargetPitch(self._robotPose.transformBy(transform), self.getTargetPose(target))
+
   def _updateObjects(self) -> None:
     objects = self._objectSensor.getObjects()
     if objects is not None:

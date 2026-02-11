@@ -1,6 +1,5 @@
-from commands2 import Subsystem, Command, cmd
+from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
-from wpimath import units
 from lib import logger, utils
 import core.constants as constants
 from lib.components.velocity_control_module import VelocityControlModule
@@ -17,7 +16,7 @@ class Hopper(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def activate(self) -> Command:
+  def run_(self) -> Command:
     return self.runEnd(
       lambda: [
         self._indexer.setSpeed(self._constants.INDEXER_SPEED),
@@ -25,7 +24,7 @@ class Hopper(Subsystem):
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],
       lambda: self.reset()
-    ).withName("Hopper:Activate")
+    ).withName("Hopper:Run")
 
   def agitate(self) -> Command:
     return self.runEnd(
@@ -36,6 +35,9 @@ class Hopper(Subsystem):
       ],
       lambda: self.reset()
     ).withName("Hopper:Agitate")
+  
+  def isRunning(self) -> bool:
+    return self._indexer.getSpeed() != 0 and self._feeder.getSpeed() != 0 and self._elevator.getSpeed() != 0
 
   def reset(self) -> None:
     self._indexer.reset()
@@ -43,4 +45,4 @@ class Hopper(Subsystem):
     self._elevator.reset()
 
   def _updateTelemetry(self) -> None:
-    pass
+    SmartDashboard.putBoolean("Robot/Hopper/IsRunning", self.isRunning())

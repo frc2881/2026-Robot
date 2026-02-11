@@ -1,4 +1,7 @@
+from typing import Callable
 from commands2 import Subsystem, Command
+from wpilib import SmartDashboard
+from wpimath import units
 from lib import logger, utils
 from lib.classes import MotorIdleMode
 from lib.components.velocity_control_module import VelocityControlModule
@@ -9,6 +12,9 @@ class Launcher(Subsystem):
   def __init__(self) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Launcher
+
+    self._targetDistances = tuple(t.distance for t in self._constants.TARGET_SPEEDS)
+    self._targetSpeeds = tuple(t.speed for t in self._constants.TARGET_SPEEDS)
 
     self._launcher = VelocityControlModule(self._constants.LAUNCHER_CONFIG)
     self._launcherFollower = FollowerModule(self._constants.LAUNCHER_FOLLOWER_CONFIG)
@@ -21,21 +27,27 @@ class Launcher(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def activate(self) -> Command:
+  def run_(self, getTargetDistance: Callable[[], units.meters]) -> Command:
     return self.runEnd(
       lambda: [
-        self._launcher.setSpeed(1.0),
-        self._accelerator.setSpeed(1.0 * .75)
+        speed := utils.getInterpolatedValue(getTargetDistance(), self._targetDistances, self._targetSpeeds),
+        self._launcher.setSpeed(speed),
+        self._accelerator.setSpeed(speed * self._constants.ACCELERATOR_SPEED_RATIO)
       ],
       lambda: self.reset()
-    ).withName("Launcher:Activate")
+    ).withName("Launcher:Run")
   
   def isAtTargetSpeed(self) -> bool:
-    return self._accelerator.isAtTargetSpeed() and self._launcher.isAtTargetSpeed()
+    return self._launcher.isAtTargetSpeed() and self._accelerator.isAtTargetSpeed()
+
+  def isRunning(self) -> bool:
+    return self._launcher.getSpeed() != 0 and self._accelerator.getSpeed != 0
 
   def reset(self) -> None:
     self._launcher.reset()
     self._accelerator.reset()
 
   def _updateTelemetry(self) -> None:
-    pass
+    SmartDashboard.putBoolean("Robot/Launcher/IsRunning", self.isRunning())
+    SmartDashboard.putBoolean("Robot/Launcher/IsAtTargetSpeed", self.isAtTargetSpeed())
+    SmartDashboard.putNumber("Robot/Launcher/Speed", self._launcher.getSpeed())
