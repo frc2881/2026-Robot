@@ -47,7 +47,7 @@ class RobotCore:
   def _initServices(self) -> None:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors, self.objectSensor)
     self.match = Match()
-    self.lights = Lights(lambda: self._isHomed(), lambda: self.localization.hasValidVisionTarget(), lambda: self.game.isLaunchReady())
+    self.lights = Lights(lambda: self.isHomed(), lambda: self.localization.hasValidVisionTarget(), lambda: self.game.isLaunchReady())
 
   def _initCommands(self) -> None:
     self.game = Game(self)
@@ -136,12 +136,8 @@ class RobotCore:
   def reset(self) -> None:
     self.drive.reset()
 
-  def _isHomed(self) -> bool:
-    return (
-      self.intake.isHomed() and self.turret.isHomed()
-      if not utils.isCompetitionMode() else 
-      True
-    )
-      
+  def isHomed(self) -> bool:
+    return self.intake.isHomed() and self.turret.isHomed()
+
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Status/IsHomed", self._isHomed())
+    SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())
