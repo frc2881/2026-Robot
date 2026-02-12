@@ -20,13 +20,13 @@ class Game:
   
   def alignRobotToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotHeading, lambda: self._robot.localization.getTargetHeading(target))
+      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
   
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.turret.alignToTargetHeading(lambda: self._robot.localization.getTargetHeading(target, constants.Subsystems.Turret.TURRET_TRANSFORM))
+      self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
 
@@ -50,7 +50,7 @@ class Game:
 
   def runLauncher(self, target: Target) -> Command: # TODO: temporary command for manual testing - will be removed and integrated into single fuel scoring command with validation checks
     return (
-      self._robot.launcher.run_(lambda: self._robot.localization.getTargetDistance(target, constants.Subsystems.Turret.TURRET_TRANSFORM))
+      self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
       .withName(f'Game:RunLauncher:{ target.name }')
     )
 

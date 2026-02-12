@@ -188,8 +188,6 @@ class Subsystems:
       motorHomedPosition = -170 # TODO: configure real value
     ))
 
-    TURRET_TRANSFORM = Transform3d(units.inchesToMeters(-5.0), units.inchesToMeters(5.0), units.inchesToMeters(20.0), Rotation3d()) # TODO: configure real value
-
   class Launcher:
     LAUNCHER_CONFIG = VelocityControlModuleConfig("Launcher/Leader", 10, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
@@ -218,6 +216,8 @@ class Subsystems:
       motorMotionMaxVelocity = 2000.0, # TODO: configure real value
       motorMotionMaxAcceleration = 4000.0 # TODO: configure real value
     ))
+
+    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-5.0), units.inchesToMeters(5.0), units.inchesToMeters(20.0), Rotation3d()) # TODO: configure real value
 
     # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (

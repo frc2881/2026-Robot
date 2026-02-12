@@ -2,6 +2,7 @@ from typing import Callable
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
 from wpimath import units
+from wpimath.geometry import Pose2d, Pose3d
 from lib import logger, utils
 from lib.classes import MotorIdleMode
 from lib.components.velocity_control_module import VelocityControlModule
@@ -27,12 +28,13 @@ class Launcher(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def run_(self, getTargetDistance: Callable[[], units.meters]) -> Command:
+  def run_(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d]) -> Command:
     return self.runEnd(
       lambda: [
-        speed := utils.getInterpolatedValue(getTargetDistance(), self._targetDistances, self._targetSpeeds),
-        self._launcher.setSpeed(speed),
-        self._accelerator.setSpeed(speed * self._constants.ACCELERATOR_SPEED_RATIO)
+        targetDistance := utils.getTargetDistance(Pose3d(getRobotPose()).transformBy(self._constants.LAUNCHER_TRANSFORM), getTargetPose()),
+        launcherSpeed := utils.getInterpolatedValue(targetDistance, self._targetDistances, self._targetSpeeds),
+        self._launcher.setSpeed(launcherSpeed),
+        self._accelerator.setSpeed(launcherSpeed * self._constants.ACCELERATOR_SPEED_RATIO)
       ],
       lambda: self.reset()
     ).withName("Launcher:Run")
