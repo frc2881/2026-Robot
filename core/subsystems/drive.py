@@ -45,7 +45,7 @@ class Drive(Subsystem):
       PIDController(*self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationPID),
       ProfiledPIDControllerRadians(
         *self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.rotationPID, 
-        TrapezoidProfileRadians.Constraints(self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.rotationMaxVelocity, self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.rotationMaxAcceleration)
+        TrapezoidProfileRadians.Constraints(units.degreesToRadians(self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.rotationMaxVelocity), units.degreesToRadians(self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.rotationMaxAcceleration))
       )
     )
     self._targetPoseAlignmentController.setTolerance(Pose2d(
