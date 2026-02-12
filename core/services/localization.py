@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Callable
 from wpilib import SmartDashboard, Timer
 from wpimath import units
-from wpimath.geometry import Pose2d, Pose3d, Rotation2d, Transform2d, Transform3d
+from wpimath.geometry import Pose2d, Pose3d, Rotation2d, Transform2d
 if TYPE_CHECKING: from wpimath.kinematics import SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from ntcore import NetworkTableInstance
@@ -90,9 +90,6 @@ class Localization():
 
   def getRobotPose(self) -> Pose2d:
     return self._robotPose
-  
-  def getRobotHeading(self) -> units.degrees:
-    return self._robotPose.rotation().degrees
 
   def resetRobotPose(self, pose: Pose2d) -> None:
     self._poseEstimator.resetPose(pose)
