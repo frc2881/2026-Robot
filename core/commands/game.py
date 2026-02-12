@@ -13,35 +13,26 @@ class Game:
 
   def alignRobotToTargetPose(self, target: Target) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .withName(f'Game:AlignRobotToTargetPose:{ target.name }')
     )
   
-  def _isRobotAlignedToTargetPose(self) -> bool:
-    return self._robot.drive.isAlignedToTargetPose()
-
   def alignRobotToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetHeading(target))
+      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotHeading, lambda: self._robot.localization.getTargetHeading(target))
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
   
-  def _isRobotAlignedToTargetHeading(self) -> bool:
-    return self._robot.drive.isAlignedToTargetHeading()
-
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.turret.alignToTargetHeading(lambda: self._robot.localization.getTargetHeading(target))
+      self._robot.turret.alignToTargetHeading(lambda: self._robot.localization.getTargetHeading(target, constants.Subsystems.Turret.TURRET_TRANSFORM))
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
 
-  def _isTurretAlignedToTargetHeading(self) -> bool:
-    return self._robot.turret.isAlignedToTargetHeading()
-
-  def _isLaunchReady(self) -> bool: # TODO: add other launch readiness validation checks (sensors indicating fuel in proper locations, etc.)
+  def isLaunchReady(self) -> bool: # TODO: add other launch readiness validation checks (sensors indicating fuel in proper locations, etc.)
     return (
-      self._isTurretAlignedToTargetHeading() and
+      self._robot.turret.isAlignedToTargetHeading() and
       self._robot.launcher.isAtTargetSpeed()
     ) 
 
@@ -59,13 +50,13 @@ class Game:
 
   def runLauncher(self, target: Target) -> Command: # TODO: temporary command for manual testing - will be removed and integrated into single fuel scoring command with validation checks
     return (
-      self._robot.launcher.run_(lambda: self._robot.localization.getTargetDistance(Target.Hub, constants.Subsystems.Turret.TURRET_TRANSFORM))
+      self._robot.launcher.run_(lambda: self._robot.localization.getTargetDistance(target, constants.Subsystems.Turret.TURRET_TRANSFORM))
       .withName(f'Game:RunLauncher:{ target.name }')
     )
 
   def alignRobotToNearestFuel(self) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getObjectsPose())
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, self._robot.localization.getObjectsPose)
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 5) # TODO: make a constant for and validate minimum fuel count to target if we use this feature on the robot
       .withName(f'Game:AlignRobotToNearestFuel')

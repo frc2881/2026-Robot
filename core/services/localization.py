@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Callable
 from wpilib import SmartDashboard, Timer
 from wpimath import units
-from wpimath.geometry import Pose2d, Pose3d, Rotation2d, Transform2d
+from wpimath.geometry import Pose2d, Pose3d, Rotation2d, Transform2d, Transform3d
 if TYPE_CHECKING: from wpimath.kinematics import SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from ntcore import NetworkTableInstance
@@ -90,6 +90,9 @@ class Localization():
 
   def getRobotPose(self) -> Pose2d:
     return self._robotPose
+  
+  def getRobotHeading(self) -> units.degrees:
+    return self._robotPose.rotation().degrees
 
   def resetRobotPose(self, pose: Pose2d) -> None:
     self._poseEstimator.resetPose(pose)
@@ -98,14 +101,14 @@ class Localization():
     targetPose = self._targets.get(target)
     return targetPose if targetPose is not None else Pose3d(self._robotPose)
 
-  def getTargetHeading(self, target: Target, transform: Transform2d = Transform2d()) -> units.degrees:
-    return utils.getTargetHeading(self._robotPose, self.getTargetPose(target))
+  def getTargetHeading(self, target: Target, transform: Transform3d = Transform3d()) -> units.degrees:
+    return utils.getTargetHeading(Pose3d(self._robotPose).transformBy(transform), self.getTargetPose(target))
   
-  def getTargetDistance(self, target: Target, transform: Transform2d = Transform2d()) -> units.meters:
-    return utils.getTargetDistance(self._robotPose.transformBy(transform), self.getTargetPose(target))
+  def getTargetDistance(self, target: Target, transform: Transform3d = Transform3d()) -> units.meters:
+    return utils.getTargetDistance(Pose3d(self._robotPose).transformBy(transform), self.getTargetPose(target))
   
-  def getTargetPitch(self, target: Target, transform: Transform2d = Transform2d()) -> units.degrees:
-    return utils.getTargetPitch(self._robotPose.transformBy(transform), self.getTargetPose(target))
+  def getTargetPitch(self, target: Target, transform: Transform3d = Transform3d()) -> units.degrees:
+    return utils.getTargetPitch(Pose3d(self._robotPose).transformBy(transform), self.getTargetPose(target))
 
   def _updateObjects(self) -> None:
     objects = self._objectSensor.getObjects()
@@ -123,7 +126,7 @@ class Localization():
     return self._objectsCount
 
   def getObjectsPose(self) -> Pose2d:
-    return Pose3d(self._robotPose.transformBy(self._objectsTransform))
+    return self._robotPose.transformBy(self._objectsTransform)
 
   def _updateTelemetry(self) -> None:
     self._robotPosePublisher.set(self.getRobotPose())

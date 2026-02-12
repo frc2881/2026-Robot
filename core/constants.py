@@ -1,6 +1,6 @@
 import wpilib
 from wpimath import units
-from wpimath.geometry import Pose3d, Transform3d, Translation3d, Rotation3d, Transform2d, Translation2d, Rotation2d
+from wpimath.geometry import Pose3d, Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
 from robotpy_apriltag import AprilTagFieldLayout
 from navx import AHRS
@@ -188,7 +188,7 @@ class Subsystems:
       motorHomedPosition = -170 # TODO: configure real value
     ))
 
-    TURRET_TRANSFORM = Transform2d(units.inchesToMeters(5.0), units.inchesToMeters(-5.0), Rotation2d()) # TODO: configure real value
+    TURRET_TRANSFORM = Transform3d(units.inchesToMeters(-5.0), units.inchesToMeters(5.0), units.inchesToMeters(20.0), Rotation3d()) # TODO: configure real value
 
   class Launcher:
     LAUNCHER_CONFIG = VelocityControlModuleConfig("Launcher/Leader", 10, False, VelocityControlModuleConstants(
