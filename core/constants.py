@@ -72,14 +72,12 @@ class Subsystems:
     PATHPLANNER_CONTROLLER = PPHolonomicDriveController(PIDConstants(5.0, 0, 0), PIDConstants(5.0, 0, 0))
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
-      translationPID = PID(2.0, 0, 0),
+      translationPID = PID(2.0, 0, 0), #TODO: configure real value
       translationMaxVelocity = 2.0, #TODO: configure real value
-      translationMaxAcceleration = 0.75, #TODO: configure real value
       translationPositionTolerance = 0.025, #TODO: configure real value
       rotationPID = PID(2.0, 0, 0), #TODO: configure real value
       rotationMaxVelocity = 720.0, #TODO: configure real value
-      rotationMaxAcceleration = 360.0, #TODO: configure real value
-      rotationPositionTolerance = 0.5
+      rotationPositionTolerance = 0.5 #TODO: configure real value
     )
 
     TARGET_HEADING_ALIGNMENT_CONSTANTS = HeadingAlignmentConstants(
