@@ -122,13 +122,12 @@ class Subsystems:
       motorMotionMaxAcceleration = 6000.0 # TODO: configure real value
     ))
 
-
-    ARM_HOLD_SPEED: units.percent = 0.05 # TODO: configure real value
+    ARM_HOLD_SPEED: units.percent = 0.01 # TODO: configure real value
     ARM_INTAKE_POSITION: float = 6.2 # TODO: configure real value
     ROLLERS_SPEED: units.percent = 1.0 # TODO: configure real value
 
   class Hopper:
-    INDEXER_CONFIG = VelocityControlModuleConfig("Indexer", 14, True, VelocityControlModuleConstants(
+    INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
@@ -139,7 +138,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
     ))
 
-    FEEDER_CONFIG = VelocityControlModuleConfig("Feeder", 15, True, VelocityControlModuleConstants(
+    FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
@@ -150,7 +149,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
     ))
 
-    ELEVATOR_CONFIG = VelocityControlModuleConfig("Elevator", 16, True, VelocityControlModuleConstants(
+    ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
@@ -165,9 +164,7 @@ class Subsystems:
     FEEDER_SPEED: units.percent = 1.0 # TODO: configure real value
     ELEVATOR_SPEED: units.percent = 1.0 # TODO: configure real value
 
-    INDEXER_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
-    FEEDER_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
-    ELEVATOR_AGITATE_SPEED: units.percent = -0.05 # TODO: configure real value
+    AGITATE_SPEED_RATIO_MAX: units.percent = 0.2 # TODO: configure real value
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -240,7 +237,7 @@ class Services:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
     VISION_MAX_ESTIMATED_POSE_DELTA: units.meters = 3.0
     VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(2.5))
-    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.3, 0.3, units.degreesToRadians(15.0))
+    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.2, 0.2, units.degreesToRadians(10.0))
 
 class Sensors: 
   class Gyro:

@@ -42,7 +42,7 @@ class RobotCore:
     self.hopper = Hopper()
     self.turret = Turret()
     self.launcher = Launcher()
-    # self.climber = Climber()
+    self.climber = Climber()
     
   def _initServices(self) -> None:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors, self.objectSensor)
@@ -68,7 +68,7 @@ class RobotCore:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
     self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
-    self.driver.leftTrigger().whileTrue(self.intake.retract()) # TODO: confirm that driver needs "emergency" ability to retract intake/hopper during teleop action
+    self.driver.leftTrigger().whileTrue(self.intake.retract())
     self.driver.rightTrigger().whileTrue(self.game.runIntake())
     self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
@@ -86,9 +86,9 @@ class RobotCore:
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    # self.operator.leftTrigger().whileTrue(self.game.runHopper()) # TODO: FOR TESTING ONLY: remove manual testing of hopper for complete fuel scoring cycle game command (should only be run while right trigger is also engaged below)
-    self.operator.rightTrigger().whileTrue(self.game.runLauncher(Target.Hub)) # TODO: FOR TESTING ONLY: remove manual testing of launcher for complete fuel scoring cycle game command (should be engaged prior to running hopper above)
-    self.operator.leftBumper().whileTrue(self.game.runIntake()) # TODO: FOR TESTING ONLY
+    self.operator.leftTrigger().whileTrue(self.hopper.agitate())
+    self.operator.rightTrigger().whileTrue(self.game.runLauncher(Target.Hub)) # TODO: FOR INITIAL TESTING ONLY
+    self.operator.leftBumper().whileTrue(self.game.runHopper()) # TODO: FOR INITIAL TESTING ONLY
     # self.operator.rightBumper().whileTrue(cmd.none())
     # self.operator.povDown().whileTrue(cmd.none())
     # self.operator.povUp().whileTrue(cmd.none())

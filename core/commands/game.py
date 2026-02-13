@@ -24,17 +24,19 @@ class Game:
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
   
+  def alignRobotToNearestFuel(self) -> Command:
+    return (
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, self._robot.localization.getObjectsPose)
+      .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
+      .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 5) # TODO: make a constant for and validate minimum fuel count to target if we use this feature on the robot
+      .withName(f'Game:AlignRobotToNearestFuel')
+    )
+
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
       self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
-
-  def isLaunchReady(self) -> bool: # TODO: add other launch readiness validation checks (sensors indicating fuel in proper locations, etc.)
-    return (
-      self._robot.turret.isAlignedToTargetHeading() and
-      self._robot.launcher.isAtTargetSpeed()
-    ) 
 
   def runIntake(self) -> Command:
     return (
@@ -54,13 +56,11 @@ class Game:
       .withName(f'Game:RunLauncher:{ target.name }')
     )
 
-  def alignRobotToNearestFuel(self) -> Command:
+  def isLaunchReady(self) -> bool: # TODO: add other launch readiness validation checks (sensors indicating fuel in proper locations, etc.)
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, self._robot.localization.getObjectsPose)
-      .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
-      .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 5) # TODO: make a constant for and validate minimum fuel count to target if we use this feature on the robot
-      .withName(f'Game:AlignRobotToNearestFuel')
-    )
+      self._robot.turret.isAlignedToTargetHeading() and
+      self._robot.launcher.isAtTargetSpeed()
+    ) 
 
   def rumbleControllers(
     self, 

@@ -1,6 +1,6 @@
 from typing import Callable
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, SendableChooser
 from wpimath import units
 from wpimath.geometry import Pose2d, Pose3d
 from lib import logger, utils
@@ -25,20 +25,29 @@ class Launcher(Subsystem):
     self._launcherFollower.setIdleMode(MotorIdleMode.Coast)
     self._accelerator.setIdleMode(MotorIdleMode.Coast)
 
+    SmartDashboard.putNumber("Robot/Launcher/Target/SpeedOverride", 0)
+
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def run_(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d]) -> Command:
     return self.runEnd(
       lambda: [
-        targetDistance := utils.getTargetDistance(Pose3d(getRobotPose()).transformBy(self._constants.LAUNCHER_TRANSFORM), getTargetPose()),
-        launcherSpeed := utils.getInterpolatedValue(targetDistance, self._targetDistances, self._targetSpeeds),
-        self._launcher.setSpeed(launcherSpeed),
-        self._accelerator.setSpeed(launcherSpeed * self._constants.ACCELERATOR_SPEED_RATIO)
+        targetSpeed := self._getTargetSpeed(getRobotPose(), getTargetPose()),
+        self._launcher.setSpeed(targetSpeed),
+        self._accelerator.setSpeed(targetSpeed * self._constants.ACCELERATOR_SPEED_RATIO)
       ],
       lambda: self.reset()
     ).withName("Launcher:Run")
   
+  def _getTargetSpeed(self, robotPose: Pose2d, targetPose: Pose3d) -> units.percent:
+    targetDistance = utils.getTargetDistance(Pose3d(robotPose).transformBy(self._constants.LAUNCHER_TRANSFORM), targetPose)
+    targetSpeed = utils.getInterpolatedValue(targetDistance, self._targetDistances, self._targetSpeeds)
+    SmartDashboard.putNumber("Robot/Launcher/Target/Distance", targetDistance)
+    SmartDashboard.putNumber("Robot/Launcher/Target/Speed", targetSpeed)
+    speedOverride = SmartDashboard.getNumber("Robot/Launcher/Target/SpeedOverride", 0)
+    return speedOverride if (speedOverride != 0) else targetSpeed
+
   def isAtTargetSpeed(self) -> bool:
     return self._launcher.isAtTargetSpeed() and self._accelerator.isAtTargetSpeed()
 
