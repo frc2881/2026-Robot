@@ -86,9 +86,9 @@ class RobotCore:
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    self.operator.leftTrigger().whileTrue(self.game.runHopper()) # TODO: FOR TESTING ONLY: remove manual testing of hopper for complete fuel scoring cycle game command (should only be run while right trigger is also engaged below)
+    # self.operator.leftTrigger().whileTrue(self.game.runHopper()) # TODO: FOR TESTING ONLY: remove manual testing of hopper for complete fuel scoring cycle game command (should only be run while right trigger is also engaged below)
     self.operator.rightTrigger().whileTrue(self.game.runLauncher(Target.Hub)) # TODO: FOR TESTING ONLY: remove manual testing of launcher for complete fuel scoring cycle game command (should be engaged prior to running hopper above)
-    # self.operator.leftBumper().whileTrue(cmd.none())
+    self.operator.leftBumper().whileTrue(self.game.runIntake()) # TODO: FOR TESTING ONLY
     # self.operator.rightBumper().whileTrue(cmd.none())
     # self.operator.povDown().whileTrue(cmd.none())
     # self.operator.povUp().whileTrue(cmd.none())

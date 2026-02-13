@@ -13,7 +13,7 @@ class Intake(Subsystem):
     self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
     self._rollers = VelocityControlModule(self._constants.ROLLERS_CONFIG)
 
-    self.setDefaultCommand(self.hold())
+    # self.setDefaultCommand(self.hold())
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -21,7 +21,7 @@ class Intake(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
+        # self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
         self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
       ],
       lambda: self._rollers.reset()
@@ -29,7 +29,7 @@ class Intake(Subsystem):
 
   def hold(self) -> Command:
     return self.run(
-      lambda: self._arm.setSpeed(self._constants.ARM_HOLD_SPEED if self._arm.getPosition() > 1 else -self._constants.ARM_HOLD_SPEED)
+      lambda: self._arm.setSpeed(-0.05)
     ).withName("Intake:HoldPosition")
 
   def extend(self) -> Command:
@@ -43,7 +43,7 @@ class Intake(Subsystem):
     ).withName("Intake:Extend")
 
   def isExtended(self) -> bool:
-    return self._arm.isAtTargetPosition() and self._arm.getPosition() > 1
+    return self._arm.isAtTargetPosition() and self._arm.getPosition() > 2
   
   def isRunning(self) -> bool:
     return self._rollers.getSpeed() != 0
