@@ -98,11 +98,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.001, 0, 0.0), # TODO: configure real value
-      motorOutputRange = Range(-1.0, 1.0),
+      motorPID = PID(0.2, 0, 0.0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 0.6),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 3000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 6000.0, # TODO: configure real value
+      motorMotionCruiseVelocity = 6000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 12000.0, # TODO: configure real value
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 100.0, # TODO: configure real value
@@ -114,7 +114,7 @@ class Subsystems:
     ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40, 
+      motorCurrentLimit = 80, 
       motorPID = PID(0.0001, 0, 0.0), # TODO: configure real value
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
@@ -122,9 +122,9 @@ class Subsystems:
       motorMotionMaxAcceleration = 6000.0 # TODO: configure real value
     ))
 
-    ARM_HOLD_SPEED: units.percent = 0.01 # TODO: configure real value
+    ARM_HOLD_SPEED: units.percent = 0.05 # TODO: configure real value
     ARM_INTAKE_POSITION: float = 6.2 # TODO: configure real value
-    ROLLERS_SPEED: units.percent = 1.0 # TODO: configure real value
+    ROLLERS_SPEED: units.percent = 0.7 # TODO: configure real value
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -180,8 +180,8 @@ class Subsystems:
       motorMotionAllowedProfileError = 0.25,
       motorSoftLimitForward = 170.0, # TODO: configure real value
       motorSoftLimitReverse = -160.0, # TODO: configure real value
-      motorHomingSpeed = 0.1, # TODO: configure real value
-      motorHomedPosition = -170 # TODO: configure real value
+      motorHomingSpeed = -0.1, # TODO: configure real value
+      motorHomedPosition = 181.0 # TODO: configure real value
     ))
 
   class Launcher:
@@ -256,7 +256,7 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontRight",
         transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
-        stream = "http://10.28.81.7:1182/?action=stream",
+        stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(

@@ -2,7 +2,7 @@ from typing import Optional
 from wpilib import DriverStation, SmartDashboard
 from lib.classes import Alliance
 from lib import logger, utils
-from classes import MatchState, HubState
+from core.classes import MatchState, HubState
 
 class Match():
   def __init__(self) -> None:
