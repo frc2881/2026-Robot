@@ -38,8 +38,8 @@ _aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/loc
 
 class Subsystems:
   class Drive:
-    BUMPER_LENGTH: units.meters = units.inchesToMeters(19.5) #TODO: configure real value
-    BUMPER_WIDTH: units.meters = units.inchesToMeters(19.5) #TODO: configure real value
+    BUMPER_LENGTH: units.meters = units.inchesToMeters(30) #TODO: configure real value
+    BUMPER_WIDTH: units.meters = units.inchesToMeters(36) #TODO: configure real value
     WHEEL_BASE: units.meters = units.inchesToMeters(20.5)
     TRACK_WIDTH: units.meters = units.inchesToMeters(26.5)
     
@@ -178,8 +178,8 @@ class Subsystems:
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 170.0, # TODO: configure real value
-      motorSoftLimitReverse = -160.0, # TODO: configure real value
+      motorSoftLimitForward = 45.0, # TODO: configure real value
+      motorSoftLimitReverse = -45.0, # TODO: configure real value
       motorHomingSpeed = -0.1, # TODO: configure real value
       motorHomedPosition = 181.0 # TODO: configure real value
     ))
@@ -213,7 +213,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
     ))
 
-    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-5.0), units.inchesToMeters(5.0), units.inchesToMeters(20.0), Rotation3d()) # TODO: configure real value
+    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(4.75), units.inchesToMeters(-7.875), units.inchesToMeters(25.3375), Rotation3d()) # TODO: configure real value
 
     # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
@@ -249,25 +249,25 @@ class Sensors:
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
         name = "FrontLeft",
-        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        transform = Transform3d(Translation3d(-0.380603, 0.341323, 0.255380), Rotation3d(-0.005125, -0.361021, 0.780823)),
         stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "FrontRight",
-        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        transform = Transform3d(Translation3d(0.281951, 0.285251, 0.309521), Rotation3d(0.002281, -0.380809, -0.821617)),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "RearLeft",
-        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        transform = Transform3d(Translation3d(-0.279887, -0.301221, 0.256676), Rotation3d(0.000982, -0.379937, 2.336536)),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "RearRight",
-        transform = Transform3d(Translation3d(0.107311, -0.050843, 0.264506), Rotation3d(0.001834, -0.569486, -0.027619)),
+        transform = Transform3d(Translation3d(0.377522, -0.339623, 0.248147), Rotation3d(-0.010726, -0.364928, -2.373685)),
         stream = "http://10.28.81.7:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       )
