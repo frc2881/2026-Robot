@@ -30,7 +30,10 @@ class Turret(Subsystem):
 
   def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
     return self.run(
-      lambda: self._turret.setPosition(utils.getTargetHeading(getRobotPose().transformBy(self._turretTransform), getTargetPose()))
+      lambda: [
+        robotPose := getRobotPose(),
+        self._turret.setPosition(utils.getTargetHeading(Pose2d(robotPose.translation() - self._turretTransform.translation(), robotPose.rotation()).rotateBy(robotPose.rotation()), getTargetPose()))
+      ]
     )
 
   def isAlignedToTargetHeading(self) -> bool:
