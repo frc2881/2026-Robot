@@ -66,9 +66,10 @@ class Localization():
           poseAmbiguity = estimatedRobotPose.targetsUsed[0].getPoseAmbiguity()
           if utils.isValueInRange(poseAmbiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY):
             hasValidVisionTarget = True
+            distance = estimatedPose.translation().distance(self._poseEstimator.getEstimatedPosition().translation())
             if (
               utils.getRobotState() == RobotState.Disabled or 
-              utils.isValueInRange(estimatedPose.translation().distance(self._poseEstimator.getEstimatedPosition().translation()), 0, constants.Services.Localization.VISION_MAX_ESTIMATED_POSE_DELTA)
+              utils.isValueInRange(distance, 0, constants.Services.Localization.VISION_MAX_ESTIMATED_POSE_DELTA)
             ):
               self._poseEstimator.addVisionMeasurement(
                 estimatedPose, 

@@ -56,7 +56,7 @@ class Subsystems:
       drivingMotorPID = PID(0.04, 0, 0),
       turningMotorCurrentLimit = 20,
       turningMotorPID = PID(1.0, 0, 0),
-      turningMotorAbsoluteEncoderConfig = AbsoluteEncoderConfig.Presets.REV_ThroughBoreEncoder #TODO: update if/when V2 installed
+      turningMotorAbsoluteEncoderConfig = AbsoluteEncoderConfig.Presets.REV_ThroughBoreEncoderV2
     )
 
     SWERVE_MODULE_CONFIGS: tuple[SwerveModuleConfig, ...] = (
@@ -73,7 +73,7 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0), #TODO: configure real value
-      translationMaxVelocity = 2.0, #TODO: configure real value
+      translationMaxVelocity = 2.5, #TODO: configure real value
       translationPositionTolerance = 0.025, #TODO: configure real value
       rotationPID = PID(2.0, 0, 0), #TODO: configure real value
       rotationMaxVelocity = 720.0, #TODO: configure real value
@@ -122,7 +122,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 6000.0 # TODO: configure real value
     ))
 
-    ARM_HOLD_SPEED: units.percent = 0.05 # TODO: configure real value
+    ARM_HOLD_SPEED: units.percent = 0.1 # TODO: configure real value
     ARM_INTAKE_POSITION: float = 6.2 # TODO: configure real value
     ROLLERS_SPEED: units.percent = 0.7 # TODO: configure real value
 
@@ -178,10 +178,10 @@ class Subsystems:
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 45.0, # TODO: configure real value
-      motorSoftLimitReverse = -45.0, # TODO: configure real value
-      motorHomingSpeed = -0.1, # TODO: configure real value
-      motorHomedPosition = 181.0 # TODO: configure real value
+      motorSoftLimitForward = 90.0, # TODO: configure real value
+      motorSoftLimitReverse = -90.0, # TODO: configure real value
+      motorHomingSpeed = -0.05, # TODO: configure real value
+      motorHomedPosition = 182.0 # TODO: configure real value
     ))
 
   class Launcher:
@@ -213,15 +213,15 @@ class Subsystems:
       motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
     ))
 
-    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(4.75), units.inchesToMeters(-7.875), units.inchesToMeters(25.3375), Rotation3d()) # TODO: configure real value
+    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d()) # TODO: configure real value
 
     # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
-      TargetLaunchSpeed(0.91, 0.40), # min theoretical distance (~3 feet) for launching fuel into hub (robot directly centered to and bumpers touching base of hub), but turret hood angle doesn't support this min distance
-      TargetLaunchSpeed(1.5, 0.45), # TODO: get minimum achievable distance and speed for scoring into hub at close range
-      TargetLaunchSpeed(2.0, 0.50), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(3.0, 0.55), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(4.0, 0.60), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(0.91, 0.35), # min theoretical distance (~3 feet) for launching fuel into hub (robot directly centered to and bumpers touching base of hub), but turret hood angle doesn't support this min distance
+      TargetLaunchSpeed(1.5, 0.40), # TODO: get minimum achievable distance and speed for scoring into hub at close range
+      TargetLaunchSpeed(2.0, 0.45), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(3.0, 0.475), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(4.0, 0.525), # TODO: calculate real distance and speed combo
       TargetLaunchSpeed(5.0, 0.65), # TODO: calculate real distance and speed combo
       TargetLaunchSpeed(6.0, 0.70), # TODO: get maxmium practical distance and speed for scoring into hub from either alliance corner
       TargetLaunchSpeed(6.15, 0.75) # max theoretical distance (~20 feet) for launching fuel to either the hub of passing from neutral zone into alliance zone
@@ -235,9 +235,9 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_ESTIMATED_POSE_DELTA: units.meters = 3.0
-    VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(2.5))
-    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.2, 0.2, units.degreesToRadians(10.0))
+    VISION_MAX_ESTIMATED_POSE_DELTA: units.meters = 0.5
+    VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5))
+    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.3, 0.3, units.degreesToRadians(15.0))
 
 class Sensors: 
   class Gyro:
@@ -249,13 +249,13 @@ class Sensors:
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
         name = "FrontLeft",
-        transform = Transform3d(Translation3d(-0.380603, 0.341323, 0.255380), Rotation3d(-0.005125, -0.361021, 0.780823)),
+        transform = Transform3d(Translation3d(0.267736, 0.345370, 0.256561), Rotation3d(-0.007596, -0.364700, 0.785822)),
         stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "FrontRight",
-        transform = Transform3d(Translation3d(0.281951, 0.285251, 0.309521), Rotation3d(0.002281, -0.380809, -0.821617)),
+        transform = Transform3d(Translation3d(0.313796, -0.323758, 0.296302), Rotation3d(0.035387, -0.395195, -0.816601)),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
