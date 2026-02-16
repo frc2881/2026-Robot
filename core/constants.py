@@ -42,16 +42,16 @@ class Subsystems:
     BUMPER_WIDTH: units.meters = units.inchesToMeters(36) #TODO: configure real value
     WHEEL_BASE: units.meters = units.inchesToMeters(20.5)
     TRACK_WIDTH: units.meters = units.inchesToMeters(26.5)
-    
-    TRANSLATION_MAX_VELOCITY: units.meters_per_second = 5.74
-    ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0
 
+    _drivingMotorModel = MotorModel.NEOVortex
+    _swerveModuleGearKit = SwerveModuleGearKit.High
+    
     _swerveModuleConstants = SwerveModuleConstants(
       wheelDiameter = units.inchesToMeters(3.0),
       drivingMotorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       drivingMotorType = SparkLowLevel.MotorType.kBrushless,
-      drivingMotorFreeSpeed = lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex],
-      drivingMotorReduction = lib.constants.Drive.SWERVE_MODULE_GEAR_RATIOS[SwerveModuleGearKit.High],
+      drivingMotorFreeSpeed = lib.constants.Motors.MOTOR_FREE_SPEEDS[_drivingMotorModel],
+      drivingMotorReduction = lib.constants.Drive.SWERVE_MODULE_GEAR_RATIOS[_swerveModuleGearKit],
       drivingMotorCurrentLimit = 80,
       drivingMotorPID = PID(0.04, 0, 0),
       turningMotorCurrentLimit = 20,
@@ -68,8 +68,8 @@ class Subsystems:
 
     DRIVE_KINEMATICS = SwerveDrive4Kinematics(*(c.translation for c in SWERVE_MODULE_CONFIGS))
 
-    PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
-    PATHPLANNER_CONTROLLER = PPHolonomicDriveController(PIDConstants(5.0, 0, 0), PIDConstants(5.0, 0, 0))
+    TRANSLATION_MAX_VELOCITY: units.meters_per_second = lib.constants.Drive.SWERVE_MODULE_FREE_SPEEDS[_drivingMotorModel][_swerveModuleGearKit] * 1.0
+    ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0), #TODO: configure real value
@@ -89,6 +89,9 @@ class Subsystems:
       rotationPID = PID(0.01, 0, 0), 
       rotationPositionTolerance = 0.5
     )
+
+    PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
+    PATHPLANNER_CONTROLLER = PPHolonomicDriveController(PIDConstants(5.0, 0, 0), PIDConstants(5.0, 0, 0))
 
     INPUT_LIMIT_DEMO: units.percent = 0.5
     INPUT_RATE_LIMIT_DEMO: units.percent = 0.5
