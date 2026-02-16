@@ -1,3 +1,4 @@
+import math
 from typing import TYPE_CHECKING, Callable
 from wpilib import SmartDashboard, Timer
 from wpimath import units
@@ -57,6 +58,7 @@ class Localization():
 
   def _updateRobotPose(self) -> None:
     self._poseEstimator.update(Rotation2d.fromDegrees(self._getGyroHeading()), self._getDriveModulePositions())
+    estimatedRobotPosition = self._poseEstimator.getEstimatedPosition()
     hasValidVisionTarget = False
     for poseSensor in self._poseSensors:
       estimatedRobotPose = poseSensor.getEstimatedRobotPose()
@@ -66,10 +68,9 @@ class Localization():
           poseAmbiguity = estimatedRobotPose.targetsUsed[0].getPoseAmbiguity()
           if utils.isValueInRange(poseAmbiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY):
             hasValidVisionTarget = True
-            distance = estimatedPose.translation().distance(self._poseEstimator.getEstimatedPosition().translation())
             if (
               utils.getRobotState() == RobotState.Disabled or 
-              utils.isValueInRange(distance, 0, constants.Services.Localization.VISION_MAX_ESTIMATED_POSE_DELTA)
+              utils.isValueInRange(utils.getTargetDistance(estimatedPose, estimatedRobotPosition), 0, constants.Services.Localization.VISION_MAX_ESTIMATED_POSE_DELTA)
             ):
               self._poseEstimator.addVisionMeasurement(
                 estimatedPose, 
