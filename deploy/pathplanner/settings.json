@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.495,
-  "robotLength": 0.495,
+  "robotWidth": 0.914,
+  "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [],
@@ -13,20 +13,22 @@
   "robotMOI": 2.4,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.038,
-  "driveGearing": 5.08,
-  "maxDriveSpeed": 4.2,
-  "driveMotorType": "NEO",
+  "driveGearing": 4.71,
+  "maxDriveSpeed": 5.4,
+  "driveMotorType": "vortex",
   "driveCurrentLimit": 80.0,
   "wheelCOF": 1.2,
-  "flModuleX": 0.115,
-  "flModuleY": 0.115,
-  "frModuleX": 0.115,
-  "frModuleY": -0.115,
-  "blModuleX": -0.115,
-  "blModuleY": 0.115,
-  "brModuleX": -0.115,
-  "brModuleY": -0.115,
+  "flModuleX": 0.26,
+  "flModuleY": 0.336,
+  "frModuleX": 0.26,
+  "frModuleY": -0.336,
+  "blModuleX": -0.26,
+  "blModuleY": 0.336,
+  "brModuleX": -0.26,
+  "brModuleY": -0.336,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Circle\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":-0.12,\"y\":0.2},\"radius\":0.1,\"strokeWidth\":0.02,\"filled\":true}}"
+  ]
 }

@@ -1,6 +1,7 @@
+import math
 from typing import Callable
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, Timer
 from wpimath import units
 from wpimath.geometry import Pose2d, Transform2d, Rotation2d, Pose3d, Rotation3d
 from lib import logger, utils
@@ -12,8 +13,10 @@ class Turret(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Turret
 
-    launcherTransform = constants.Subsystems.Launcher.LAUNCHER_TRANSFORM 
-    self._turretTransform = Transform2d(launcherTransform.translation().toTranslation2d(), launcherTransform.rotation().toRotation2d())
+    self._turretTransform = Transform2d(
+      constants.Subsystems.Launcher.LAUNCHER_TRANSFORM.translation().toTranslation2d(), 
+      constants.Subsystems.Launcher.LAUNCHER_TRANSFORM.rotation().toRotation2d()
+    )
 
     self._turret = RelativePositionControlModule(self._constants.TURRET_CONFIG)
 
@@ -31,14 +34,7 @@ class Turret(Subsystem):
 
   def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
     return self.runEnd(
-      lambda: [
-        robotPose := getRobotPose(),
-        self._turret.setPosition(
-          utils.getTargetHeading(
-            Pose2d(robotPose.translation(), robotPose.rotation()).transformBy(self._turretTransform),
-            getTargetPose())
-          )
-      ],
+      lambda: self._turret.setPosition(utils.getTargetHeading(getRobotPose().transformBy(self._turretTransform), getTargetPose(), True)),
       lambda: self.reset()
     )
 
