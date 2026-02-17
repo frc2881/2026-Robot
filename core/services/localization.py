@@ -65,9 +65,11 @@ class Localization():
       if estimatedRobotPose is not None:
         estimatedPose = estimatedRobotPose.estimatedPose.toPose2d()
         if utils.isPoseInBounds(estimatedPose, constants.Game.Field.BOUNDS):
-          poseAmbiguity = estimatedRobotPose.targetsUsed[0].getPoseAmbiguity()
-          if utils.isValueInRange(poseAmbiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY):
-            hasValidVisionTarget = True
+          hasValidVisionTarget = True
+          for target in estimatedRobotPose.targetsUsed:
+            if not utils.isValueInRange(target.getPoseAmbiguity(), -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY):
+              hasValidVisionTarget = False
+          if hasValidVisionTarget:
             if (
               utils.getRobotState() == RobotState.Disabled or 
               utils.isValueInRange(utils.getTargetDistance(estimatedPose, estimatedRobotPosition), 0, constants.Services.Localization.VISION_MAX_ESTIMATED_POSE_DELTA)
@@ -76,7 +78,7 @@ class Localization():
                 estimatedPose, 
                 estimatedRobotPose.timestampSeconds,
                 constants.Services.Localization.VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS
-                if poseAmbiguity == -1 else
+                if len(estimatedRobotPose.targetsUsed) > 1 else
                 constants.Services.Localization.VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS
               )     
     self._robotPose = self._poseEstimator.getEstimatedPosition()

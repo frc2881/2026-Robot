@@ -181,8 +181,8 @@ class Subsystems:
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 90.0, # TODO: configure real value
-      motorSoftLimitReverse = -90.0, # TODO: configure real value
+      motorSoftLimitForward = 120.0, # TODO: configure real value
+      motorSoftLimitReverse = -120.0, # TODO: configure real value
       motorHomingSpeed = -0.05, # TODO: configure real value
       motorHomedPosition = 182.0 # TODO: configure real value
     ))
