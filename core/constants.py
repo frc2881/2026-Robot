@@ -252,25 +252,37 @@ class Sensors:
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
         name = "FrontLeft",
-        transform = Transform3d(Translation3d(0.267736, 0.345370, 0.256561), Rotation3d(-0.007596, -0.364700, 0.785822)),
+        transform = Transform3d(
+          Translation3d(x = units.inchesToMeters(10.54), y = units.inchesToMeters(13.60), z = units.inchesToMeters(10.10)), 
+          Rotation3d(roll = units.degreesToRadians(-0.44), pitch = units.degreesToRadians(-20.90), yaw = units.degreesToRadians(45.02))
+        ),
         stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "FrontRight",
-        transform = Transform3d(Translation3d(0.313796, -0.323758, 0.296302), Rotation3d(0.035387, -0.395195, -0.816601)),
+        transform = Transform3d(
+          Translation3d(x = units.inchesToMeters(12.35), y = units.inchesToMeters(-12.75), z = units.inchesToMeters(11.67)), 
+          Rotation3d(roll = units.degreesToRadians(2.03), pitch = units.degreesToRadians(-22.64), yaw = units.degreesToRadians(-46.79))
+        ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "RearLeft",
-        transform = Transform3d(Translation3d(-0.279887, -0.301221, 0.256676), Rotation3d(0.000982, -0.379937, 2.336536)),
+        transform = Transform3d(
+          Translation3d(x = units.inchesToMeters(-11.02), y = units.inchesToMeters(-11.86), z = units.inchesToMeters(10.11)), 
+          Rotation3d(roll = units.degreesToRadians(0.06), pitch = units.degreesToRadians(-21.77), yaw = units.degreesToRadians(133.87))
+        ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "RearRight",
-        transform = Transform3d(Translation3d(0.377522, -0.339623, 0.248147), Rotation3d(-0.010726, -0.364928, -2.373685)),
+        transform = Transform3d(
+          Translation3d(x = units.inchesToMeters(14.86), y = units.inchesToMeters(-13.37), z = units.inchesToMeters(9.77)), 
+          Rotation3d(roll = units.degreesToRadians(-0.61), pitch = units.degreesToRadians(-20.91), yaw = units.degreesToRadians(-136.00))
+        ),
         stream = "http://10.28.81.7:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       )
