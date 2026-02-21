@@ -233,7 +233,24 @@ class Subsystems:
     ACCELERATOR_SPEED_RATIO: units.percent = 1.0 # TODO: configure real value
 
   class Climber:
-    pass
+    CLIMB_CONFIG = RelativePositionControlModuleConfig("Climb", 19, False, RelativePositionControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80, # TODO: configure real value
+      motorPID = PID(0.001, 0, 0.0), # TODO: configure real value
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
+      motorMotionCruiseVelocity = 2000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 4000.0, # TODO: configure real value
+      motorMotionAllowedProfileError = 0.5,
+      motorRelativeEncoderPositionConversionFactor = 1.0,
+      motorSoftLimitForward = 100.0, # TODO: configure real value
+      motorSoftLimitReverse = 0.0, # TODO: configure real value
+      motorHomingSpeed = 0.1,
+      motorHomedPosition = 0.0
+    ))
+    CLIMB_UP_POSITION = 0.0 # TODO: configure real value
+    CLIMB_DOWN_POSITION = 0.0 # TODO: configure real value
 
 class Services:
   class Localization:
@@ -304,7 +321,7 @@ class Controllers:
   DRIVER_CONTROLLER_PORT: int = 0
   OPERATOR_CONTROLLER_PORT: int = 1
   INPUT_DEADBAND: units.percent = 0.1
-  HOMING_BUTTON_CONFIG = ButtonControllerConfig(name = "Homing", channel = 0)
+  HOMING_BUTTON_CONFIG = ButtonControllerConfig(name = "Homing", channel = 3)
 
 class Game:
   class Robot:

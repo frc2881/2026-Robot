@@ -76,9 +76,9 @@ class RobotCore:
     # self.driver.povDown().whileTrue(cmd.none()) # TODO: climb down sequence
     self.driver.povLeft().whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
     self.driver.povRight().whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
-    # self.driver.a().whileTrue(cmd.none())
+    self.driver.a().whileTrue(self.climber.down())
     self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.CornerRight))
-    # self.driver.y().whileTrue(cmd.none())
+    self.driver.y().whileTrue(self.climber.up())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
     # self.driver.start().whileTrue(cmd.none())
     self.driver.back().debounce(0.5).whileTrue(self.gyro.reset())

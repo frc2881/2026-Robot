@@ -11,7 +11,22 @@ import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
-  Move_1 = auto()
+  Start_TRL_D = auto()
+  Start_TRR_O = auto()
+  BL_NL = auto()
+  BR_NR = auto()
+
+  Intake_NL = auto()
+  Intake_NR = auto()
+
+  NL_BL = auto()
+  NR_BR = auto()
+
+  Climb_BL_TWL = auto()
+  Climb_BR_TWR = auto()
+
+  Score_D_TWL = auto()
+  Score_O_TWR = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
