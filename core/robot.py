@@ -1,6 +1,7 @@
 from commands2 import cmd
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
+from lib.classes import MotorIdleMode
 from lib.controllers.xbox import XboxController
 from lib.controllers.button import ButtonController
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
@@ -62,7 +63,9 @@ class RobotCore:
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
-    self.homingButton.pressed().debounce(0.5).whileTrue(cmd.parallel(self.intake.resetToHome(), self.turret.resetToHome()))
+    self.homingButton.pressed().debounce(0.5).whileTrue(
+      cmd.parallel(self.intake.resetToHome(), self.turret.resetToHome(), self.drive._setIdleMode(MotorIdleMode.Coast))
+      ).onFalse(self.drive._setIdleMode(MotorIdleMode.Brake))
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))

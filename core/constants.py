@@ -270,8 +270,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(10.54), y = units.inchesToMeters(13.60), z = units.inchesToMeters(10.10)), 
-          Rotation3d(roll = units.degreesToRadians(-0.44), pitch = units.degreesToRadians(-20.90), yaw = units.degreesToRadians(45.02))
+          Translation3d(x = units.inchesToMeters(10.14), y = units.inchesToMeters(11.57), z = units.inchesToMeters(8.51)),
+          Rotation3d(roll = units.degreesToRadians(-0.99), pitch = units.degreesToRadians(-32.35), yaw = units.degreesToRadians(47.70))
         ),
         stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -279,17 +279,17 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontRight",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(12.35), y = units.inchesToMeters(-12.75), z = units.inchesToMeters(11.67)), 
-          Rotation3d(roll = units.degreesToRadians(2.03), pitch = units.degreesToRadians(-22.64), yaw = units.degreesToRadians(-46.79))
-        ),
+        Translation3d(x = units.inchesToMeters(9.43), y = units.inchesToMeters(-12.40), z = units.inchesToMeters(11.53)),
+        Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-29.73), yaw = units.degreesToRadians(-45.32))
+      ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
         name = "RearLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(-11.02), y = units.inchesToMeters(-11.86), z = units.inchesToMeters(10.11)), 
-          Rotation3d(roll = units.degreesToRadians(0.06), pitch = units.degreesToRadians(-21.77), yaw = units.degreesToRadians(133.87))
+          Translation3d(x = units.inchesToMeters(-8.16), y = units.inchesToMeters(12.98), z = units.inchesToMeters(10.03)),
+          Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-32.09), yaw = units.degreesToRadians(138.44))
         ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -297,8 +297,8 @@ class Sensors:
       PoseSensorConfig(
         name = "RearRight",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(14.86), y = units.inchesToMeters(-13.37), z = units.inchesToMeters(9.77)), 
-          Rotation3d(roll = units.degreesToRadians(-0.61), pitch = units.degreesToRadians(-20.91), yaw = units.degreesToRadians(-136.00))
+          Translation3d(x = units.inchesToMeters(-10.07), y = units.inchesToMeters(-11.15), z = units.inchesToMeters(9.77)),
+          Rotation3d(roll = units.degreesToRadians(-0.35), pitch = units.degreesToRadians(-29.93), yaw = units.degreesToRadians(-134.10))
         ),
         stream = "http://10.28.81.7:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
