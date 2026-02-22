@@ -1,7 +1,6 @@
 from commands2 import cmd
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
-from lib.classes import MotorIdleMode
 from lib.controllers.xbox import XboxController
 from lib.controllers.button import ButtonController
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
@@ -63,9 +62,14 @@ class RobotCore:
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
-    self.homingButton.pressed().debounce(0.5).whileTrue(
-      cmd.parallel(self.intake.resetToHome(), self.turret.resetToHome(), self.drive._setIdleMode(MotorIdleMode.Coast))
-      ).onFalse(self.drive._setIdleMode(MotorIdleMode.Brake))
+    self.homingButton.pressed().debounce(1.0).whileTrue(
+      cmd.parallel(
+        self.intake.resetToHome(), 
+        self.turret.resetToHome(),
+        # TODO: add climber reset when configured
+        self.drive.holdCoastMode()
+      ).ignoringDisable(True)
+    .withName("HomingButton:Pressed"))
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
@@ -84,7 +88,7 @@ class RobotCore:
     self.driver.y().whileTrue(self.climber.up())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
     # self.driver.start().whileTrue(cmd.none())
-    self.driver.back().debounce(0.5).whileTrue(self.gyro.reset())
+    self.driver.back().debounce(0.5).whileTrue(self.gyro.reset().ignoringDisable(True))
 
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
@@ -93,17 +97,16 @@ class RobotCore:
     self.operator.rightTrigger().whileTrue(self.game.runLauncher(Target.Hub)) # TODO: FOR INITIAL TESTING ONLY
     self.operator.leftBumper().whileTrue(self.game.runHopper()) # TODO: FOR INITIAL TESTING ONLY
     # self.operator.rightBumper().whileTrue(cmd.none())
-    # self.operator.povDown().whileTrue(cmd.none())
-    # self.operator.povUp().whileTrue(cmd.none())
-    # self.operator.povRight().whileTrue(cmd.none())
+    self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
+    self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())
+    # self.operator.povRight().debounce(1.0).whileTrue(cmd.none()) # TODO: add climber reset to home when configured
     # self.operator.povLeft().whileTrue(cmd.none())
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
     self.operator.b().whileTrue(self.turret.setHeading(0))
     # self.operator.y().whileTrue(cmd.none())
     # self.operator.x().whileTrue(cmd.none())
-    self.operator.start().whileTrue(self.turret.resetToHome())
-    self.operator.back().whileTrue(self.intake.resetToHome())
-    pass
+    # self.operator.start().whileTrue(cmd.none())
+    # self.operator.back().whileTrue(cmd.none())
 
   def _initTelemetry(self) -> None:
     SmartDashboard.putString("Game/Robot/Type", constants.Game.Robot.TYPE.name)
