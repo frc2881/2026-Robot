@@ -5,6 +5,7 @@ from wpilib import SendableChooser, SmartDashboard
 from wpimath.geometry import Transform2d
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.path import PathPlannerPath
+from pathplannerlib.events import EventTrigger
 from lib import logger, utils
 from lib.classes import Alliance
 import core.constants as constants
@@ -15,22 +16,20 @@ class AutoPath(Enum):
   Start_TRR_O = auto()
   Start_BL_D = auto()
   Start_BR_O = auto()
-
   BL_NL = auto()
   BR_NR = auto()
-
   NL_BL = auto()
   NR_BR = auto()
-
   Intake_NL = auto()
   Intake_NR = auto()
-
   Score_BL_TWL = auto()
   Score_BR_TWR = auto()
   Score_D_TWL = auto()
   Score_O_TWR = auto()
   Score_O_BR = auto()
   Score_D_BL = auto()
+
+  BL_NZ_SCL = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -67,8 +66,12 @@ class Auto:
     self._autos.addOption("[BumpR_O_BR]", self.auto_BumpR_O_BR)
     self._autos.addOption("[BumpR_NR_BR]", self.auto_BumpR_NR_BR)
 
+    self._autos.addOption("BL_NZ_SCL", self.auto_BL_NZ_SCL)
+
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
+
+    EventTrigger("RunIntake").whileTrue(self._robot.game.runIntake())
 
   def get(self) -> Command:
     return self._auto
@@ -87,6 +90,11 @@ class Auto:
       AutoBuilder.followPath(self._paths.get(path))
       .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
     )
+
+  def auto_BL_NZ_SCL(self) -> Command:
+    return cmd.sequence(
+      self._move(AutoPath.BL_NZ_SCL)
+    ).withName("Auto:BL_NZ_SCL")
 
   def auto_TrenchL_D_C(self) -> Command:
     return cmd.sequence(
