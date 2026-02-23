@@ -1,7 +1,8 @@
 import math
 from typing import Callable
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard, Timer
+from wpilib import SmartDashboard
+import wpimath
 from wpimath import units
 from wpimath.geometry import Pose2d, Transform2d, Rotation2d, Pose3d, Rotation3d
 from lib import logger, utils
@@ -34,9 +35,12 @@ class Turret(Subsystem):
 
   def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
     return self.runEnd(
-      lambda: self._turret.setPosition(utils.getTargetHeading(getRobotPose().transformBy(self._turretTransform), getTargetPose(), True)),
+      lambda: self._turret.setPosition(self._getTurretTargetHeading(getRobotPose().transformBy(self._turretTransform), getTargetPose())),
       lambda: self.reset()
     )
+  
+  def _getTurretTargetHeading(turretPose: Pose2d, targetPose: Pose2d) -> units.degrees:
+    return wpimath.inputModulus(units.radiansToDegrees(math.atan2(targetPose.Y() - turretPose.Y(), targetPose.X() - turretPose.X()) - (turretPose.rotation().radians())), -10, 350)
 
   def isAlignedToTargetHeading(self) -> bool:
     return self._turret.isAtTargetPosition()

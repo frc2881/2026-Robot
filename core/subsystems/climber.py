@@ -23,6 +23,12 @@ class Climber(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
+  def resetToHome(self) -> Command:
+    return self._climber.resetToHome(self).withName("Climber:ResetToHome")
+
+  def isHomed(self) -> bool:
+    return self._climber.isHomed()
+
   def reset(self) -> None:
     lambda: self._climber.reset()
 

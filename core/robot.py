@@ -3,6 +3,7 @@ from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.controllers.xbox import XboxController
 from lib.controllers.button import ButtonController
+from lib.classes import RobotState
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
 from lib.sensors.object import ObjectSensor
@@ -68,7 +69,8 @@ class RobotCore:
         self.turret.resetToHome(),
         # TODO: add climber reset when configured
         self.drive.holdCoastMode()
-      ).ignoringDisable(True)
+      ).onlyIf(lambda: utils.getRobotState() == RobotState.Disabled)
+      .ignoringDisable(True)
     .withName("HomingButton:Pressed"))
 
   def _setupDriver(self) -> None:
@@ -79,13 +81,13 @@ class RobotCore:
     self.driver.rightTrigger().whileTrue(self.game.runIntake())
     self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
-    # self.driver.povUp().whileTrue(cmd.none()) # TODO: climb up sequence
-    # self.driver.povDown().whileTrue(cmd.none()) # TODO: climb down sequence
+    self.driver.povUp().whileTrue(self.game.climbUp())
+    self.driver.povDown().whileTrue(self.game.climbDown())
     self.driver.povLeft().whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
     self.driver.povRight().whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
-    self.driver.a().whileTrue(self.climber.down())
+    # self.driver.a().whileTrue()
     self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.CornerRight))
-    self.driver.y().whileTrue(self.climber.up())
+    # self.driver.y().whileTrue()
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
     # self.driver.start().whileTrue(cmd.none())
     self.driver.back().debounce(0.5).whileTrue(self.gyro.reset().ignoringDisable(True))
@@ -99,7 +101,7 @@ class RobotCore:
     # self.operator.rightBumper().whileTrue(cmd.none())
     self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
     self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())
-    # self.operator.povRight().debounce(1.0).whileTrue(cmd.none()) # TODO: add climber reset to home when configured
+    self.operator.povRight().debounce(1.0).whileTrue(self.climber.resetToHome())
     # self.operator.povLeft().whileTrue(cmd.none())
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
     self.operator.b().whileTrue(self.turret.setHeading(0))

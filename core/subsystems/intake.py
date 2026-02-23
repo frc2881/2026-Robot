@@ -22,16 +22,22 @@ class Intake(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
+        self.intakeHold(),
         self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
       ],
       lambda: self._rollers.reset()
+    ).beforeStarting(
+      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
     ).withName("Intake:Run")
 
   def hold(self) -> Command:
     return self.run(
       lambda: self._runHold()
     ).withName("Intake:HoldPosition")
+  
+  def intakeHold(self):
+    if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):
+      self._arm.setSpeed(self._constants.ARM_INTAKE_SPEED)
   
   def _runHold(self) -> None:
     if math.isclose(self._arm.getPosition(), 0, abs_tol = 1.0):

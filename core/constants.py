@@ -38,8 +38,8 @@ _aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/loc
 
 class Subsystems:
   class Drive:
-    BUMPER_LENGTH: units.meters = units.inchesToMeters(30) #TODO: configure real value
-    BUMPER_WIDTH: units.meters = units.inchesToMeters(36) #TODO: configure real value
+    BUMPER_LENGTH: units.meters = units.inchesToMeters(31) #TODO: configure real value
+    BUMPER_WIDTH: units.meters = units.inchesToMeters(37) #TODO: configure real value
     WHEEL_BASE: units.meters = units.inchesToMeters(20.5)
     TRACK_WIDTH: units.meters = units.inchesToMeters(26.5)
 
@@ -102,14 +102,14 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
       motorPID = PID(0.2, 0, 0.0), # TODO: configure real value
-      motorOutputRange = Range(-1.0, 0.6),
+      motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 6000.0, # TODO: configure real value
       motorMotionMaxAcceleration = 12000.0, # TODO: configure real value
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 100.0, # TODO: configure real value
-      motorSoftLimitReverse = 0.0, # TODO: configure real value
+      motorSoftLimitForward = 7.2,
+      motorSoftLimitReverse = 0.0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = 0.0
     ))
@@ -126,22 +126,23 @@ class Subsystems:
     ))
 
     ARM_HOLD_SPEED: units.percent = 0.1 # TODO: configure real value
-    ARM_INTAKE_POSITION: float = 6.2 # TODO: configure real value
-    ROLLERS_SPEED: units.percent = 0.7 # TODO: configure real value
+    ARM_INTAKE_SPEED: units.percent = 0.4
+    ARM_INTAKE_POSITION: float = 6.4
+    ROLLERS_SPEED: units.percent = 1.0 # TODO: configure real value
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0), # TODO: configure real value
+      motorPID = PID(0.001, 0, 0), # TODO: configure real value
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0, # TODO: configure real value
       motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
     ))
 
-    FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, True, VelocityControlModuleConstants(
+    FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
@@ -156,7 +157,7 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0),
+      motorPID = PID(0.01, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0, # TODO: configure real value
@@ -164,10 +165,10 @@ class Subsystems:
     ))
 
     INDEXER_SPEED: units.percent = 1.0 # TODO: configure real value
-    FEEDER_SPEED: units.percent = 1.0 # TODO: configure real value
-    ELEVATOR_SPEED: units.percent = 1.0 # TODO: configure real value
+    FEEDER_SPEED: units.percent = 0.9 # TODO: configure real value
+    ELEVATOR_SPEED: units.percent = 1.0
 
-    AGITATE_SPEED_RATIO_MAX: units.percent = 0.2 # TODO: configure real value
+    AGITATE_SPEED_RATIO_MAX: units.percent = 0.5 # TODO: configure real value
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -181,10 +182,10 @@ class Subsystems:
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 120.0, # TODO: configure real value
-      motorSoftLimitReverse = -120.0, # TODO: configure real value
-      motorHomingSpeed = -0.05, # TODO: configure real value
-      motorHomedPosition = 182.0 # TODO: configure real value
+      motorSoftLimitForward = 325.0,
+      motorSoftLimitReverse = -10.0,
+      motorHomingSpeed = 0.025,
+      motorHomedPosition = -18.3
     ))
 
   class Launcher:
@@ -220,14 +221,14 @@ class Subsystems:
 
     # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
-      TargetLaunchSpeed(0.91, 0.35), # min theoretical distance (~3 feet) for launching fuel into hub (robot directly centered to and bumpers touching base of hub), but turret hood angle doesn't support this min distance
-      TargetLaunchSpeed(1.5, 0.40), # TODO: get minimum achievable distance and speed for scoring into hub at close range
-      TargetLaunchSpeed(2.0, 0.45), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(3.0, 0.475), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(4.0, 0.525), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(5.0, 0.65), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(6.0, 0.70), # TODO: get maxmium practical distance and speed for scoring into hub from either alliance corner
-      TargetLaunchSpeed(6.15, 0.75) # max theoretical distance (~20 feet) for launching fuel to either the hub of passing from neutral zone into alliance zone
+      TargetLaunchSpeed(0.91, 0.30), # min theoretical distance (~3 feet) for launching fuel into hub (robot directly centered to and bumpers touching base of hub), but turret hood angle doesn't support this min distance
+      TargetLaunchSpeed(1.5, 0.35), # TODO: get minimum achievable distance and speed for scoring into hub at close range
+      TargetLaunchSpeed(2.0, 0.40), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(3.0, 0.45), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(4.0, 0.50), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(5.0, 0.55), # TODO: calculate real distance and speed combo
+      TargetLaunchSpeed(6.0, 0.60), # TODO: get maxmium practical distance and speed for scoring into hub from either alliance corner
+      TargetLaunchSpeed(6.15, 0.65) # max theoretical distance (~20 feet) for launching fuel to either the hub of passing from neutral zone into alliance zone
     )
 
     ACCELERATOR_SPEED_RATIO: units.percent = 1.0 # TODO: configure real value
@@ -270,8 +271,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(10.14), y = units.inchesToMeters(11.57), z = units.inchesToMeters(8.51)),
-          Rotation3d(roll = units.degreesToRadians(-0.99), pitch = units.degreesToRadians(-32.35), yaw = units.degreesToRadians(47.70))
+          Translation3d(x = units.inchesToMeters(9.5), y = units.inchesToMeters(12.5), z = units.inchesToMeters(8.51)),
+          Rotation3d(roll = units.degreesToRadians(-0.99), pitch = units.degreesToRadians(-25.2), yaw = units.degreesToRadians(50))
         ),
         stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -279,8 +280,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontRight",
         transform = Transform3d(
-        Translation3d(x = units.inchesToMeters(9.43), y = units.inchesToMeters(-12.40), z = units.inchesToMeters(11.53)),
-        Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-29.73), yaw = units.degreesToRadians(-45.32))
+        Translation3d(x = units.inchesToMeters(9.5), y = units.inchesToMeters(-12.5), z = units.inchesToMeters(11.53)),
+        Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-25.2), yaw = units.degreesToRadians(-50))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -288,8 +289,8 @@ class Sensors:
       PoseSensorConfig(
         name = "RearLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(-8.16), y = units.inchesToMeters(12.98), z = units.inchesToMeters(10.03)),
-          Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-32.09), yaw = units.degreesToRadians(138.44))
+          Translation3d(x = units.inchesToMeters(-9.5), y = units.inchesToMeters(12.5), z = units.inchesToMeters(10.03)),
+          Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-30.5), yaw = units.degreesToRadians(135))
         ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -297,8 +298,8 @@ class Sensors:
       PoseSensorConfig(
         name = "RearRight",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(-10.07), y = units.inchesToMeters(-11.15), z = units.inchesToMeters(9.77)),
-          Rotation3d(roll = units.degreesToRadians(-0.35), pitch = units.degreesToRadians(-29.93), yaw = units.degreesToRadians(-134.10))
+          Translation3d(x = units.inchesToMeters(-9.5), y = units.inchesToMeters(-12.5), z = units.inchesToMeters(9.77)),
+          Rotation3d(roll = units.degreesToRadians(-0.35), pitch = units.degreesToRadians(-31.5), yaw = units.degreesToRadians(-135))
         ),
         stream = "http://10.28.81.7:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -326,7 +327,7 @@ class Controllers:
 class Game:
   class Robot:
     TYPE = RobotType.Competition
-    NAME: str = "2026-Robot" #TODO: configure selected robot name
+    NAME: str = "Rosetta Stone"
 
   class Commands:
     AUTO_ALIGNMENT_TIMEOUT: units.seconds = 1.5 # TODO: configure real value (if applicable)
@@ -347,6 +348,8 @@ class Game:
           Target.TowerRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.TrenchLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.TrenchRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.ClimbLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.ClimbRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.Outpost: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.Depot: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90)))
         },
@@ -354,10 +357,12 @@ class Game:
           Target.Hub: Pose3d(4.623, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.CornerLeft: Pose3d(0.280, 7.790, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
           Target.CornerRight: Pose3d(0.280, 0.280, 0, Rotation3d(Rotation2d.fromDegrees(45))),
-          Target.TowerLeft: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.TowerRight: Pose3d(1.385, 3.150, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.TrenchLeft: Pose3d(3.664, 6.535, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TrenchRight: Pose3d(3.664, 1.600, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TowerLeft: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TowerRight: Pose3d(1.385, 3.150, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TrenchLeft: Pose3d(3.664, 6.535, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TrenchRight: Pose3d(3.664, 1.600, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.ClimbLeft: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.ClimbRight: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.Outpost: Pose3d(0.280, 0.650, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.Depot: Pose3d(0.350, 5.125, 0, Rotation3d(Rotation2d.fromDegrees(0)))
         }

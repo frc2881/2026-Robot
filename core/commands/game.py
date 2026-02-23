@@ -55,6 +55,18 @@ class Game:
       self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target))
       .withName(f'Game:RunLauncher:{ target.name }')
     )
+  
+  def climbUp(self) -> Command:
+    return (
+      self._robot.climber.up()
+      .withName("Game:ClimbUp")
+    )
+  
+  def climbDown(self) -> Command:
+    return (
+      self._robot.climber.down()
+      .withName("Game:ClimbDown")
+    )
 
   def isLaunchReady(self) -> bool: # TODO: add other launch readiness validation checks (sensors indicating fuel in proper locations, etc.)
     return (

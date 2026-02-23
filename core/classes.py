@@ -10,6 +10,8 @@ class Target(Enum):
   TrenchRight = auto()
   CornerLeft = auto()
   CornerRight = auto()
+  ClimbLeft = auto()
+  ClimbRight = auto()
   Outpost = auto()
   Depot = auto()
 
