@@ -38,8 +38,8 @@ _aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/loc
 
 class Subsystems:
   class Drive:
-    BUMPER_LENGTH: units.meters = units.inchesToMeters(31) #TODO: configure real value
-    BUMPER_WIDTH: units.meters = units.inchesToMeters(37) #TODO: configure real value
+    BUMPER_LENGTH: units.meters = units.inchesToMeters(31.0)
+    BUMPER_WIDTH: units.meters = units.inchesToMeters(37.0)
     WHEEL_BASE: units.meters = units.inchesToMeters(20.5)
     TRACK_WIDTH: units.meters = units.inchesToMeters(26.5)
 
@@ -72,12 +72,12 @@ class Subsystems:
     ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
-      translationPID = PID(2.0, 0, 0), #TODO: configure real value
-      translationMaxVelocity = 2.5, #TODO: configure real value
-      translationPositionTolerance = 0.025, #TODO: configure real value
-      rotationPID = PID(2.0, 0, 0), #TODO: configure real value
-      rotationMaxVelocity = 720.0, #TODO: configure real value
-      rotationPositionTolerance = 0.5 #TODO: configure real value
+      translationPID = PID(2.0, 0, 0),
+      translationMaxVelocity = 2.5,
+      translationPositionTolerance = 0.025,
+      rotationPID = PID(2.0, 0, 0),
+      rotationMaxVelocity = 720.0,
+      rotationPositionTolerance = 0.5
     )
 
     TARGET_HEADING_ALIGNMENT_CONSTANTS = HeadingAlignmentConstants(
@@ -101,11 +101,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.2, 0, 0.0), # TODO: configure real value
-      motorOutputRange = Range(-1.0, 1.0),
+      motorPID = PID(0.2, 0, 0.0),
+      motorOutputRange = Range(-1.0, 0.5),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0, # TODO: configure real value
+      motorMotionCruiseVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 7.2,
@@ -118,39 +118,39 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80, 
-      motorPID = PID(0.0001, 0, 0.0), # TODO: configure real value
+      motorPID = PID(0.0001, 0, 0.0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 3000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 6000.0 # TODO: configure real value
+      motorMotionMaxVelocity = 3000.0,
+      motorMotionMaxAcceleration = 6000.0
     ))
 
-    ARM_HOLD_SPEED: units.percent = 0.1 # TODO: configure real value
-    ARM_INTAKE_SPEED: units.percent = 0.4
+    ARM_DEFAULT_HOLD_SPEED: units.percent = 0.1
+    ARM_INTAKE_HOLD_SPEED: units.percent = 0.4
     ARM_INTAKE_POSITION: float = 6.4
-    ROLLERS_SPEED: units.percent = 1.0 # TODO: configure real value
+    ROLLERS_SPEED: units.percent = 1.0
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.001, 0, 0), # TODO: configure real value
+      motorPID = PID(0.001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0
     ))
 
     FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0.0), # TODO: configure real value
+      motorPID = PID(0.0001, 0, 0.0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
-      motorMotionMaxVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0
     ))
 
     ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
@@ -160,15 +160,15 @@ class Subsystems:
       motorPID = PID(0.01, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0
     ))
 
-    INDEXER_SPEED: units.percent = 1.0 # TODO: configure real value
-    FEEDER_SPEED: units.percent = 0.9 # TODO: configure real value
+    INDEXER_SPEED: units.percent = 1.0
+    FEEDER_SPEED: units.percent = 0.9
     ELEVATOR_SPEED: units.percent = 1.0
 
-    AGITATE_SPEED_RATIO_MAX: units.percent = 0.5 # TODO: configure real value
+    AGITATE_SPEED_RATIO: units.percent = 0.5
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -193,11 +193,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
-      motorPID = PID(0.0001, 0, 0), # TODO: configure real value
+      motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0
     ))
 
     LAUNCHER_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/Follower", 11, 10, True, FollowerModuleConstants(
@@ -210,14 +210,15 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
-      motorPID = PID(0.0001, 0, 0), # TODO: configure real value
+      motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0 # TODO: configure real value
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0
     ))
 
-    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d()) # TODO: configure real value
+    ACCELERATOR_SPEED_RATIO: units.percent = 1.0
+    LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
 
     # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
@@ -230,8 +231,6 @@ class Subsystems:
       TargetLaunchSpeed(6.0, 0.60), # TODO: get maxmium practical distance and speed for scoring into hub from either alliance corner
       TargetLaunchSpeed(6.15, 0.65) # max theoretical distance (~20 feet) for launching fuel to either the hub of passing from neutral zone into alliance zone
     )
-
-    ACCELERATOR_SPEED_RATIO: units.percent = 1.0 # TODO: configure real value
 
   class Climber:
     CLIMB_CONFIG = RelativePositionControlModuleConfig("Climb", 19, False, RelativePositionControlModuleConstants(
@@ -330,7 +329,8 @@ class Game:
     NAME: str = "Rosetta Stone"
 
   class Commands:
-    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 1.5 # TODO: configure real value (if applicable)
+    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0 # TODO: optimize for minimum time needed for fine-grained auto-alignment (tower climb positioning?) based on testing
+    LAUNCHER_READY_TIMEOUT: units.seconds = 1.5 # TODO: optimize for minimum time needed for launcher to get acheive target speed based on testing
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

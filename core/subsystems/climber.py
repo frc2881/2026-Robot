@@ -13,12 +13,12 @@ class Climber(Subsystem):
   def up(self) -> Command:
     return self.run(
       lambda: self._climber.setPosition(self._constants.CLIMB_UP_POSITION)
-    ).withName("Climb:Up")
+    ).withName("Climber:Up")
   
   def down(self) -> Command:
     return self.run(
       lambda: self._climber.setPosition(self._constants.CLIMB_DOWN_POSITION)
-    ).withName("Climb:Down")
+    ).withName("Climber:Down")
 
   def periodic(self) -> None:
     self._updateTelemetry()

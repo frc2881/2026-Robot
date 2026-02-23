@@ -22,7 +22,7 @@ class Intake(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self.intakeHold(),
+        self._arm.setSpeed(self._constants.ARM_INTAKE_HOLD_SPEED),
         self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
       ],
       lambda: self._rollers.reset()
@@ -33,17 +33,13 @@ class Intake(Subsystem):
   def hold(self) -> Command:
     return self.run(
       lambda: self._runHold()
-    ).withName("Intake:HoldPosition")
-  
-  def intakeHold(self):
-    if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):
-      self._arm.setSpeed(self._constants.ARM_INTAKE_SPEED)
+    ).withName("Intake:Hold")
   
   def _runHold(self) -> None:
     if math.isclose(self._arm.getPosition(), 0, abs_tol = 1.0):
-      self._arm.setSpeed(-self._constants.ARM_HOLD_SPEED)
+      self._arm.setSpeed(-self._constants.ARM_DEFAULT_HOLD_SPEED)
     if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):
-      self._arm.setSpeed(self._constants.ARM_HOLD_SPEED)
+      self._arm.setSpeed(self._constants.ARM_DEFAULT_HOLD_SPEED)
 
   def extend(self) -> Command:
     return self.run(
@@ -53,7 +49,7 @@ class Intake(Subsystem):
   def retract(self) -> Command:
     return self.run(
       lambda: self._arm.setPosition(0)
-    ).withName("Intake:Extend")
+    ).withName("Intake:Retract")
 
   def isExtended(self) -> bool:
     return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION / 2

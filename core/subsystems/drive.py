@@ -226,7 +226,7 @@ class Drive(Subsystem):
     self._targetHeadingAlignmentState = State.Running
 
   def _runTargetHeadingAlignment(self, robotPose: Pose2d, targetPose: Pose2d) -> None:
-    self._targetHeadingAlignmentController.setSetpoint(utils.getTargetHeading(robotPose, targetPose))
+    self._targetHeadingAlignmentController.setSetpoint(utils.wrapAngle(utils.getTargetHeading(robotPose, targetPose)))
     self._targetHeadingAlignmentRotationInput = self._targetHeadingAlignmentController.calculate(robotPose.rotation().degrees()) if not self._targetHeadingAlignmentController.atSetpoint() else 0
 
   def _endTargetHeadingAlignment(self) -> None:

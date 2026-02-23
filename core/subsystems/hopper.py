@@ -30,9 +30,9 @@ class Hopper(Subsystem):
   def agitate(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexer.setSpeed(random.uniform(-self._constants.AGITATE_SPEED_RATIO_MAX, self._constants.AGITATE_SPEED_RATIO_MAX)),
-        self._feeder.setSpeed(random.uniform(-self._constants.AGITATE_SPEED_RATIO_MAX, self._constants.AGITATE_SPEED_RATIO_MAX)),
-        self._elevator.setSpeed(random.uniform(-self._constants.AGITATE_SPEED_RATIO_MAX, self._constants.AGITATE_SPEED_RATIO_MAX))
+        self._indexer.setSpeed(-self._constants.INDEXER_SPEED * self._constants.AGITATE_SPEED_RATIO),
+        self._feeder.setSpeed(-self._constants.FEEDER_SPEED * self._constants.AGITATE_SPEED_RATIO),
+        self._elevator.setSpeed(-self._constants.ELEVATOR_SPEED * self._constants.AGITATE_SPEED_RATIO)
       ],
       lambda: self.reset()
     ).withName("Hopper:Agitate")

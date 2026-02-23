@@ -67,9 +67,9 @@ class RobotCore:
       cmd.parallel(
         self.intake.resetToHome(), 
         self.turret.resetToHome(),
-        # TODO: add climber reset when configured
+        # TODO: add climber homing when configured/tested
         self.drive.holdCoastMode()
-      ).onlyIf(lambda: utils.getRobotState() == RobotState.Disabled)
+      ).onlyWhile(lambda: utils.getRobotState() == RobotState.Disabled)
       .ignoringDisable(True)
     .withName("HomingButton:Pressed"))
 
@@ -95,17 +95,17 @@ class RobotCore:
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    self.operator.leftTrigger().whileTrue(self.hopper.agitate())
-    self.operator.rightTrigger().whileTrue(self.game.runLauncher(Target.Hub)) # TODO: FOR INITIAL TESTING ONLY
-    self.operator.leftBumper().whileTrue(self.game.runHopper()) # TODO: FOR INITIAL TESTING ONLY
+    # self.operator.leftTrigger().whileTrue(cmd.none())
+    self.operator.rightTrigger().whileTrue(self.game.scoreFuel())
+    self.operator.leftBumper().whileTrue(self.hopper.agitate())
     # self.operator.rightBumper().whileTrue(cmd.none())
     self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
     self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())
     self.operator.povRight().debounce(1.0).whileTrue(self.climber.resetToHome())
     # self.operator.povLeft().whileTrue(cmd.none())
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
-    self.operator.b().whileTrue(self.turret.setHeading(0))
-    # self.operator.y().whileTrue(cmd.none())
+    # self.operator.b().whileTrue(cmd.none())
+    self.operator.y().whileTrue(self.turret.setHeading(0))
     # self.operator.x().whileTrue(cmd.none())
     # self.operator.start().whileTrue(cmd.none())
     # self.operator.back().whileTrue(cmd.none())
@@ -145,7 +145,7 @@ class RobotCore:
     self.drive.reset()
 
   def isHomed(self) -> bool:
-    return self.intake.isHomed() and self.turret.isHomed()
+    return self.intake.isHomed() and self.turret.isHomed() # TODO: add climber homing when configured/tested
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())
