@@ -1,6 +1,7 @@
 import math
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
+from wpimath import units
 from lib import logger, utils
 from lib.components.relative_position_control_module import RelativePositionControlModule
 from lib.components.velocity_control_module import VelocityControlModule
@@ -46,9 +47,9 @@ class Intake(Subsystem):
       lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
     ).withName("Intake:Extend")
   
-  def retract(self) -> Command:
+  def retract(self, level: units.percent = 1.0) -> Command:
     return self.run(
-      lambda: self._arm.setPosition(0)
+      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION - (self._constants.ARM_INTAKE_POSITION * level))
     ).withName("Intake:Retract")
 
   def isExtended(self) -> bool:
