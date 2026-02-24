@@ -4,16 +4,16 @@ from wpimath import units
 
 class Target(Enum):
   Hub = auto()
-  TowerLeft = auto()
-  TowerRight = auto()
+  Shuttle = auto()
   TrenchLeft = auto()
   TrenchRight = auto()
+  TowerLeft = auto()
+  TowerRight = auto()
   CornerLeft = auto()
-  CornerRight = auto()
-  ClimbLeft = auto()
-  ClimbRight = auto()
   Outpost = auto()
   Depot = auto()
+  ClimbLeft = auto()
+  ClimbRight = auto()
 
 @dataclass(frozen=True, slots=True)
 class TargetLaunchSpeed:
