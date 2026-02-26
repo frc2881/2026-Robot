@@ -29,7 +29,9 @@ from lib.classes import (
   VelocityControlModuleConstants,
   ButtonControllerConfig,
   PoseSensorConfig,
-  ObjectSensorConfig
+  ObjectSensorConfig,
+  DistanceSensorConfig,
+  BinarySensorConfig
 )
 from core.classes import Target, TargetLaunchSpeed
 import lib.constants
@@ -273,7 +275,7 @@ class Sensors:
           Translation3d(x = units.inchesToMeters(9.5), y = units.inchesToMeters(12.5), z = units.inchesToMeters(8.51)),
           Rotation3d(roll = units.degreesToRadians(-0.99), pitch = units.degreesToRadians(-25.2), yaw = units.degreesToRadians(50))
         ),
-        stream = "http://10.28.81.6:1184/?action=stream",
+        stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
@@ -291,7 +293,7 @@ class Sensors:
           Translation3d(x = units.inchesToMeters(-9.5), y = units.inchesToMeters(12.5), z = units.inchesToMeters(10.03)),
           Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-30.5), yaw = units.degreesToRadians(135))
         ),
-        stream = "http://10.28.81.6:1182/?action=stream",
+        stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
@@ -306,16 +308,18 @@ class Sensors:
     )
 
   class Object:
-    # TODO: configure real values for installed camera
     OBJECT_SENSOR_CONFIG = ObjectSensorConfig(
       name = "Fuel", 
       transform = Transform3d(Translation3d(units.inchesToMeters(-11.0), units.inchesToMeters(-4.0), units.inchesToMeters(24.0)), Rotation3d(0, units.degreesToRadians(25.0), units.degreesToRadians(0))),
-      stream = "http://10.28.81.6:1186/?action=stream",
+      stream = "http://10.28.81.6:1182/?action=stream",
       objectHeight = units.inchesToMeters(5.71)
     )
 
+  class Distance:
+    HOPPER_TOP_SENSOR_CONFIG = DistanceSensorConfig("HopperTop", 0, 2 / 1, 0, 1300)
+
 class Cameras:
-  DRIVER_STREAM = "http://10.28.81.6:1184/?action=stream" #TODO: configure real value for installed camera
+  DRIVER_STREAM = "http://10.28.81.6:1182/?action=stream"
 
 class Controllers:
   DRIVER_CONTROLLER_PORT: int = 0

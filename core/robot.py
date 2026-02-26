@@ -7,6 +7,7 @@ from lib.classes import RobotState
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
 from lib.sensors.object import ObjectSensor
+from lib.sensors.distance import DistanceSensor
 from core.commands.auto import Auto
 from core.commands.game import Game
 from core.subsystems.drive import Drive
@@ -36,6 +37,7 @@ class RobotCore:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.COM_TYPE)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS)
     self.objectSensor = ObjectSensor(constants.Sensors.Object.OBJECT_SENSOR_CONFIG)
+    self.hopperTopSensor = DistanceSensor(constants.Sensors.Distance.HOPPER_TOP_SENSOR_CONFIG)
 
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
