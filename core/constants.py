@@ -124,7 +124,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 3000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxAcceleration = 6000.0,
+      motorMotionAllowedProfileError = 1
     ))
 
     ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
@@ -141,7 +142,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0
+      motorMotionMaxAcceleration = 12000.0,
+      motorMotionAllowedProfileError = 1
     ))
 
     FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
@@ -152,7 +154,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0
+      motorMotionMaxAcceleration = 12000.0,
+      motorMotionAllowedProfileError = 1
     ))
 
     ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
@@ -163,7 +166,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0
+      motorMotionMaxAcceleration = 12000.0,
+      motorMotionAllowedProfileError = 1
     ))
 
     INDEXER_SPEED: units.percent = 1.0
@@ -191,6 +195,8 @@ class Subsystems:
       motorHomedPosition = -18.3
     ))
 
+    WRAP_ANGLE_INPUT_RANGE = Range(-10, 350)
+
   class Launcher:
     LAUNCHER_CONFIG = VelocityControlModuleConfig("Launcher/Leader", 10, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
@@ -200,7 +206,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0
+      motorMotionMaxAcceleration = 12000.0,
+      motorMotionAllowedProfileError = 10
     ))
 
     LAUNCHER_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/Follower", 11, 10, True, FollowerModuleConstants(
@@ -217,7 +224,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0
+      motorMotionMaxAcceleration = 12000.0,
+      motorMotionAllowedProfileError = 10
     ))
 
     ACCELERATOR_SPEED_RATIO: units.percent = 1.0
@@ -239,21 +247,21 @@ class Subsystems:
     CLIMB_CONFIG = RelativePositionControlModuleConfig("Climb", 19, True, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 80, # TODO: configure real value
-      motorPID = PID(1.0, 0, 0.0), # TODO: configure real value
+      motorCurrentLimit = 80,
+      motorPID = PID(1.0, 0, 0.0),
       motorOutputRange = Range(-0.8, 0.95),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 6000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 12000.0, # TODO: configure real value
+      motorMotionCruiseVelocity = 6000.0,
+      motorMotionMaxAcceleration = 12000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 100.0, # TODO: configure real value
-      motorSoftLimitReverse = 0.0, # TODO: configure real value
+      motorSoftLimitForward = 100.0,
+      motorSoftLimitReverse = 0.0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = 0.0
     ))
-    CLIMB_UP_POSITION = 0.0 # TODO: configure real value
-    CLIMB_DOWN_POSITION = 90.0 # TODO: configure real value
+    CLIMB_UP_POSITION = 0.0
+    CLIMB_DOWN_POSITION = 90.0 # TODO: tune to minimum viable lift off ground
 
 class Services:
   class Localization:
@@ -317,7 +325,13 @@ class Sensors:
     )
 
   class Distance:
-    HOPPER_TOP_SENSOR_CONFIG = DistanceSensorConfig("HopperTop", 0, 2 / 1, 0, 1300)
+    HOPPER_SENSOR_CONFIG = DistanceSensorConfig(
+      name = "Hopper", 
+      channel = 0, 
+      pulseWidthConversionFactor = 2.0, 
+      minTargetDistance = 0, 
+      maxTargetDistance = 800 # TODO: tune max target distance for inside hopper walls
+    ) 
 
 class Cameras:
   DRIVER_STREAM = "http://10.28.81.6:1182/?action=stream"
@@ -335,7 +349,7 @@ class Game:
 
   class Commands:
     AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0 # TODO: optimize for minimum time needed for fine-grained auto-alignment (tower climb positioning?) based on testing
-    LAUNCHER_READY_TIMEOUT: units.seconds = 1.5 # TODO: optimize for minimum time needed for launcher to get acheive target speed based on testing
+    LAUNCHER_READY_TIMEOUT: units.seconds = 1.0 # TODO: optimize for minimum time needed for launcher to get acheive target speed based on testing
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

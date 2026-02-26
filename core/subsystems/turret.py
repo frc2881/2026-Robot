@@ -3,9 +3,8 @@ from typing import Callable
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
 from wpimath import units
-from wpimath.geometry import Pose2d, Transform2d, Rotation2d, Pose3d, Rotation3d
+from wpimath.geometry import Pose2d, Transform2d
 from lib import logger, utils
-from lib.classes import Range
 from lib.components.relative_position_control_module import RelativePositionControlModule
 import core.constants as constants
 
@@ -40,12 +39,10 @@ class Turret(Subsystem):
     )
   
   def _getTargetHeading(self, robotPose: Pose2d, targetPose: Pose2d) -> units.degrees:
-    temp = utils.wrapAngle(
-      utils.getTargetHeading(robotPose.transformBy(self._turretTransform), targetPose, True),
-      Range(-10, 350)
+    return utils.wrapAngle(
+      utils.getTargetHeading(robotPose.transformBy(self._turretTransform), targetPose, isRobotRelative = True),
+      self._constants.WRAP_ANGLE_INPUT_RANGE
     )
-    logger.debug(temp)
-    return temp
   
   def isAlignedToTargetHeading(self) -> bool:
     return self._turret.isAtTargetPosition()

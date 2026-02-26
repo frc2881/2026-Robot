@@ -37,7 +37,7 @@ class RobotCore:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.COM_TYPE)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS)
     self.objectSensor = ObjectSensor(constants.Sensors.Object.OBJECT_SENSOR_CONFIG)
-    self.hopperTopSensor = DistanceSensor(constants.Sensors.Distance.HOPPER_TOP_SENSOR_CONFIG)
+    self.hopperSensor = DistanceSensor(constants.Sensors.Distance.HOPPER_SENSOR_CONFIG)
 
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
@@ -104,7 +104,7 @@ class RobotCore:
     self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
     self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())
     # self.operator.povRight().whileTrue(cmd.none())
-    self.operator.povLeft().debounce(1.0).whileTrue(self.climber.resetToHome())
+    # self.operator.povLeft().whileTrue(cmd.none())
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
     # self.operator.b().whileTrue(cmd.none())
     self.operator.y().whileTrue(self.turret.setHeading(0))
@@ -147,7 +147,7 @@ class RobotCore:
     self.drive.reset()
 
   def isHomed(self) -> bool:
-    return self.intake.isHomed() and self.turret.isHomed() # TODO: add climber homing when configured/tested
+    return self.intake.isHomed() and self.turret.isHomed() and self.climber.isHomed()
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())

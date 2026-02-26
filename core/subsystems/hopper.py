@@ -27,13 +27,13 @@ class Hopper(Subsystem):
       lambda: self.reset()
     ).withName("Hopper:Run")
   
-  def runIndexer_(self) -> Command:
+  def runIndexerForIntake(self) -> Command:
     return self.runEnd(
       lambda: [
         self._indexer.setSpeed(self._constants.INDEXER_INTAKE_SPEED)
       ],
       lambda: self.reset()
-    ).withName("Hopper:Run")
+    ).withName("Hopper:RunIndexerForIntake")
 
   def agitate(self) -> Command:
     return self.runEnd(

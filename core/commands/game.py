@@ -51,7 +51,7 @@ class Game:
   def runIntake(self) -> Command:
     return (
       self._robot.intake.run_()
-      .alongWith(self._robot.hopper.runIndexer_())
+      .alongWith(self._robot.hopper.runIndexerForIntake())
       .withName("Game:RunIntake")
     )
 
