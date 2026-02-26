@@ -332,6 +332,17 @@ class Sensors:
       minTargetDistance = 0, 
       maxTargetDistance = 800 # TODO: tune max target distance for inside hopper walls
     ) 
+    INDEXER_SENSOR_CONFIG = DistanceSensorConfig(
+      name = "Indexer",
+      channel = 1, 
+      pulseWidthConversionFactor = 0.75, 
+      minTargetDistance = 0, 
+      maxTargetDistance = 500 # TODO: tune max target distance for inside hopper walls
+    )
+
+  class Binary:
+    FEEDER_SENSOR_CONFIG = BinarySensorConfig(name = "Feeder", channel = 4)
+    ELEVATOR_SENSOR_CONFIG = BinarySensorConfig(name = "Elevator", channel = 2)
 
 class Cameras:
   DRIVER_STREAM = "http://10.28.81.6:1182/?action=stream"
