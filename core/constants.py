@@ -104,7 +104,7 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
       motorPID = PID(0.2, 0, 0.0),
-      motorOutputRange = Range(-1.0, 0.5),
+      motorOutputRange = Range(-0.7, 0.5),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 6000.0,
       motorMotionMaxAcceleration = 12000.0,
@@ -127,10 +127,10 @@ class Subsystems:
       motorMotionMaxAcceleration = 6000.0
     ))
 
-    ARM_DEFAULT_HOLD_SPEED: units.percent = 0.1
-    ARM_INTAKE_HOLD_SPEED: units.percent = 0.4
+    ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
+    ARM_INTAKE_HOLD_SPEED: units.percent = 0.5
     ARM_INTAKE_POSITION: float = 6.4
-    ROLLERS_SPEED: units.percent = 1.0
+    ROLLERS_SPEED: units.percent = 0.9
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -167,6 +167,7 @@ class Subsystems:
     ))
 
     INDEXER_SPEED: units.percent = 1.0
+    INDEXER_INTAKE_SPEED: units.percent = 0.5
     FEEDER_SPEED: units.percent = 0.9
     ELEVATOR_SPEED: units.percent = 1.0
 
@@ -184,8 +185,8 @@ class Subsystems:
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 325.0,
-      motorSoftLimitReverse = -10.0,
+      motorSoftLimitForward = 320.0,
+      motorSoftLimitReverse = -5.0,
       motorHomingSpeed = 0.025,
       motorHomedPosition = -18.3
     ))
@@ -235,15 +236,15 @@ class Subsystems:
     )
 
   class Climber:
-    CLIMB_CONFIG = RelativePositionControlModuleConfig("Climb", 19, False, RelativePositionControlModuleConstants(
+    CLIMB_CONFIG = RelativePositionControlModuleConfig("Climb", 19, True, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80, # TODO: configure real value
-      motorPID = PID(0.001, 0, 0.0), # TODO: configure real value
-      motorOutputRange = Range(-1.0, 1.0),
+      motorPID = PID(1.0, 0, 0.0), # TODO: configure real value
+      motorOutputRange = Range(-0.8, 0.95),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 2000.0, # TODO: configure real value
-      motorMotionMaxAcceleration = 4000.0, # TODO: configure real value
+      motorMotionCruiseVelocity = 6000.0, # TODO: configure real value
+      motorMotionMaxAcceleration = 12000.0, # TODO: configure real value
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 100.0, # TODO: configure real value
@@ -252,7 +253,7 @@ class Subsystems:
       motorHomedPosition = 0.0
     ))
     CLIMB_UP_POSITION = 0.0 # TODO: configure real value
-    CLIMB_DOWN_POSITION = 0.0 # TODO: configure real value
+    CLIMB_DOWN_POSITION = 90.0 # TODO: configure real value
 
 class Services:
   class Localization:

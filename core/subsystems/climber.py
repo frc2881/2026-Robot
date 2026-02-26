@@ -11,13 +11,15 @@ class Climber(Subsystem):
     self._climber = RelativePositionControlModule(self._constants.CLIMB_CONFIG)
 
   def up(self) -> Command:
-    return self.run(
-      lambda: self._climber.setPosition(self._constants.CLIMB_UP_POSITION)
+    return self.runEnd(
+      lambda: self._climber.setPosition(self._constants.CLIMB_UP_POSITION),
+      lambda: self._climber.reset()
     ).withName("Climber:Up")
   
   def down(self) -> Command:
-    return self.run(
-      lambda: self._climber.setPosition(self._constants.CLIMB_DOWN_POSITION)
+    return self.runEnd(
+      lambda: self._climber.setPosition(self._constants.CLIMB_DOWN_POSITION),
+      lambda: self._climber.reset()
     ).withName("Climber:Down")
 
   def periodic(self) -> None:

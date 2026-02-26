@@ -26,7 +26,10 @@ class Intake(Subsystem):
         self._arm.setSpeed(self._constants.ARM_INTAKE_HOLD_SPEED),
         self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
       ],
-      lambda: self._rollers.reset()
+      lambda: [
+        self._rollers.reset(),
+        self._arm.reset()
+      ]
     ).beforeStarting(
       lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
     ).withName("Intake:Run")

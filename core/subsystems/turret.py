@@ -40,10 +40,12 @@ class Turret(Subsystem):
     )
   
   def _getTargetHeading(self, robotPose: Pose2d, targetPose: Pose2d) -> units.degrees:
-    return utils.wrapAngle(
-      utils.getTargetHeading(robotPose.transformBy(self._turretTransform), targetPose),
-      Range(self._constants.TURRET_CONFIG.constants.motorSoftLimitReverse, self._constants.TURRET_CONFIG.constants.motorSoftLimitForward)
+    temp = utils.wrapAngle(
+      utils.getTargetHeading(robotPose.transformBy(self._turretTransform), targetPose, True),
+      Range(-10, 350)
     )
+    logger.debug(temp)
+    return temp
   
   def isAlignedToTargetHeading(self) -> bool:
     return self._turret.isAtTargetPosition()

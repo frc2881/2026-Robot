@@ -12,24 +12,11 @@ import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
-  Start_TRL_D = auto()
-  Start_TRR_O = auto()
-  Start_BL_D = auto()
-  Start_BR_O = auto()
-  BL_NL = auto()
-  BR_NR = auto()
-  NL_BL = auto()
-  NR_BR = auto()
-  Intake_NL = auto()
-  Intake_NR = auto()
-  Score_BL_TWL = auto()
-  Score_BR_TWR = auto()
-  Score_D_TWL = auto()
-  Score_O_TWR = auto()
-  Score_O_BR = auto()
-  Score_D_BL = auto()
-
   BL_NZ_SCL = auto()
+  BR_NZ_SCR = auto()
+
+  TL_D_SCL = auto()
+
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -52,21 +39,9 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("[TrenchL_D_C]", self.auto_TrenchL_D_C)
-    self._autos.addOption("[BumpL_D_C]", self.auto_BumpL_D_C)
-    self._autos.addOption("[BumpL_NL_C]", self.auto_BumpL_NL_C)
-    self._autos.addOption("[TrenchL_D_BL]", self.auto_TrenchL_D_BL)
-    self._autos.addOption("[BumpL_D_BL]", self.auto_BumpL_D_BL)
-    self._autos.addOption("[BumpL_NL_BL]", self.auto_BumpL_NL_BL)
+    self._autos.addOption("TrenchL_D_SCL", self.auto_TrenchL_D_SCL)
 
-    self._autos.addOption("[TrenchR_O_C]", self.auto_TrenchR_O_C)
-    self._autos.addOption("[BumpR_O_C]", self.auto_BumpR_O_C)
-    self._autos.addOption("[BumpR_NR_C]", self.auto_BumpR_NR_C)
-    self._autos.addOption("[TrenchR_O_BR]", self.auto_TrenchR_O_BR)
-    self._autos.addOption("[BumpR_O_BR]", self.auto_BumpR_O_BR)
-    self._autos.addOption("[BumpR_NR_BR]", self.auto_BumpR_NR_BR)
-
-    self._autos.addOption("BL_NZ_SCL", self.auto_BL_NZ_SCL)
+    self._autos.addOption("BumpL_NZ_SCL", self.auto_BL_NZ_SCL)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -96,136 +71,8 @@ class Auto:
       self._move(AutoPath.BL_NZ_SCL)
     ).withName("Auto:BL_NZ_SCL")
 
-  def auto_TrenchL_D_C(self) -> Command:
+  def auto_TrenchL_D_SCL(self) -> Command:
     return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_TRL_D)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_D_TWL)
-      # SCORE
-      # ADD CLIMB SEQUENCE
+      self._move(AutoPath.TL_D_SCL)
     ).withName("Auto:[TrenchL_D_C]")
   
-  def auto_BumpL_D_C(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_BL_D)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_D_TWL)
-      # SCORE
-      # ADD CLIMB SEQUENCE
-    ).withName("Auto:[BumpL_D_C]")
-  
-  def auto_BumpL_NL_C(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BL_NL),
-      cmd.parallel(
-        self._move(AutoPath.Intake_NL)
-        # INTAKE
-      ),
-      self._move(AutoPath.NL_BL),
-      self._move(AutoPath.Score_BL_TWL)
-      # SCORE
-      # ADD CLIMB SEQUENCE
-    ).withName("Auto:[BumpL_NL_C]")
-  
-  def auto_TrenchL_D_BL(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_TRL_D)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_D_BL)
-      # SCORE
-    ).withName("Auto:[TrenchL_D_BL]")
-  
-  def auto_BumpL_D_BL(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_BL_D)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_D_BL)
-      # SCORE
-    ).withName("Auto:[BumpL_D_BL]")
-  
-  def auto_BumpL_NL_BL(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BL_NL),
-      cmd.parallel(
-        self._move(AutoPath.Intake_NL)
-        # INTAKE
-      ),
-      self._move(AutoPath.NL_BL),
-      # SCORE
-    ).withName("Auto:[BumpL_NL_BL]")
-
-  def auto_TrenchR_O_C(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_TRR_O)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_O_TWR)
-      # SCORE
-      # ADD CLIMB SEQUENCE
-    ).withName("Auto:[TrenchR_O_C]")
-  
-  def auto_BumpR_O_C(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_BR_O)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_O_TWR)
-      # SCORE
-      # ADD CLIMB SEQUENCE
-    ).withName("Auto:[BumpR_O_C]")
-  
-  def auto_BumpR_NR_C(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BR_NR),
-      cmd.parallel(
-        self._move(AutoPath.Intake_NR)
-        # INTAKE
-      ),
-      self._move(AutoPath.NR_BR),
-      self._move(AutoPath.Score_BR_TWR)
-      # SCORE
-      # ADD CLIMB SEQUENCE
-    ).withName("Auto:[BumpR_NR_C]")
-  
-  def auto_TrenchR_O_BR(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_TRR_O)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_O_BR)
-      # SCORE
-    ).withName("Auto:[TrenchR_O_BR]")
-  
-  def auto_BumpR_O_BR(self) -> Command:
-    return cmd.sequence(
-      cmd.parallel(
-        self._move(AutoPath.Start_BR_O)
-        # INTAKE
-      ),
-      self._move(AutoPath.Score_O_BR)
-      # SCORE
-    ).withName("Auto:[BumpR_O_BR]")
-  
-  def auto_BumpR_NR_BR(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BR_NR),
-      cmd.parallel(
-        self._move(AutoPath.Intake_NR)
-        # INTAKE
-      ),
-      self._move(AutoPath.NR_BR),
-      # SCORE
-    ).withName("Auto:[BumpR_NR_BR]")
-
-
