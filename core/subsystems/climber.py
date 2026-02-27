@@ -12,13 +12,13 @@ class Climber(Subsystem):
 
   def up(self) -> Command:
     return self.runEnd(
-      lambda: self._climber.setPosition(self._constants.CLIMB_UP_POSITION),
+      lambda: self._climber.setPosition(self._constants.CLIMBER_UP_POSITION),
       lambda: self._climber.reset()
     ).withName("Climber:Up")
   
   def down(self) -> Command:
     return self.runEnd(
-      lambda: self._climber.setPosition(self._constants.CLIMB_DOWN_POSITION),
+      lambda: self._climber.setPosition(self._constants.CLIMBER_DOWN_POSITION),
       lambda: self._climber.reset()
     ).withName("Climber:Down")
 

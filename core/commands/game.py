@@ -57,13 +57,13 @@ class Game:
 
   def climbUp(self) -> Command:
     return (
-      self._robot.climber.up()
+      self._robot.climber.down()
       .withName("Game:ClimbUp")
     )
   
   def climbDown(self) -> Command:
     return (
-      self._robot.climber.down()
+      self._robot.climber.up()
       .withName("Game:ClimbDown")
     )
 

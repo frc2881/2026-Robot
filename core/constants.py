@@ -104,10 +104,10 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
       motorPID = PID(0.2, 0, 0.0),
-      motorOutputRange = Range(-0.7, 0.5),
+      motorOutputRange = Range(-0.7, 0.4),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
+      motorMotionMaxAcceleration = 3000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 7.2,
@@ -123,15 +123,15 @@ class Subsystems:
       motorPID = PID(0.0001, 0, 0.0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 3000.0,
-      motorMotionMaxAcceleration = 6000.0,
-      motorMotionAllowedProfileError = 1
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 3000.0,
+      motorMotionAllowedProfileError = 10
     ))
 
-    ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
-    ARM_INTAKE_HOLD_SPEED: units.percent = 0.5
     ARM_INTAKE_POSITION: float = 6.4
-    ROLLERS_SPEED: units.percent = 0.9
+    ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
+    ARM_INTAKE_HOLD_SPEED: units.percent = 0.6
+    ROLLERS_SPEED: units.percent = 0.8
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -161,7 +161,7 @@ class Subsystems:
     ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40,
+      motorCurrentLimit = 80,
       motorPID = PID(0.01, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
@@ -174,7 +174,6 @@ class Subsystems:
     INDEXER_INTAKE_SPEED: units.percent = 0.5
     FEEDER_SPEED: units.percent = 0.9
     ELEVATOR_SPEED: units.percent = 1.0
-
     AGITATE_SPEED_RATIO: units.percent = 0.5
 
   class Turret:
@@ -233,14 +232,13 @@ class Subsystems:
 
     # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
-      TargetLaunchSpeed(0.91, 0.30), # min theoretical distance (~3 feet) for launching fuel into hub (robot directly centered to and bumpers touching base of hub), but turret hood angle doesn't support this min distance
-      TargetLaunchSpeed(1.5, 0.35), # TODO: get minimum achievable distance and speed for scoring into hub at close range
-      TargetLaunchSpeed(2.0, 0.40), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(3.0, 0.45), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(4.0, 0.50), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(5.0, 0.55), # TODO: calculate real distance and speed combo
-      TargetLaunchSpeed(6.0, 0.60), # TODO: get maxmium practical distance and speed for scoring into hub from either alliance corner
-      TargetLaunchSpeed(6.15, 0.65) # max theoretical distance (~20 feet) for launching fuel to either the hub of passing from neutral zone into alliance zone
+      TargetLaunchSpeed(1.0, 0.38),
+      TargetLaunchSpeed(2.0, 0.40),
+      TargetLaunchSpeed(2.4, 0.44),
+      TargetLaunchSpeed(3.3, 0.48),
+      TargetLaunchSpeed(4.6, 0.54),
+      TargetLaunchSpeed(5.4, 0.58),
+      TargetLaunchSpeed(6.0, 0.62)
     )
 
   class Climber:
@@ -260,8 +258,9 @@ class Subsystems:
       motorHomingSpeed = 0.1,
       motorHomedPosition = 0.0
     ))
-    CLIMB_UP_POSITION = 0.0
-    CLIMB_DOWN_POSITION = 90.0 # TODO: tune to minimum viable lift off ground
+
+    CLIMBER_UP_POSITION = 0.0
+    CLIMBER_DOWN_POSITION = 90.0
 
 class Services:
   class Localization:
@@ -276,13 +275,12 @@ class Sensors:
       COM_TYPE = AHRS.NavXComType.kUSB1
   
   class Pose:
-    # TODO: configure real values for all installed cameras
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
         name = "FrontLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(9.5), y = units.inchesToMeters(12.5), z = units.inchesToMeters(8.51)),
-          Rotation3d(roll = units.degreesToRadians(-0.99), pitch = units.degreesToRadians(-25.2), yaw = units.degreesToRadians(50))
+          Translation3d(x = units.inchesToMeters(9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.0), yaw = units.degreesToRadians(50.0))
         ),
         stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -290,8 +288,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontRight",
         transform = Transform3d(
-        Translation3d(x = units.inchesToMeters(9.5), y = units.inchesToMeters(-12.5), z = units.inchesToMeters(11.53)),
-        Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-25.2), yaw = units.degreesToRadians(-50))
+        Translation3d(x = units.inchesToMeters(9.75), y = units.inchesToMeters(-12.75), z = units.inchesToMeters(12.0)),
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.0), yaw = units.degreesToRadians(-50.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -299,8 +297,8 @@ class Sensors:
       PoseSensorConfig(
         name = "RearLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(-9.5), y = units.inchesToMeters(12.5), z = units.inchesToMeters(10.03)),
-          Rotation3d(roll = units.degreesToRadians(-0.57), pitch = units.degreesToRadians(-30.5), yaw = units.degreesToRadians(135))
+          Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-30.0), yaw = units.degreesToRadians(135.0))
         ),
         stream = "http://10.28.81.6:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -308,8 +306,8 @@ class Sensors:
       PoseSensorConfig(
         name = "RearRight",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(-9.5), y = units.inchesToMeters(-12.5), z = units.inchesToMeters(9.77)),
-          Rotation3d(roll = units.degreesToRadians(-0.35), pitch = units.degreesToRadians(-31.5), yaw = units.degreesToRadians(-135))
+          Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(-12.75), z = units.inchesToMeters(10.25)),
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-30.0), yaw = units.degreesToRadians(-135.0))
         ),
         stream = "http://10.28.81.7:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
