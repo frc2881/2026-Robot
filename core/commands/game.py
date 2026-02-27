@@ -67,12 +67,6 @@ class Game:
       .withName("Game:ClimbDown")
     )
 
-  def isLaunchReady(self) -> bool:
-    return (
-      self._robot.turret.isAlignedToTargetHeading() and
-      self._robot.launcher.isAtTargetSpeed()
-    ) 
-
   def rumbleControllers(
     self, 
     mode: ControllerRumbleMode = ControllerRumbleMode.Both, 

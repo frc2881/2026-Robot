@@ -9,12 +9,10 @@ class Lights():
   def __init__(
       self,
       isHomed: Callable[[], bool],
-      hasValidVisionTarget: Callable[[], bool],
-      isLaunchReady: Callable[[], bool]
+      hasValidVisionTarget: Callable[[], bool]
     ) -> None:
     self._isHomed = isHomed
     self._hasValidVisionTarget = hasValidVisionTarget
-    self._isLaunchReady = isLaunchReady
 
     self._lightsController = LightsController()
 
@@ -28,14 +26,12 @@ class Lights():
       self._lightsController.setMode(LightsMode.RobotNotConnected)
       return
     if utils.getRobotState() == RobotState.Disabled:
-      if not utils.isCompetitionMode() and not self._isHomed():
+      if not self._isHomed():
         self._lightsController.setMode(LightsMode.RobotNotHomed)
         return
-      if utils.isCompetitionMode() and not self._hasValidVisionTarget():
+      if not self._hasValidVisionTarget():
         self._lightsController.setMode(LightsMode.VisionNotReady)
         return
     else:
-      if self._isLaunchReady():
-        self._lightsController.setMode(LightsMode.LaunchReady)
-        return
+      pass
     self._lightsController.setMode(LightsMode.Default)

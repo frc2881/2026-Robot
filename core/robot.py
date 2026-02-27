@@ -54,7 +54,7 @@ class RobotCore:
   def _initServices(self) -> None:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors, self.objectSensor)
     self.match = Match()
-    self.lights = Lights(lambda: self.isHomed(), lambda: self.localization.hasValidVisionTarget(), lambda: self.game.isLaunchReady())
+    self.lights = Lights(lambda: self.isHomed(), lambda: self.localization.hasValidVisionTarget())
 
   def _initCommands(self) -> None:
     self.game = Game(self)
