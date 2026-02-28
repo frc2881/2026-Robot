@@ -70,17 +70,13 @@ class Localization():
             if not utils.isValueInRange(target.getPoseAmbiguity(), -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY):
               hasValidVisionTarget = False
           if hasValidVisionTarget:
-            if (
-              utils.getRobotState() == RobotState.Disabled or 
-              utils.isValueInRange(utils.getTargetDistance(estimatedPose, estimatedRobotPosition), 0, constants.Services.Localization.VISION_MAX_ESTIMATED_POSE_DELTA)
-            ):
-              self._poseEstimator.addVisionMeasurement(
-                estimatedPose, 
-                estimatedRobotPose.timestampSeconds,
-                constants.Services.Localization.VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS
-                if len(estimatedRobotPose.targetsUsed) > 1 else
-                constants.Services.Localization.VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS
-              )     
+            self._poseEstimator.addVisionMeasurement(
+              estimatedPose, 
+              estimatedRobotPose.timestampSeconds,
+              constants.Services.Localization.VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS
+              if len(estimatedRobotPose.targetsUsed) > 1 else
+              constants.Services.Localization.VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS
+            )     
     self._robotPose = self._poseEstimator.getEstimatedPosition()
     if hasValidVisionTarget:
       self._hasValidVisionTarget = True

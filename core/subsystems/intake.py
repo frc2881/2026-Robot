@@ -31,15 +31,15 @@ class Intake(Subsystem):
         self._arm.reset()
       ]
     ).beforeStarting(
-      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
+      self.extend().until(lambda: self._arm.isAtTargetPosition())
     ).withName("Intake:Run")
 
   def hold(self) -> Command:
     return self.run(
-      lambda: self._runHold()
+      lambda: self._hold()
     ).withName("Intake:Hold")
   
-  def _runHold(self) -> None:
+  def _hold(self) -> None:
     if math.isclose(self._arm.getPosition(), 0, abs_tol = 1.0):
       self._arm.setSpeed(-self._constants.ARM_DEFAULT_HOLD_SPEED)
     if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):

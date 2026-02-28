@@ -11,7 +11,6 @@ class Target(Enum):
   TowerRight = auto()
   CornerLeft = auto()
   Outpost = auto()
-  Depot = auto()
   ClimbLeft = auto()
   ClimbRight = auto()
 

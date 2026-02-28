@@ -75,9 +75,9 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0),
-      translationMaxVelocity = 2.5,
+      translationMaxVelocity = 3.0,
       translationPositionTolerance = 0.025,
-      rotationPID = PID(2.0, 0, 0),
+      rotationPID = PID(3.0, 0, 0),
       rotationMaxVelocity = 720.0,
       rotationPositionTolerance = 0.5
     )
@@ -103,11 +103,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.2, 0, 0.0),
-      motorOutputRange = Range(-0.7, 0.4),
+      motorPID = PID(0.2, 0, 0),
+      motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 6000.0,
-      motorMotionMaxAcceleration = 3000.0,
+      motorMotionCruiseVelocity = 12000.0,
+      motorMotionMaxAcceleration = 6000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 7.2,
@@ -120,60 +120,67 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80, 
-      motorPID = PID(0.0001, 0, 0.0),
+      motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 3000.0,
-      motorMotionAllowedProfileError = 10
+      motorMotionMaxAcceleration = 6000.0,
     ))
 
     ARM_INTAKE_POSITION: float = 6.4
     ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
     ARM_INTAKE_HOLD_SPEED: units.percent = 0.6
-    ROLLERS_SPEED: units.percent = 0.8
+    ROLLERS_SPEED: units.percent = 0.9
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.001, 0, 0),
+      motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
-      motorMotionAllowedProfileError = 1
+      motorMotionMaxAcceleration = 6000.0
+    ))
+
+    ROLLER_CONFIG = VelocityControlModuleConfig("Hopper/Roller", 20, False, VelocityControlModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 40,
+      motorPID = PID(0.0001, 0, 0),
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 6000.0
     ))
 
     FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0.0),
+      motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
-      motorMotionAllowedProfileError = 1
+      motorMotionMaxAcceleration = 6000.0
     ))
 
     ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 80,
-      motorPID = PID(0.01, 0, 0),
+      motorCurrentLimit = 40,
+      motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
-      motorMotionAllowedProfileError = 1
+      motorMotionMaxAcceleration = 6000.0
     ))
 
-    INDEXER_SPEED: units.percent = 1.0
-    INDEXER_INTAKE_SPEED: units.percent = 0.5
+    INDEXER_SPEED: units.percent = 0.9
+    ROLLER_SPEED: units.percent = 0.9
     FEEDER_SPEED: units.percent = 0.9
-    ELEVATOR_SPEED: units.percent = 1.0
+    ELEVATOR_SPEED: units.percent = 0.9
     AGITATE_SPEED_RATIO: units.percent = 0.5
 
   class Turret:
@@ -183,15 +190,15 @@ class Subsystems:
       motorCurrentLimit = 80,
       motorRelativeEncoderPositionConversionFactor = 360.0 / 21.0,
       motorPID = PID(0.025, 0, 0.0025),
-      motorOutputRange = Range(-0.5, 0.5), # TODO: update to 100% output range and adjust velocity/acceleration/PID values in relation
+      motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 40000.0,
-      motorMotionMaxAcceleration = 80000.0,
+      motorMotionCruiseVelocity = 120000.0,
+      motorMotionMaxAcceleration = 60000.0,
       motorMotionAllowedProfileError = 0.25,
       motorSoftLimitForward = 320.0,
-      motorSoftLimitReverse = -5.0,
-      motorHomingSpeed = 0.025,
-      motorHomedPosition = -18.3
+      motorSoftLimitReverse = -10.0,
+      motorHomingSpeed = 0.1,
+      motorHomedPosition = -19.0
     ))
 
     WRAP_ANGLE_INPUT_RANGE = Range(-10, 350)
@@ -205,8 +212,7 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
-      motorMotionAllowedProfileError = 10
+      motorMotionMaxAcceleration = 6000.0
     ))
 
     LAUNCHER_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/Follower", 11, 10, True, FollowerModuleConstants(
@@ -223,14 +229,12 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
-      motorMotionAllowedProfileError = 10
+      motorMotionMaxAcceleration = 6000.0
     ))
 
     ACCELERATOR_SPEED_RATIO: units.percent = 1.0
     LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
 
-    # TODO: configure real values
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
       TargetLaunchSpeed(1.0, 0.38),
       TargetLaunchSpeed(2.0, 0.40),
@@ -246,11 +250,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
-      motorPID = PID(1.0, 0, 0.0),
+      motorPID = PID(1.0, 0, 0),
       motorOutputRange = Range(-0.8, 0.95),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
+      motorMotionMaxAcceleration = 3000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 100.0,
@@ -265,7 +269,6 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_ESTIMATED_POSE_DELTA: units.meters = 1.0
     VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
     VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.3, 0.3, units.degreesToRadians(15.0))
 
@@ -357,8 +360,8 @@ class Game:
     NAME: str = "Rosetta Stone"
 
   class Commands:
-    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0 # TODO: optimize for minimum time needed for fine-grained auto-alignment (tower climb positioning?) based on testing
-    LAUNCHER_READY_TIMEOUT: units.seconds = 1.0 # TODO: optimize for minimum time needed for launcher to get acheive target speed based on testing
+    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0
+    LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()
@@ -366,7 +369,7 @@ class Game:
     BOUNDS = (Translation2d(0, 0), Translation2d(LENGTH, WIDTH))
 
     class Targets:
-      # TODO: properly configure and tune all target poses (rough/temp placeholders for now)
+      # TODO: properly configure and tune all RED target poses (rough/temp placeholders for now)
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Red: {
           Target.Hub: Pose3d(11.918, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(180))),
@@ -377,21 +380,19 @@ class Game:
           Target.TowerRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.CornerLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.Outpost: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.Depot: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.ClimbLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.ClimbRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90)))
         },
         Alliance.Blue: {
           Target.Hub: Pose3d(4.623, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.Shuttle: Pose3d(0.280, 0.650, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.TrenchLeft: Pose3d(3.664, 6.535, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.TrenchRight: Pose3d(3.664, 1.600, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerLeft: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerRight: Pose3d(1.385, 3.150, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.CornerLeft: Pose3d(0.280, 7.790, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
-          Target.Outpost: Pose3d(0.280, 0.650, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.Depot: Pose3d(0.350, 5.125, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.ClimbLeft: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.ClimbRight: Pose3d(1.385, 4.350, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.Shuttle: Pose3d(1.500, 1.500, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.TrenchLeft: Pose3d(3.500, 6.900, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TrenchRight: Pose3d(3.500, 1.175, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TowerLeft: Pose3d(1.575, 4.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TowerRight: Pose3d(1.575, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.CornerLeft: Pose3d(0.500, 7.650, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.Outpost: Pose3d(0.500, 0.675, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.ClimbLeft: Pose3d(1.105, 4.850, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ClimbRight: Pose3d(1.020, 2.620, 0, Rotation3d(Rotation2d.fromDegrees(0))),
         }
       }
