@@ -8,15 +8,15 @@ from pathplannerlib.path import PathPlannerPath
 from pathplannerlib.events import EventTrigger
 from lib import logger, utils
 from lib.classes import Alliance
+from core.classes import Target
 import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
   BL_NZ_SCL = auto()
   BR_NZ_SCR = auto()
-
-  TL_D_SCL = auto()
-
+  TR_OP_SCR = auto()
+  TL_DP_SCL = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -39,9 +39,10 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("TrenchL_D_SCL", self.auto_TrenchL_D_SCL)
-
-    self._autos.addOption("BumpL_NZ_SCL", self.auto_BL_NZ_SCL)
+    self._autos.addOption("BL_NZ_SCL", self.auto_BL_NZ_SCL)
+    self._autos.addOption("BR_NZ_SCR", self.auto_BR_NZ_SCR)
+    self._autos.addOption("TR_OP_SCR", self.auto_TR_OP_SCR)
+    self._autos.addOption("TL_DP_SCL", self.auto_TL_DP_SCL)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -65,14 +66,34 @@ class Auto:
       AutoBuilder.followPath(self._paths.get(path))
       .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
     )
+  
+  def _score(self) -> Command:
+    return self._robot.game.scoreFuel()
+  
+  def _climb(self, target: Target) -> Command:
+    return self._robot.game.alignRobotToTargetPose(target) # TODO: add drive on to tower and climb up with X seconds left in auto
 
   def auto_BL_NZ_SCL(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BL_NZ_SCL)
+      self._move(AutoPath.BL_NZ_SCL),
+      self._score()
     ).withName("Auto:BL_NZ_SCL")
 
-  def auto_TrenchL_D_SCL(self) -> Command:
+  def auto_BR_NZ_SCR(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TL_D_SCL)
-    ).withName("Auto:[TrenchL_D_C]")
+      self._move(AutoPath.BR_NZ_SCR),
+      self._score()
+    ).withName("Auto:BR_NZ_SCR")
+  
+  def auto_TR_OP_SCR(self) -> Command:
+    return cmd.sequence(
+      self._move(AutoPath.TR_OP_SCR),
+      self._score()
+    ).withName("Auto:TR_OP_SCR")
+  
+  def auto_TL_DP_SCL(self) -> Command:
+    return cmd.sequence(
+      self._move(AutoPath.TL_DP_SCL),
+      self._score()
+    ).withName("Auto:TL_DP_SCL")
   

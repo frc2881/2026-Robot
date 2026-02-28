@@ -144,7 +144,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 6000.0
     ))
 
-    ROLLER_CONFIG = VelocityControlModuleConfig("Hopper/Roller", 20, False, VelocityControlModuleConstants(
+    ROLLER_CONFIG = VelocityControlModuleConfig("Hopper/Roller", 20, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
