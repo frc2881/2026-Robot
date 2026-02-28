@@ -39,10 +39,10 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("BL_NZ_SCL", self.auto_BL_NZ_SCL)
-    self._autos.addOption("BR_NZ_SCR", self.auto_BR_NZ_SCR)
-    self._autos.addOption("TR_OP_SCR", self.auto_TR_OP_SCR)
-    self._autos.addOption("TL_DP_SCL", self.auto_TL_DP_SCL)
+    self._autos.addOption("[BL]_NZ_SCL", self.auto_BL_NZ_SCL)
+    self._autos.addOption("[BR]_NZ_SCR", self.auto_BR_NZ_SCR)
+    self._autos.addOption("[TR]_OP_SCR", self.auto_TR_OP_SCR)
+    self._autos.addOption("[TL]_DP_SCL", self.auto_TL_DP_SCL)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
