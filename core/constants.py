@@ -369,19 +369,18 @@ class Game:
     BOUNDS = (Translation2d(0, 0), Translation2d(LENGTH, WIDTH))
 
     class Targets:
-      # TODO: properly configure and tune all RED target poses (rough/temp placeholders for now)
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Red: {
-          Target.Hub: Pose3d(11.918, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.Shuttle: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.TrenchLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.TrenchRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.TowerRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.CornerLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.Outpost: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbLeft: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.ClimbRight: Pose3d(14.000, 4.032, 0, Rotation3d(Rotation2d.fromDegrees(-90)))
+          Target.Hub: Pose3d(11.917, 4.038, 1.263, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.Shuttle: Pose3d(15.040, 6.570, 0.0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.TrenchLeft: Pose3d(13.040, 1.170, 0.0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TrenchRight: Pose3d(13.040, 6.895, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TowerLeft: Pose3d(14.965, 3.770, 0.0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TowerRight: Pose3d(14.965, 4.770, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.CornerLeft: Pose3d(16.040, 0.420, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.Outpost: Pose3d(16.040, 7.395, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.ClimbLeft: Pose3d(15.435, 3.220, 0.0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.ClimbRight: Pose3d(15.520, 5.450, 0.0, Rotation3d(Rotation2d.fromDegrees(180)))
         },
         Alliance.Blue: {
           Target.Hub: Pose3d(4.623, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
