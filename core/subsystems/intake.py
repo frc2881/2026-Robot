@@ -21,22 +21,18 @@ class Intake(Subsystem):
     self._updateTelemetry()
 
   def run_(self) -> Command:
-    return self.runEnd(
+    return self.startEnd(
       lambda: [
         self._arm.setSpeed(self._constants.ARM_INTAKE_HOLD_SPEED),
         self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
       ],
-      lambda: [
-        self._rollers.reset(),
-        self._arm.reset()
-      ]
-    ).beforeStarting(
-      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
-    ).withName("Intake:Run")
+      lambda: self.reset()
+    ).beforeStarting(self._extend()).withName("Intake:Run")
 
   def hold(self) -> Command:
-    return self.run(
-      lambda: self._runHold()
+    return self.runEnd(
+      lambda: self._runHold(),
+      lambda: self.reset()
     ).withName("Intake:Hold")
   
   def _runHold(self) -> None:
@@ -45,10 +41,25 @@ class Intake(Subsystem):
     if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):
       self._arm.setSpeed(self._constants.ARM_DEFAULT_HOLD_SPEED)
 
-  def extend(self) -> Command:
-    return self.run(
-      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
-    ).withName("Intake:Extend")
+  def startIntake(self) -> Command:
+    return self.runOnce(
+      lambda: [
+        self._arm.setSpeed(self._constants.ARM_INTAKE_HOLD_SPEED),
+        self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
+      ]
+    ).beforeStarting(self._extend()).withName("Intake:Start")
+  
+  def stopIntake(self) -> Command:
+    return self.runOnce(lambda: self.reset()).withName("Intake:Stop")
+
+  def _extend(self) -> Command:
+    return (
+      self.runOnce(lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION))
+      .onlyIf(lambda: not self.isExtended())
+      .until(lambda: self._arm.isAtTargetPosition())
+      .withTimeout(1.0)
+      .withName("Intake:Extend")
+    )
   
   def retract(self, level: units.percent = 1.0) -> Command:
     return self.run(

@@ -7,6 +7,7 @@ from navx import AHRS
 from rev import SparkLowLevel, AbsoluteEncoderConfig
 from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
+from pathplannerlib.path import FlippingUtil
 from lib import logger, utils
 from lib.classes import (
   FollowerModuleConfig,
@@ -370,18 +371,6 @@ class Game:
 
     class Targets:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
-        Alliance.Red: {
-          Target.Hub: Pose3d(11.917, 4.038, 1.263, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.Shuttle: Pose3d(15.040, 6.570, 0.0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.TrenchLeft: Pose3d(13.040, 1.170, 0.0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TrenchRight: Pose3d(13.040, 6.895, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.TowerLeft: Pose3d(14.965, 3.770, 0.0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerRight: Pose3d(14.965, 4.770, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.CornerLeft: Pose3d(16.040, 0.420, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.Outpost: Pose3d(16.040, 7.395, 0.0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.ClimbLeft: Pose3d(15.435, 3.220, 0.0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.ClimbRight: Pose3d(15.520, 5.450, 0.0, Rotation3d(Rotation2d.fromDegrees(180)))
-        },
         Alliance.Blue: {
           Target.Hub: Pose3d(4.623, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.Shuttle: Pose3d(1.500, 1.500, 0, Rotation3d(Rotation2d.fromDegrees(0))),
@@ -397,5 +386,10 @@ class Game:
           Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpRightOut: Pose3d(5.800, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-        }
+        },
+        Alliance.Red: {}
       }
+
+      for target in TARGETS[Alliance.Blue]:
+        redTargetPose = FlippingUtil.flipFieldPose(TARGETS[Alliance.Blue][target].toPose2d())
+        TARGETS[Alliance.Red][target] = Pose3d(redTargetPose.X(), redTargetPose.Y(), TARGETS[Alliance.Blue][target].Z(), Rotation3d(redTargetPose.rotation()))

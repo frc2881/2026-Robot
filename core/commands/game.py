@@ -18,9 +18,9 @@ class Game:
       .withName(f'Game:AlignRobotToTargetPose:{ target.name }')
     )
   
-  def alignRobotToNearestTargetPose(self, getNearestTarget: Callable[[], Target]) -> Command:
+  def alignRobotToNearestTargetPose(self, targets: list[Target]) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(getNearestTarget()).toPose2d())
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getNearestTargetPose(targets).toPose2d())
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .withName(f'Game:AlignRobotToNearestTargetPose')
     )
@@ -30,7 +30,12 @@ class Game:
       self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
-  
+
+  def alignRobotToNearestBump(self) -> Command:
+    return (
+      self.alignRobotToNearestTargetPose([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
+    )
+
   def alignRobotToNearestFuel(self) -> Command:
     return (
       self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, self._robot.localization.getObjectsPose)
@@ -39,11 +44,6 @@ class Game:
       .withName(f'Game:AlignRobotToNearestFuel')
     )
   
-  def alignRobotToNearestBumpTargetPose(self) -> Command:
-    return (
-      self.alignRobotToNearestTargetPose(lambda: self._robot.localization.getNearestBumpTarget())
-    )
-
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
       self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())

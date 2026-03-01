@@ -48,6 +48,7 @@ class Auto:
     SmartDashboard.putData("Robot/Auto", self._autos)
 
     EventTrigger("RunIntake").whileTrue(self._robot.game.runIntake())
+    # EventTrigger("RunIntake").onTrue(self._robot.intake.startIntake()).onFalse(self._robot.intake.stopIntake())
 
   def get(self) -> Command:
     return self._auto

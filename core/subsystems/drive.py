@@ -5,7 +5,7 @@ from wpimath import units
 from wpimath.controller import PIDController, ProfiledPIDControllerRadians, HolonomicDriveController
 from wpimath.trajectory import TrapezoidProfileRadians
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Rotation2d, Pose2d
+from wpimath.geometry import Rotation2d, Pose2d, Pose3d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics
 from ntcore import NetworkTableInstance
 from pathplannerlib.util import DriveFeedforwards
@@ -39,6 +39,7 @@ class Drive(Subsystem):
     self._targetHeadingAlignmentController.enableContinuousInput(-180.0, 180.0)
     self._targetHeadingAlignmentRotationInput: units.percent = 0
 
+    self._targetPose: Pose2d | None = None
     self._targetPoseAlignmentState = State.Stopped
     self._targetPoseAlignmentController = HolonomicDriveController(
       PIDController(*self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationPID),
@@ -184,21 +185,22 @@ class Drive(Subsystem):
 
   def alignToTargetPose(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
     return self.startRun(
-      lambda: self._initTargetPoseAlignment(),
-      lambda: self._runTargetPoseAlignment(getRobotPose(), getTargetPose())
+      lambda: self._initTargetPoseAlignment(getTargetPose()),
+      lambda: self._runTargetPoseAlignment(getRobotPose())
     ).until(
       lambda: self._targetPoseAlignmentState == State.Completed
     ).finallyDo(
       lambda end: self._endTargetPoseAlignment()
     )
   
-  def _initTargetPoseAlignment(self) -> None:
+  def _initTargetPoseAlignment(self, targetPose: Pose2d) -> None:
+    self._targetPose = targetPose
     self._targetPoseAlignmentState = State.Running
 
-  def _runTargetPoseAlignment(self, robotPose: Pose2d, targetPose: Pose2d) -> None:
+  def _runTargetPoseAlignment(self, robotPose: Pose2d) -> None:
     self._setModuleStates(
       utils.clampTranslationVelocity(
-        self._targetPoseAlignmentController.calculate(robotPose, targetPose, 0, targetPose.rotation()), 
+        self._targetPoseAlignmentController.calculate(robotPose, self._targetPose, 0, self._targetPose.rotation()), 
         self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationMaxVelocity
       )
     )
@@ -215,18 +217,19 @@ class Drive(Subsystem):
 
   def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
     return cmd.startRun(
-      lambda: self._initTargetHeadingAlignment(),
-      lambda: self._runTargetHeadingAlignment(getRobotPose(), getTargetPose())
+      lambda: self._initTargetHeadingAlignment(getTargetPose()),
+      lambda: self._runTargetHeadingAlignment(getRobotPose())
     ).finallyDo(
       lambda end: self._endTargetHeadingAlignment()
     )
 
-  def _initTargetHeadingAlignment(self) -> None:
+  def _initTargetHeadingAlignment(self, targetPose) -> None:
+    self._targetPose = targetPose
     self._targetHeadingAlignmentController.reset()
     self._targetHeadingAlignmentState = State.Running
 
-  def _runTargetHeadingAlignment(self, robotPose: Pose2d, targetPose: Pose2d) -> None:
-    self._targetHeadingAlignmentController.setSetpoint(utils.wrapAngle(utils.getTargetHeading(robotPose, targetPose)))
+  def _runTargetHeadingAlignment(self, robotPose: Pose2d) -> None:
+    self._targetHeadingAlignmentController.setSetpoint(utils.wrapAngle(utils.getTargetHeading(robotPose, self._targetPose)))
     self._targetHeadingAlignmentRotationInput = self._targetHeadingAlignmentController.calculate(robotPose.rotation().degrees()) if not self._targetHeadingAlignmentController.atSetpoint() else 0
 
   def _endTargetHeadingAlignment(self) -> None:
@@ -241,6 +244,7 @@ class Drive(Subsystem):
     self._driftCorrectionState == State.Stopped
     self._targetPoseAlignmentState = State.Stopped
     self._targetHeadingAlignmentState == State.Stopped
+    self._targetPose = None
 
   def _updateTelemetry(self) -> None:
     self._modulesStatesPublisher.set(self._getModuleStates())

@@ -58,7 +58,6 @@ class Localization():
 
   def _updateRobotPose(self) -> None:
     self._poseEstimator.update(Rotation2d.fromDegrees(self._getGyroHeading()), self._getDriveModulePositions())
-    estimatedRobotPosition = self._poseEstimator.getEstimatedPosition()
     hasValidVisionTarget = False
     for poseSensor in self._poseSensors:
       estimatedRobotPose = poseSensor.getEstimatedRobotPose()
@@ -98,14 +97,10 @@ class Localization():
     targetPose = self._targets.get(target)
     return targetPose if targetPose is not None else Pose3d(self._robotPose)
   
-  def getNearestBumpTarget(self) -> Target:
-    pose = Pose3d(self._robotPose.nearest([
-      self._targets[Target.BumpLeftIn].toPose2d(), 
-      self._targets[Target.BumpLeftOut].toPose2d(), 
-      self._targets[Target.BumpRightIn].toPose2d(), 
-      self._targets[Target.BumpRightOut].toPose2d() 
-    ]))
-    return next((k for k, v in self._targets.items() if v == pose), Target.BumpLeftIn)
+  def getNearestTargetPose(self, targets: list[Target]) -> Pose3d:
+    targetPose = Pose3d(self._robotPose).nearest([self._targets[target] for target in self._targets if target in targets])
+    logger.debug(targetPose)
+    return targetPose if targetPose is not None else Pose3d(self._robotPose)
   
   def _updateObjects(self) -> None:
     objects = self._objectSensor.getObjects()

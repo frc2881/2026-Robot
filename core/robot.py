@@ -93,7 +93,7 @@ class RobotCore:
     self.driver.povRight().whileTrue(self.game.alignRobotToTargetPose(Target.ClimbRight))
     self.driver.a().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
     self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
-    self.driver.y().whileTrue(self.game.alignRobotToNearestBumpTargetPose())
+    self.driver.y().whileTrue(self.game.alignRobotToNearestBump())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
     # self.driver.start().whileTrue(cmd.none())
     self.driver.back().debounce(0.5).whileTrue(self.gyro.reset().ignoringDisable(True))
