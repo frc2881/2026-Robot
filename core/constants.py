@@ -140,8 +140,8 @@ class Subsystems:
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxVelocity = 40000.0,
+      motorMotionMaxAcceleration = 80000.0
     ))
 
     ROLLER_CONFIG = VelocityControlModuleConfig("Hopper/Roller", 20, True, VelocityControlModuleConstants(
@@ -173,14 +173,14 @@ class Subsystems:
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 6000.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.9
-    ROLLER_SPEED: units.percent = 0.9
-    FEEDER_SPEED: units.percent = 0.9
-    ELEVATOR_SPEED: units.percent = 0.9
+    INDEXER_SPEED: units.percent = 1.0
+    ROLLER_SPEED: units.percent = 1.0
+    FEEDER_SPEED: units.percent = 1.0
+    ELEVATOR_SPEED: units.percent = 1.0
     AGITATE_SPEED_RATIO: units.percent = 0.5
 
   class Turret:
@@ -393,5 +393,9 @@ class Game:
           Target.Outpost: Pose3d(0.500, 0.675, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.ClimbLeft: Pose3d(1.105, 4.850, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ClimbRight: Pose3d(1.020, 2.620, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.BumpRightOut: Pose3d(5.800, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
         }
       }

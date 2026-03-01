@@ -13,6 +13,11 @@ class Target(Enum):
   Outpost = auto()
   ClimbLeft = auto()
   ClimbRight = auto()
+  BumpLeftIn = auto()
+  BumpLeftOut = auto()
+  BumpRightIn = auto()
+  BumpRightOut = auto()
+  
 
 @dataclass(frozen=True, slots=True)
 class TargetLaunchSpeed:

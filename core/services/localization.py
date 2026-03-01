@@ -98,6 +98,15 @@ class Localization():
     targetPose = self._targets.get(target)
     return targetPose if targetPose is not None else Pose3d(self._robotPose)
   
+  def getNearestBumpTarget(self) -> Target:
+    pose = Pose3d(self._robotPose.nearest([
+      self._targets[Target.BumpLeftIn].toPose2d(), 
+      self._targets[Target.BumpLeftOut].toPose2d(), 
+      self._targets[Target.BumpRightIn].toPose2d(), 
+      self._targets[Target.BumpRightOut].toPose2d() 
+    ]))
+    return next((k for k, v in self._targets.items() if v == pose), Target.BumpLeftIn)
+  
   def _updateObjects(self) -> None:
     objects = self._objectSensor.getObjects()
     if objects is not None:

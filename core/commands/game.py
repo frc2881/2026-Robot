@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 from commands2 import Command, cmd
 from wpilib import RobotBase
 from lib import logger, utils
@@ -18,6 +18,13 @@ class Game:
       .withName(f'Game:AlignRobotToTargetPose:{ target.name }')
     )
   
+  def alignRobotToNearestTargetPose(self, getNearestTarget: Callable[[], Target]) -> Command:
+    return (
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(getNearestTarget()).toPose2d())
+      .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
+      .withName(f'Game:AlignRobotToNearestTargetPose')
+    )
+  
   def alignRobotToTargetHeading(self, target: Target) -> Command:
     return (
       self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
@@ -30,6 +37,11 @@ class Game:
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 10) # TODO: make a constant for and validate minimum fuel count to target IF we use this feature on the robot
       .withName(f'Game:AlignRobotToNearestFuel')
+    )
+  
+  def alignRobotToNearestBumpTargetPose(self) -> Command:
+    return (
+      self.alignRobotToNearestTargetPose(lambda: self._robot.localization.getNearestBumpTarget())
     )
 
   def alignTurretToTargetHeading(self, target: Target) -> Command:

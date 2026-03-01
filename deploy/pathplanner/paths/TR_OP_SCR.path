@@ -20,7 +20,7 @@
         "y": 0.6789364035087715
       },
       "prevControl": {
-        "x": 0.75970394736842,
+        "x": 0.7597039473684211,
         "y": 0.6789364035087715
       },
       "nextControl": {
@@ -70,7 +70,7 @@
     {
       "name": "RunIntake",
       "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 1.0,
+      "endWaypointRelativePos": 0.3913824057450618,
       "command": null
     }
   ],
