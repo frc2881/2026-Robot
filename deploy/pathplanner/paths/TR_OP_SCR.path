@@ -66,17 +66,10 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "RunIntake",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 0.3913824057450618,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.6,
-    "maxAcceleration": 2.8,
+    "maxVelocity": 3.2,
+    "maxAcceleration": 2.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

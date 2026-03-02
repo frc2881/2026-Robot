@@ -10,8 +10,6 @@ from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 from pathplannerlib.path import FlippingUtil
 from lib import logger, utils
 from lib.classes import (
-  FollowerModuleConfig,
-  FollowerModuleConstants,
   RobotType,
   Alliance, 
   PID,
@@ -28,6 +26,10 @@ from lib.classes import (
   RelativePositionControlModuleConfig,
   VelocityControlModuleConfig,
   VelocityControlModuleConstants,
+  FollowerModuleConfig,
+  FollowerModuleConstants,
+  SpeedModuleConstants,
+  SpeedModuleConfig,
   ButtonControllerConfig,
   PoseSensorConfig,
   ObjectSensorConfig,
@@ -104,11 +106,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.2, 0, 0),
-      motorOutputRange = Range(-1.0, 1.0),
+      motorPID = PID(0.3, 0, 0),
+      motorOutputRange = Range(-1.0, 0.1),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 12000.0,
-      motorMotionMaxAcceleration = 6000.0,
+      motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 7.2,
@@ -125,24 +127,21 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0,
+      motorMotionMaxAcceleration = 12000.0,
+      motorVelocityConversionFactor = 1.0
     ))
 
     ARM_INTAKE_POSITION: float = 6.4
     ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
     ARM_INTAKE_HOLD_SPEED: units.percent = 0.6
-    ROLLERS_SPEED: units.percent = 0.9
+    ROLLERS_SPEED: units.percent = 1.0
 
   class Hopper:
-    INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
+    INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0),
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 40000.0,
-      motorMotionMaxAcceleration = 80000.0
+      motorVelocityConversionFactor = 1.0
     ))
 
     ROLLER_CONFIG = VelocityControlModuleConfig("Hopper/Roller", 20, True, VelocityControlModuleConstants(
@@ -153,7 +152,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxAcceleration = 6000.0,
+      motorVelocityConversionFactor = 1.0
     ))
 
     FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
@@ -164,7 +164,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxAcceleration = 6000.0,
+      motorVelocityConversionFactor = 1.0
     ))
 
     ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
@@ -175,10 +176,11 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxAcceleration = 6000.0,
+      motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 1.0
+    INDEXER_SPEED: units.percent = 0.4
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
@@ -213,7 +215,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxAcceleration = 6000.0,
+      motorVelocityConversionFactor = 1.0
     ))
 
     LAUNCHER_FOLLOWER_CONFIG = FollowerModuleConfig("Launcher/Follower", 11, 10, True, FollowerModuleConstants(
@@ -230,7 +233,8 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0
+      motorMotionMaxAcceleration = 6000.0,
+      motorVelocityConversionFactor = 1.0
     ))
 
     ACCELERATOR_SPEED_RATIO: units.percent = 1.0
@@ -241,8 +245,8 @@ class Subsystems:
       TargetLaunchSpeed(2.0, 0.40),
       TargetLaunchSpeed(2.4, 0.44),
       TargetLaunchSpeed(3.3, 0.48),
-      TargetLaunchSpeed(4.6, 0.54),
-      TargetLaunchSpeed(5.4, 0.58),
+      TargetLaunchSpeed(4.6, 0.56),
+      TargetLaunchSpeed(5.4, 0.60),
       TargetLaunchSpeed(6.0, 0.62)
     )
 
@@ -252,7 +256,7 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
       motorPID = PID(1.0, 0, 0),
-      motorOutputRange = Range(-0.8, 0.95),
+      motorOutputRange = Range(-0.7, 0.9),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 6000.0,
       motorMotionMaxAcceleration = 3000.0,
@@ -270,6 +274,7 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
+    VISION_MAX_TARGET_DISTANCE: units.meters = 4.0
     VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
     VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.3, 0.3, units.degreesToRadians(15.0))
 

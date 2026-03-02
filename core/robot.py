@@ -83,7 +83,7 @@ class RobotCore:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
     self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
-    self.driver.leftTrigger().whileTrue(self.intake.retract(0.5))
+    self.driver.leftTrigger().whileTrue(self.intake.retract(0.8))
     self.driver.rightTrigger().whileTrue(self.game.runIntake())
     self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))

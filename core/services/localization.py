@@ -66,7 +66,7 @@ class Localization():
         if utils.isPoseInBounds(estimatedPose, constants.Game.Field.BOUNDS):
           hasValidVisionTarget = True
           for target in estimatedRobotPose.targetsUsed:
-            if not utils.isValueInRange(target.getPoseAmbiguity(), -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY):
+            if not self._isValidTarget(target.getBestCameraToTarget().translation().norm(), target.getPoseAmbiguity()):
               hasValidVisionTarget = False
           if hasValidVisionTarget:
             self._poseEstimator.addVisionMeasurement(
@@ -81,8 +81,14 @@ class Localization():
       self._hasValidVisionTarget = True
       self._validVisionTargetBufferTimer.restart()
     else:
-      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.1):
+      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.2):
         self._hasValidVisionTarget = False
+
+  def _isValidTarget(self, distance: units.meters, ambiguity: units.percent) -> bool:
+    return (
+      distance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE and
+      utils.isValueInRange(ambiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY)
+    )
 
   def hasValidVisionTarget(self) -> bool:
     return self._hasValidVisionTarget

@@ -47,9 +47,6 @@ class Auto:
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
 
-    EventTrigger("RunIntake").whileTrue(self._robot.game.runIntake())
-    # EventTrigger("RunIntake").onTrue(self._robot.intake.startIntake()).onFalse(self._robot.intake.stopIntake())
-
   def get(self) -> Command:
     return self._auto
   
@@ -68,21 +65,30 @@ class Auto:
       .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
     )
   
+  def _intake(self) -> Command:
+    return (
+      cmd.waitSeconds(1.5).andThen(self._robot.game.runIntake())
+      .deadlineFor(logger.log_("Auto:Intake"))
+    )
+  
   def _score(self) -> Command:
-    return self._robot.game.scoreFuel()
+    return (
+      self._robot.game.scoreFuel()
+      .deadlineFor(logger.log_("Auto:Score"))
+    )
   
   def _climb(self, target: Target) -> Command:
     return self._robot.game.alignRobotToTargetPose(target) # TODO: add drive on to tower and climb up with X seconds left in auto
 
   def auto_BL_NZ_SCL(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BL_NZ_SCL),
+      self._move(AutoPath.BL_NZ_SCL).deadlineFor(self._intake()),
       self._score()
     ).withName("Auto:BL_NZ_SCL")
 
   def auto_BR_NZ_SCR(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BR_NZ_SCR),
+      self._move(AutoPath.BR_NZ_SCR).deadlineFor(self._intake()),
       self._score()
     ).withName("Auto:BR_NZ_SCR")
   
@@ -94,7 +100,7 @@ class Auto:
   
   def auto_TL_DP_SCL(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TL_DP_SCL),
+      self._move(AutoPath.TL_DP_SCL).deadlineFor(self._intake()),
       self._score()
     ).withName("Auto:TL_DP_SCL")
   

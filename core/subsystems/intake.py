@@ -1,5 +1,5 @@
 import math
-from commands2 import Subsystem, Command
+from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard
 from wpimath import units
 from lib import logger, utils
@@ -41,23 +41,10 @@ class Intake(Subsystem):
     if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):
       self._arm.setSpeed(self._constants.ARM_DEFAULT_HOLD_SPEED)
 
-  def startIntake(self) -> Command:
-    return self.runOnce(
-      lambda: [
-        self._arm.setSpeed(self._constants.ARM_INTAKE_HOLD_SPEED),
-        self._rollers.setSpeed(self._constants.ROLLERS_SPEED)
-      ]
-    ).beforeStarting(self._extend()).withName("Intake:Start")
-  
-  def stopIntake(self) -> Command:
-    return self.runOnce(lambda: self.reset()).withName("Intake:Stop")
-
   def _extend(self) -> Command:
     return (
-      self.runOnce(lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION))
-      .onlyIf(lambda: not self.isExtended())
-      .until(lambda: self._arm.isAtTargetPosition())
-      .withTimeout(1.0)
+      self.run(lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION))
+      .withTimeout(0.2)
       .withName("Intake:Extend")
     )
   
@@ -67,7 +54,7 @@ class Intake(Subsystem):
     ).withName("Intake:Retract")
 
   def isExtended(self) -> bool:
-    return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION / 2
+    return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.8
   
   def isRunning(self) -> bool:
     return self._rollers.getSpeed() != 0
@@ -79,8 +66,8 @@ class Intake(Subsystem):
     return self._arm.isHomed()
 
   def reset(self) -> None:
-    lambda: self._arm.reset()
-    lambda: self._rollers.reset()
+    self._arm.reset()
+    self._rollers.reset()
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Intake/IsExtended", self.isExtended())
