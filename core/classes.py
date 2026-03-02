@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, IntEnum, auto
 from dataclasses import dataclass
 from wpimath import units
 
@@ -23,6 +23,12 @@ class Target(Enum):
 class TargetLaunchSpeed:
   distance: units.meters
   speed: units.percent
+
+class FuelLevel(IntEnum):
+  Empty = 0
+  Low = 1
+  Mid = 2
+  Full = 3
 
 class MatchState(Enum):
   Stopped = auto()

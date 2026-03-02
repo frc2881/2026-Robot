@@ -15,7 +15,8 @@ class Hopper(Subsystem):
     self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
-    self._indexerTimer = Timer()
+    self._indexerRunPatternTimer = Timer()
+    self._indexerRunPatternTimer.start()
   
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -23,14 +24,14 @@ class Hopper(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexerTimer.advanceIfElapsed(1.0),
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerTimer.get() < 0.75 else 0),
+        self._indexerRunPatternTimer.advanceIfElapsed(1.0),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < 0.75 else 0),
         self._roller.setSpeed(self._constants.ROLLER_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],
       lambda: self.reset()
-    ).beforeStarting(lambda: self._indexerTimer.restart()).withName("Hopper:Run")
+    ).withName("Hopper:Run")
 
   def agitate(self) -> Command:
     return self.runEnd(

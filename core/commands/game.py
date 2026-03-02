@@ -3,7 +3,7 @@ from commands2 import Command, cmd
 from wpilib import RobotBase
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
-from core.classes import Target
+from core.classes import Target, FuelLevel
 import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
@@ -56,7 +56,6 @@ class Game:
       .alongWith(
         self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(Target.Hub)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(self._robot.hopper.run_())
-        # TODO: add sensor-based logic to detect hopper fuel level and slowly moved intake arm up to funnel fuel into the indexer as level decreases
       ).withName("Game:ScoreFuel")
     )
   
@@ -64,6 +63,26 @@ class Game:
     return (
       self._robot.intake.run_()
       .withName("Game:RunIntake")
+    )
+  
+  def retractIntake(self) -> Command:
+    return (
+      self._robot.intake.retract()
+      .onlyIf(lambda: self.getFuelLevel() < FuelLevel.Mid)
+      .withName("Game:RetractIntake")
+    )
+
+  def agitateIntake(self) -> Command:
+    return (
+      self._robot.intake.agitate()
+      .onlyIf(lambda: self.getFuelLevel() < FuelLevel.Mid)
+      .withName("Game:AgitateIntake")
+    )
+  
+  def agitateHopper(self) -> Command:
+    return (
+      self._robot.hopper.agitate()
+      .withName("Game:AgitateHopper")
     )
 
   def climbUp(self) -> Command:
@@ -77,7 +96,16 @@ class Game:
       self._robot.climber.up()
       .withName("Game:ClimbDown")
     )
-
+  
+  def getFuelLevel(self) -> FuelLevel:
+    if utils.isValueInRange(self._robot.hopperSensor.getDistance(), 0, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL):
+      return FuelLevel.Full
+    if utils.isValueInRange(self._robot.hopperSensor.getDistance(), constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_MID):
+      return FuelLevel.Mid
+    if self._robot.indexerSensor.hasTarget() or self._robot.feederSensor.hasTarget():
+      return FuelLevel.Low
+    return FuelLevel.Empty
+    
   def rumbleControllers(
     self, 
     mode: ControllerRumbleMode = ControllerRumbleMode.Both, 

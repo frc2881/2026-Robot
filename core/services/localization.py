@@ -1,4 +1,3 @@
-import math
 from typing import TYPE_CHECKING, Callable
 from wpilib import SmartDashboard, Timer
 from wpimath import units
@@ -7,7 +6,6 @@ if TYPE_CHECKING: from wpimath.kinematics import SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from ntcore import NetworkTableInstance
 from lib import logger, utils
-from lib.classes import RobotState
 if TYPE_CHECKING: from lib.sensors.pose import PoseSensor
 if TYPE_CHECKING: from lib.sensors.object import ObjectSensor
 from core.classes import Target
@@ -64,10 +62,9 @@ class Localization():
       if estimatedRobotPose is not None:
         estimatedPose = estimatedRobotPose.estimatedPose.toPose2d()
         if utils.isPoseInBounds(estimatedPose, constants.Game.Field.BOUNDS):
-          hasValidVisionTarget = True
           for target in estimatedRobotPose.targetsUsed:
-            if not self._isValidTarget(target.getBestCameraToTarget().translation().norm(), target.getPoseAmbiguity()):
-              hasValidVisionTarget = False
+            if self._isValidTarget(target.getPoseAmbiguity(), target.getBestCameraToTarget().translation().norm()):
+              hasValidVisionTarget = True
           if hasValidVisionTarget:
             self._poseEstimator.addVisionMeasurement(
               estimatedPose, 
@@ -84,10 +81,10 @@ class Localization():
       if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.2):
         self._hasValidVisionTarget = False
 
-  def _isValidTarget(self, distance: units.meters, ambiguity: units.percent) -> bool:
+  def _isValidTarget(self, ambiguity: units.percent, distance: units.meters) -> bool:
     return (
-      distance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE and
-      utils.isValueInRange(ambiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY)
+      utils.isValueInRange(ambiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY) and
+      distance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE  
     )
 
   def hasValidVisionTarget(self) -> bool:
@@ -105,7 +102,6 @@ class Localization():
   
   def getNearestTargetPose(self, targets: list[Target]) -> Pose3d:
     targetPose = Pose3d(self._robotPose).nearest([self._targets[target] for target in self._targets if target in targets])
-    logger.debug(targetPose)
     return targetPose if targetPose is not None else Pose3d(self._robotPose)
   
   def _updateObjects(self) -> None:

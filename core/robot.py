@@ -83,7 +83,7 @@ class RobotCore:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
     self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
-    self.driver.leftTrigger().whileTrue(self.intake.retract(0.8))
+    self.driver.leftTrigger().whileTrue(self.game.retractIntake())
     self.driver.rightTrigger().whileTrue(self.game.runIntake())
     self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
@@ -101,9 +101,9 @@ class RobotCore:
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    # self.operator.leftTrigger().whileTrue(cmd.none()) # TODO: reserve for shuttle fuel if implemented
+    self.operator.leftTrigger().whileTrue(self.game.agitateIntake())
     self.operator.rightTrigger().whileTrue(self.game.scoreFuel())
-    self.operator.leftBumper().whileTrue(self.hopper.agitate())
+    self.operator.leftBumper().whileTrue(self.game.agitateHopper())
     # self.operator.rightBumper().whileTrue(cmd.none())
     self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
     self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())

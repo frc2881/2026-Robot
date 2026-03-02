@@ -26,10 +26,10 @@ from lib.classes import (
   RelativePositionControlModuleConfig,
   VelocityControlModuleConfig,
   VelocityControlModuleConstants,
-  FollowerModuleConfig,
-  FollowerModuleConstants,
   SpeedModuleConstants,
   SpeedModuleConfig,
+  FollowerModuleConfig,
+  FollowerModuleConstants,
   ButtonControllerConfig,
   PoseSensorConfig,
   ObjectSensorConfig,
@@ -78,10 +78,10 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0),
-      translationMaxVelocity = 3.0,
+      translationMaxVelocity = 3.6,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 720.0,
+      rotationMaxVelocity = 960.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -105,36 +105,39 @@ class Subsystems:
     ARM_CONFIG = RelativePositionControlModuleConfig("Intake/Arm", 18, False, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40,
+      motorCurrentLimit = 60,
       motorPID = PID(0.3, 0, 0),
-      motorOutputRange = Range(-1.0, 0.1),
+      motorOutputRange = Range(-1.0, 0.2),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 7.2,
-      motorSoftLimitReverse = 0.0,
+      motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.1,
-      motorHomedPosition = 0.0
+      motorHomedPosition = 0
     ))
         
     ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 80, 
+      motorCurrentLimit = 100, 
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 12000.0,
+      motorMotionMaxVelocity = 12000.0,
+      motorMotionMaxAcceleration = 24000.0,
       motorVelocityConversionFactor = 1.0
     ))
 
+    ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 6.4
+    ARM_AGITATE_RANGE = Range(0.5, 0.8)
     ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
-    ARM_INTAKE_HOLD_SPEED: units.percent = 0.6
-    ROLLERS_SPEED: units.percent = 1.0
+    ARM_INTAKE_HOLD_SPEED: units.percent = 0.75
+    ROLLERS_INTAKE_SPEED: units.percent = 1.0
+    ROLLERS_AGITATE_SPEED: units.percent = 0.1
 
   class Hopper:
     INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
@@ -184,7 +187,7 @@ class Subsystems:
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
-    AGITATE_SPEED_RATIO: units.percent = 0.5
+    AGITATE_SPEED_RATIO: units.percent = 0.3
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -245,8 +248,8 @@ class Subsystems:
       TargetLaunchSpeed(2.0, 0.40),
       TargetLaunchSpeed(2.4, 0.44),
       TargetLaunchSpeed(3.3, 0.48),
-      TargetLaunchSpeed(4.6, 0.56),
-      TargetLaunchSpeed(5.4, 0.60),
+      TargetLaunchSpeed(4.6, 0.54),
+      TargetLaunchSpeed(5.4, 0.58),
       TargetLaunchSpeed(6.0, 0.62)
     )
 
@@ -344,8 +347,10 @@ class Sensors:
       channel = 1, 
       pulseWidthConversionFactor = 0.75, 
       minTargetDistance = 0, 
-      maxTargetDistance = 500 # TODO: tune max target distance for inside hopper walls
+      maxTargetDistance = 400 # TODO: tune max target distance for indexer range on belts
     )
+    HOPPER_FUEL_LEVEL_FULL: units.millimeters = 200
+    HOPPER_FUEL_LEVEL_MID: units.millimeters = 400
 
   class Binary:
     FEEDER_SENSOR_CONFIG = BinarySensorConfig(name = "Feeder", channel = 4)
@@ -367,6 +372,7 @@ class Game:
 
   class Commands:
     AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0
+    AUTO_INTAKE_DELAY: units.seconds = 1.5
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
 
   class Field:
