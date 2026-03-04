@@ -1,18 +1,23 @@
 from typing import Callable
 from wpilib import DriverStation
+from wpimath import units
 from lib.classes import RobotState
 from lib.controllers.lights import LightsController
 from lib import logger, utils
-from core.classes import LightsMode
+from core.classes import LightsMode, HubState
 
 class Lights():
   def __init__(
       self,
       isHomed: Callable[[], bool],
-      hasValidVisionTarget: Callable[[], bool]
+      hasValidVisionTarget: Callable[[], bool],
+      getHubState: Callable[[], HubState],
+      getMatchStateTime: Callable[[], units.seconds]
     ) -> None:
     self._isHomed = isHomed
     self._hasValidVisionTarget = hasValidVisionTarget
+    self._getHubState = getHubState
+    self._getMatchStateTime = getMatchStateTime
 
     self._lightsController = LightsController()
 
@@ -25,6 +30,7 @@ class Lights():
     if not DriverStation.isDSAttached():
       self._lightsController.setMode(LightsMode.RobotNotConnected)
       return
+    
     if utils.getRobotState() == RobotState.Disabled:
       if not self._isHomed():
         self._lightsController.setMode(LightsMode.RobotNotHomed)
@@ -32,6 +38,14 @@ class Lights():
       if not self._hasValidVisionTarget():
         self._lightsController.setMode(LightsMode.VisionNotReady)
         return
-    else:
-      pass
+    
+    if utils.getRobotState() == RobotState.Enabled:
+      isMatchStateEnding = self._getMatchStateTime() < 5
+      self._lightsController.setMode(
+        LightsMode.HubStateActiveEnding if isMatchStateEnding else LightsMode.HubStateInactiveEnding
+        if self._getHubState() == HubState.Active else 
+        LightsMode.HubStateActive if isMatchStateEnding else LightsMode.HubStateInactive
+      )
+      return
+
     self._lightsController.setMode(LightsMode.Default)

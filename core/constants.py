@@ -78,10 +78,10 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(2.0, 0, 0),
-      translationMaxVelocity = 3.6,
+      translationMaxVelocity = 3.2,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 960.0,
+      rotationMaxVelocity = 720.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -383,16 +383,16 @@ class Game:
     class Targets:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
-          Target.Hub: Pose3d(4.623, 4.032, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.Shuttle: Pose3d(1.500, 1.500, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.TrenchLeft: Pose3d(3.500, 6.900, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.TrenchRight: Pose3d(3.500, 1.175, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerLeft: Pose3d(1.575, 4.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.TowerRight: Pose3d(1.575, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.Shuttle: Pose3d(1.500, 1.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.TrenchLeft: Pose3d(3.500, 7.050, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.TrenchRight: Pose3d(3.500, 1.050, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TowerLeft: Pose3d(1.575, 4.220, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TowerRight: Pose3d(1.575, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.CornerLeft: Pose3d(0.500, 7.650, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.Outpost: Pose3d(0.500, 0.675, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.ClimbLeft: Pose3d(1.105, 4.850, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbRight: Pose3d(1.020, 2.620, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.Outpost: Pose3d(0.500, 0.800, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.ClimbLeft: Pose3d(1.106, 4.820, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ClimbRight: Pose3d(1.016, 2.680, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),

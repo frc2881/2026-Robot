@@ -35,12 +35,17 @@ class Game:
     return (
       self.alignRobotToNearestTargetPose([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
     )
+  
+  def alignRobotToNearestCorner(self) -> Command:
+    return (
+      self.alignRobotToNearestTargetPose([Target.CornerLeft, Target.Outpost])
+    )
 
   def alignRobotToNearestFuel(self) -> Command:
     return (
       self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, self._robot.localization.getObjectsPose)
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
-      .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 10) # TODO: make a constant for and validate minimum fuel count to target IF we use this feature on the robot
+      .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 10)
       .withName(f'Game:AlignRobotToNearestFuel')
     )
   
@@ -50,13 +55,13 @@ class Game:
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
   
-  def scoreFuel(self) -> Command:
+  def launchFuel(self, target: Target) -> Command:
     return (
-      self.alignTurretToTargetHeading(Target.Hub)
+      self.alignTurretToTargetHeading(target)
       .alongWith(
-        self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(Target.Hub)),
+        self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(self._robot.hopper.run_())
-      ).withName("Game:ScoreFuel")
+      ).withName(f'Game:LaunchFuel:{ target.name }')
     )
   
   def runIntake(self) -> Command:

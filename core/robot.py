@@ -52,9 +52,18 @@ class RobotCore:
     self.climber = Climber()
     
   def _initServices(self) -> None:
-    self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors, self.objectSensor)
+    self.localization = Localization(
+      self.gyro.getHeading, 
+      self.drive.getModulePositions, 
+      self.poseSensors, self.objectSensor
+    )
     self.match = Match()
-    self.lights = Lights(lambda: self.isHomed(), lambda: self.localization.hasValidVisionTarget())
+    self.lights = Lights(
+      self.isHomed, 
+      self.localization.hasValidVisionTarget,
+      self.match.getHubState,
+      self.match.getMatchStateTime
+    )
 
   def _initCommands(self) -> None:
     self.game = Game(self)
@@ -91,7 +100,7 @@ class RobotCore:
     self.driver.povDown().whileTrue(self.game.climbDown())
     self.driver.povLeft().whileTrue(self.game.alignRobotToTargetPose(Target.ClimbLeft))
     self.driver.povRight().whileTrue(self.game.alignRobotToTargetPose(Target.ClimbRight))
-    self.driver.a().whileTrue(self.game.alignRobotToTargetPose(Target.CornerLeft))
+    self.driver.a().whileTrue(self.game.alignRobotToNearestCorner())
     self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
     self.driver.y().whileTrue(self.game.alignRobotToNearestBump())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
@@ -102,9 +111,9 @@ class RobotCore:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
     self.operator.leftTrigger().whileTrue(self.game.agitateIntake())
-    self.operator.rightTrigger().whileTrue(self.game.scoreFuel())
+    self.operator.rightTrigger().whileTrue(self.game.launchFuel(Target.Hub))
     self.operator.leftBumper().whileTrue(self.game.agitateHopper())
-    # self.operator.rightBumper().whileTrue(cmd.none())
+    self.operator.rightBumper().whileTrue(self.game.launchFuel(Target.Shuttle))
     self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
     self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())
     # self.operator.povRight().whileTrue(cmd.none())
