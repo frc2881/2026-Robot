@@ -77,11 +77,11 @@ class Subsystems:
     ROTATION_MAX_VELOCITY: units.degrees_per_second = 720.0
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
-      translationPID = PID(2.0, 0, 0),
-      translationMaxVelocity = 3.2,
+      translationPID = PID(3.0, 0, 0),
+      translationMaxVelocity = 2.5,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 720.0,
+      rotationMaxVelocity = 540.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -195,7 +195,7 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
       motorRelativeEncoderPositionConversionFactor = 360.0 / 21.0,
-      motorPID = PID(0.025, 0, 0.0025),
+      motorPID = PID(0.02, 0, 0.002),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 120000.0,
@@ -204,7 +204,7 @@ class Subsystems:
       motorSoftLimitForward = 320.0,
       motorSoftLimitReverse = -10.0,
       motorHomingSpeed = 0.1,
-      motorHomedPosition = -19.0
+      motorHomedPosition = -19.45
     ))
 
     WRAP_ANGLE_INPUT_RANGE = Range(-10, 350)
@@ -277,7 +277,7 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_DISTANCE: units.meters = 4.0
+    VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
     VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
     VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.3, 0.3, units.degreesToRadians(15.0))
 
