@@ -43,9 +43,13 @@ class Game:
   
   def alignRobotToClimb(self, target: Target) -> Command:
     return (
-      self.alignRobotToTargetPose(Target.ClimbStageLeft if target == Target.ClimbLeft else Target.ClimbStageRight).withTimeout(1.5)
+      self.alignRobotToTargetPose(Target.ClimbStageLeft if target == Target.ClimbLeft else Target.ClimbStageRight).withTimeout(constants.Game.Commands.AUTO_ALIGNMENT_TIMEOUT)
       .andThen(self.alignRobotToTargetPose(target))
-      .andThen(self._robot.drive.drive(lambda: 0, lambda: 0.05 * (-1 if target == Target.ClimbLeft else 1), lambda: 0).withTimeout(1.0))
+      .andThen(self._robot.drive.drive(
+        lambda: 0, 
+        lambda: constants.Subsystems.Climber.CLIMBER_DRIVE_ENGAGEMENT_SPEED * (-1 if target == Target.ClimbLeft else 1), 
+        lambda: 0
+      ).withTimeout(constants.Subsystems.Climber.CLIMBER_DRIVE_ENGAGEMENT_TIMEOUT))
     )
 
   def alignRobotToNearestFuel(self) -> Command:

@@ -256,7 +256,7 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
-      motorPID = PID(2.0, 0, 0),
+      motorPID = PID(3.0, 0, 0),
       motorOutputRange = Range(-0.7, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 24000.0,
@@ -271,6 +271,8 @@ class Subsystems:
 
     CLIMBER_UP_POSITION = 0.0
     CLIMBER_DOWN_POSITION = 90.0
+    CLIMBER_DRIVE_ENGAGEMENT_SPEED = 0.05
+    CLIMBER_DRIVE_ENGAGEMENT_TIMEOUT = 1.0
 
 class Services:
   class Localization:
@@ -370,7 +372,6 @@ class Game:
 
   class Commands:
     AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0
-    AUTO_INTAKE_DELAY: units.seconds = 1.5
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
 
   class Field:

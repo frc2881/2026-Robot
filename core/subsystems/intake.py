@@ -15,7 +15,6 @@ class Intake(Subsystem):
     self._rollers = VelocityControlModule(self._constants.ROLLERS_CONFIG)
 
     self._armAgitatePatternTimer = Timer()
-    self._armAgitatePatternTimer.start()
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -43,8 +42,8 @@ class Intake(Subsystem):
         self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
       ],
       lambda: self.reset()
-    ).withName("Intake:Agitate")
-
+    ).beforeStarting(lambda: self._armAgitatePatternTimer.restart()).withName("Intake:Agitate")
+  
   def retract(self) -> Command:
     return self.startEnd(
       lambda: self._arm.setPosition(self._constants.ARM_RETRACT_POSITION),

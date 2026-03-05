@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 from enum import Enum, auto
 from commands2 import Command, cmd
 from wpilib import SendableChooser, SmartDashboard
+from wpimath import units
 from wpimath.geometry import Transform2d
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.path import PathPlannerPath
@@ -68,76 +69,82 @@ class Auto:
       .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
     )
   
-  def _intake(self) -> Command:
+  def _runIntake(self) -> Command:
     return (
-      cmd.waitSeconds(constants.Game.Commands.AUTO_INTAKE_DELAY).andThen(self._robot.game.runIntake())
-      .deadlineFor(logger.log_("Auto:Intake"))
+      self._robot.game.runIntake()
+      .deadlineFor(logger.log_("Auto:RunIntake"))
     )
   
-  def _score(self) -> Command:
+  def _scoreFuel(self) -> Command:
     return (
       self._robot.game.launchFuel(Target.Hub)
-      .alongWith(self._robot.game.agitateIntake())
-      .deadlineFor(logger.log_("Auto:Score"))
+      .deadlineFor(self._robot.game.agitateIntake())
+      .deadlineFor(logger.log_("Auto:ScoreFuel"))
+    )
+  
+  def _alignClimb(self, target: Target) -> Command:
+    return (
+      self._robot.game.alignRobotToClimb(target)
+      .deadlineFor(logger.log_("Auto:AlignClimb"))
     )
   
   def _climb(self) -> Command:
     return (
-      cmd.waitUntil(lambda: utils.getMatchTime() < 2.0)
+      cmd.waitUntil(lambda: utils.getMatchTime() <= 2.0)
       .andThen(self._robot.game.climbUp().withTimeout(2.0))
       .deadlineFor(logger.log_("Auto:Climb"))
     )
 
   def auto_BL_NZ_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BL_NZ_SF).deadlineFor(self._intake()),
-      self._score()
+      self._move(AutoPath.BL_NZ_SF).deadlineFor(cmd.waitSeconds(1.25).andThen(self._runIntake())),
+      self._scoreFuel()
     ).withName("Auto:[BL]_NZ_SF")
 
   def auto_BL_NZ_SF_CL(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BL_NZ_SF).deadlineFor(self._intake()),
-      self._robot.game.alignRobotToClimb(Target.ClimbLeft),
-      self._score().alongWith(self._climb())
+      self._move(AutoPath.BL_NZ_SF).deadlineFor(cmd.waitSeconds(1.25).andThen(self._runIntake())),
+      self._alignClimb(Target.ClimbLeft),
+      self._scoreFuel().alongWith(self._climb())
     ).withName("Auto:[BL]_NZ_SF_CL")
 
   def auto_BR_NZ_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BR_NZ_SF).deadlineFor(self._intake()),
-      self._score()
+      self._move(AutoPath.BR_NZ_SF).deadlineFor(cmd.waitSeconds(1.25).andThen(self._runIntake())),
+      self._scoreFuel()
     ).withName("Auto:[BR]_NZ_SF")
   
   def auto_BR_NZ_SF_CR(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BR_NZ_SF).deadlineFor(self._intake()),
-      self._robot.game.alignRobotToClimb(Target.ClimbRight),
-      self._score().deadlineFor(self._climb())
+      self._move(AutoPath.BR_NZ_SF).deadlineFor(cmd.waitSeconds(1.25).andThen(self._runIntake())),
+      self._alignClimb(Target.ClimbRight),
+      self._scoreFuel().deadlineFor(self._climb())
     ).withName("Auto:[BR]_NZ_SF_CR")
   
   def auto_TR_OP_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TR_OP_SF).deadlineFor(self._intake().withTimeout(3.0)),
-      self._score()
+      self._move(AutoPath.TR_OP_SF).deadlineFor(self._runIntake().withTimeout(1.0)),
+      self._scoreFuel()
     ).withName("Auto:[TR]_OP_SF")
   
   def auto_TR_OP_SF_CR(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TR_OP_SF).deadlineFor(self._intake().withTimeout(3.0)),
+      self._move(AutoPath.TR_OP_SF).deadlineFor(self._runIntake().withTimeout(1.0)),
       cmd.waitSeconds(2.0),
-      self._robot.game.alignRobotToClimb(Target.ClimbRight),
-      self._score().deadlineFor(self._climb())
+      self._alignClimb(Target.ClimbRight),
+      self._scoreFuel().deadlineFor(self._climb())
     ).withName("Auto:[TR]_OP_SF_CR")
   
   def auto_TL_DP_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TL_DP_SF).deadlineFor(self._intake()),
-      self._score()
+      self._move(AutoPath.TL_DP_SF).deadlineFor(self._runIntake()),
+      self._scoreFuel()
     ).withName("Auto:[TL]_DP_SF")
   
   def auto_TL_DP_SF_CL(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TL_DP_SF).deadlineFor(self._intake()),
-      self._robot.game.alignRobotToClimb(Target.ClimbLeft),
-      self._score().deadlineFor(self._climb())
+      self._move(AutoPath.TL_DP_SF).deadlineFor(self._runIntake()),
+      self._alignClimb(Target.ClimbLeft),
+      self._scoreFuel().deadlineFor(self._climb())
     ).withName("Auto:[TL]_DP_SF_CL")
   

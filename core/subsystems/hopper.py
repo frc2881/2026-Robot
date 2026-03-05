@@ -16,7 +16,6 @@ class Hopper(Subsystem):
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
     self._indexerRunPatternTimer = Timer()
-    self._indexerRunPatternTimer.start()
   
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -32,7 +31,7 @@ class Hopper(Subsystem):
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],
       lambda: self.reset()
-    ).withName("Hopper:Run")
+    ).beforeStarting(lambda: self._indexerRunPatternTimer.restart()).withName("Hopper:Run")
 
   def agitate(self) -> Command:
     return self.runEnd(
