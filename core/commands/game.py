@@ -40,6 +40,13 @@ class Game:
     return (
       self.alignRobotToNearestTargetPose([Target.CornerLeft, Target.Outpost])
     )
+  
+  def alignRobotToClimb(self, target: Target) -> Command:
+    return (
+      self.alignRobotToTargetPose(Target.ClimbStageLeft if target == Target.ClimbLeft else Target.ClimbStageRight).withTimeout(1.5)
+      .andThen(self.alignRobotToTargetPose(target))
+      .andThen(self._robot.drive.drive(lambda: 0, lambda: 0.05 * (-1 if target == Target.ClimbLeft else 1), lambda: 0).withTimeout(1.0))
+    )
 
   def alignRobotToNearestFuel(self) -> Command:
     return (
@@ -73,14 +80,12 @@ class Game:
   def retractIntake(self) -> Command:
     return (
       self._robot.intake.retract()
-      .onlyIf(lambda: self.getFuelLevel() < FuelLevel.Mid)
       .withName("Game:RetractIntake")
     )
 
   def agitateIntake(self) -> Command:
     return (
       self._robot.intake.agitate()
-      .onlyIf(lambda: self.getFuelLevel() < FuelLevel.Mid)
       .withName("Game:AgitateIntake")
     )
   

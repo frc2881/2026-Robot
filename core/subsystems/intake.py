@@ -17,49 +17,27 @@ class Intake(Subsystem):
     self._armAgitatePatternTimer = Timer()
     self._armAgitatePatternTimer.start()
 
-    self.setDefaultCommand(self.hold())
-
   def periodic(self) -> None:
     self._updateTelemetry()
-
-  def hold(self) -> Command:
-    return self.runEnd(
-      lambda: self._runHold(),
-      lambda: self.reset()
-    ).withName("Intake:Hold")
-  
-  def _runHold(self) -> None:
-    if math.isclose(self._arm.getPosition(), 0, abs_tol = 1.0):
-      self._arm.setSpeed(-self._constants.ARM_DEFAULT_HOLD_SPEED)
-    if math.isclose(self._arm.getPosition(), self._constants.ARM_INTAKE_POSITION, abs_tol = 1.0):
-      self._arm.setSpeed(self._constants.ARM_DEFAULT_HOLD_SPEED)
 
   def run_(self) -> Command:
     return self.startEnd(
       lambda: [
-        self._arm.setSpeed(self._constants.ARM_INTAKE_HOLD_SPEED),
+        self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
         self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED)
       ],
       lambda: self.reset()
-    ).beforeStarting(self._extend()).withName("Intake:Run")
-
-  def _extend(self) -> Command:
-    return (
-      self.run(lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION))
-      .onlyIf(lambda: not self.isExtended())
-      .withTimeout(0.5)
-      .withName("Intake:Extend")
-    )
+    ).withName("Intake:Run")
 
   def agitate(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._armAgitatePatternTimer.advanceIfElapsed(1.5),
+        self._armAgitatePatternTimer.advanceIfElapsed(1.0),
         self._arm.setPosition(
           self._constants.ARM_INTAKE_POSITION * (
-            self._constants.ARM_AGITATE_RANGE.min 
-            if self._armAgitatePatternTimer.get() < 1.0 else 
-            self._constants.ARM_AGITATE_RANGE.max
+            self._constants.ARM_AGITATE_RANGE.max 
+            if self._armAgitatePatternTimer.get() < 0.75 else 
+            self._constants.ARM_AGITATE_RANGE.min
           )
         ),
         self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
@@ -68,8 +46,9 @@ class Intake(Subsystem):
     ).withName("Intake:Agitate")
 
   def retract(self) -> Command:
-    return self.run(
-      lambda: self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
+    return self.startEnd(
+      lambda: self._arm.setPosition(self._constants.ARM_RETRACT_POSITION),
+      lambda: self.reset()
     ).withName("Intake:Retract")
 
   def isExtended(self) -> bool:

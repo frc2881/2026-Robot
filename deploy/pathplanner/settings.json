@@ -4,8 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [],
   "autoFolders": [],
-  "defaultMaxVel": 3.2,
-  "defaultMaxAccel": 2.4,
+  "defaultMaxVel": 2.8,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 720.0,
   "defaultMaxAngAccel": 540.0,
   "defaultNominalVoltage": 12.0,
@@ -30,6 +30,6 @@
   "bumperOffsetY": 0.0,
   "robotFeatures": [
     "{\"name\":\"Circle\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":-0.12,\"y\":0.2},\"radius\":0.1,\"strokeWidth\":0.02,\"filled\":true}}",
-    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.045,\"y\":0.34},\"size\":{\"width\":0.07,\"length\":0.038},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}"
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.03,\"y\":0.34},\"size\":{\"width\":0.07,\"length\":0.038},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}"
   ]
 }

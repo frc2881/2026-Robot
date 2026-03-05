@@ -42,9 +42,9 @@ class Lights():
     if utils.getRobotState() == RobotState.Enabled:
       isMatchStateEnding = self._getMatchStateTime() < 5
       self._lightsController.setMode(
-        LightsMode.HubStateActiveEnding if isMatchStateEnding else LightsMode.HubStateInactiveEnding
+        (LightsMode.HubStateActiveEnding if isMatchStateEnding else LightsMode.HubStateActive)
         if self._getHubState() == HubState.Active else 
-        LightsMode.HubStateActive if isMatchStateEnding else LightsMode.HubStateInactive
+        (LightsMode.HubStateInactiveEnding if isMatchStateEnding else LightsMode.HubStateInactive)
       )
       return
 

@@ -1,5 +1,5 @@
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard, Timer
+from wpilib import SmartDashboard
 from lib import logger, utils
 import core.constants as constants
 from lib.components.velocity_control_module import VelocityControlModule
@@ -14,9 +14,6 @@ class Hopper(Subsystem):
     self._roller = VelocityControlModule(self._constants.ROLLER_CONFIG)
     self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
-
-    self._indexerRunPatternTimer = Timer()
-    self._indexerRunPatternTimer.start()
   
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -24,8 +21,7 @@ class Hopper(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexerRunPatternTimer.advanceIfElapsed(1.0),
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < 0.75 else 0),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED),
         self._roller.setSpeed(self._constants.ROLLER_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)

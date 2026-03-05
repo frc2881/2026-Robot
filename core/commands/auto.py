@@ -77,15 +77,14 @@ class Auto:
   def _score(self) -> Command:
     return (
       self._robot.game.launchFuel(Target.Hub)
+      .alongWith(self._robot.game.agitateIntake())
       .deadlineFor(logger.log_("Auto:Score"))
     )
   
-  def _climb(self, target: Target) -> Command:
-     # TODO: theoretical/experimental ... movement and timing not tested/calibrated
+  def _climb(self) -> Command:
     return (
-      cmd.waitUntil(lambda: utils.getMatchTime() < 3.0)
-      .andThen(self._robot.drive.drive(lambda: 0, lambda: 0.05 * 1 if target == Target.ClimbRight else -1, lambda: 0)).withTimeout(1.0)
-      .andThen(self._robot.game.climbUp()).withTimeout(2.0)
+      cmd.waitUntil(lambda: utils.getMatchTime() < 2.0)
+      .andThen(self._robot.game.climbUp().withTimeout(2.0))
       .deadlineFor(logger.log_("Auto:Climb"))
     )
 
@@ -98,8 +97,8 @@ class Auto:
   def auto_BL_NZ_SF_CL(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BL_NZ_SF).deadlineFor(self._intake()),
-      self._robot.game.alignRobotToTargetPose(Target.ClimbLeft),
-      self._score().deadlineFor(self._climb())
+      self._robot.game.alignRobotToClimb(Target.ClimbLeft),
+      self._score().alongWith(self._climb())
     ).withName("Auto:[BL]_NZ_SF_CL")
 
   def auto_BR_NZ_SF(self) -> Command:
@@ -111,20 +110,21 @@ class Auto:
   def auto_BR_NZ_SF_CR(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_SF).deadlineFor(self._intake()),
-      self._robot.game.alignRobotToTargetPose(Target.ClimbRight),
+      self._robot.game.alignRobotToClimb(Target.ClimbRight),
       self._score().deadlineFor(self._climb())
     ).withName("Auto:[BR]_NZ_SF_CR")
   
   def auto_TR_OP_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TR_OP_SF),
+      self._move(AutoPath.TR_OP_SF).deadlineFor(self._intake().withTimeout(3.0)),
       self._score()
     ).withName("Auto:[TR]_OP_SF")
   
   def auto_TR_OP_SF_CR(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TR_OP_SF),
-      self._robot.game.alignRobotToTargetPose(Target.ClimbRight),
+      self._move(AutoPath.TR_OP_SF).deadlineFor(self._intake().withTimeout(3.0)),
+      cmd.waitSeconds(2.0),
+      self._robot.game.alignRobotToClimb(Target.ClimbRight),
       self._score().deadlineFor(self._climb())
     ).withName("Auto:[TR]_OP_SF_CR")
   
@@ -137,7 +137,7 @@ class Auto:
   def auto_TL_DP_SF_CL(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.TL_DP_SF).deadlineFor(self._intake()),
-      self._robot.game.alignRobotToTargetPose(Target.ClimbLeft),
+      self._robot.game.alignRobotToClimb(Target.ClimbLeft),
       self._score().deadlineFor(self._climb())
     ).withName("Auto:[TL]_DP_SF_CL")
   

@@ -81,7 +81,7 @@ class Subsystems:
       translationMaxVelocity = 2.5,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 540.0,
+      rotationMaxVelocity = 720.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -106,14 +106,14 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
-      motorPID = PID(0.3, 0, 0),
+      motorPID = PID(0.2, 0, 0),
       motorOutputRange = Range(-1.0, 0.2),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 12000.0,
-      motorMotionMaxAcceleration = 24000.0,
+      motorMotionCruiseVelocity = 24000.0,
+      motorMotionMaxAcceleration = 12000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 7.2,
+      motorSoftLimitForward = 7.5,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = 0
@@ -122,7 +122,7 @@ class Subsystems:
     ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 100, 
+      motorCurrentLimit = 80, 
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
@@ -132,12 +132,10 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 6.4
-    ARM_AGITATE_RANGE = Range(0.5, 0.8)
-    ARM_DEFAULT_HOLD_SPEED: units.percent = 0.05
-    ARM_INTAKE_HOLD_SPEED: units.percent = 0.75
+    ARM_INTAKE_POSITION: float = 7.5
+    ARM_AGITATE_RANGE = Range(0.4, 0.7)
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.1
+    ROLLERS_AGITATE_SPEED: units.percent = 0.2
 
   class Hopper:
     INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
@@ -183,11 +181,11 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.4
+    INDEXER_SPEED: units.percent = 0.5
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
-    AGITATE_SPEED_RATIO: units.percent = 0.3
+    AGITATE_SPEED_RATIO: units.percent = 0.2
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -258,11 +256,11 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
-      motorPID = PID(1.0, 0, 0),
-      motorOutputRange = Range(-0.7, 0.9),
+      motorPID = PID(2.0, 0, 0),
+      motorOutputRange = Range(-0.7, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 6000.0,
-      motorMotionMaxAcceleration = 3000.0,
+      motorMotionCruiseVelocity = 24000.0,
+      motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
       motorSoftLimitForward = 100.0,
@@ -340,14 +338,14 @@ class Sensors:
       channel = 0, 
       pulseWidthConversionFactor = 2.0, 
       minTargetDistance = 0, 
-      maxTargetDistance = 800 # TODO: tune max target distance for inside hopper walls
+      maxTargetDistance = 800
     ) 
     INDEXER_SENSOR_CONFIG = DistanceSensorConfig(
       name = "Indexer",
       channel = 1, 
       pulseWidthConversionFactor = 0.75, 
       minTargetDistance = 0, 
-      maxTargetDistance = 400 # TODO: tune max target distance for indexer range on belts
+      maxTargetDistance = 400
     )
     HOPPER_FUEL_LEVEL_FULL: units.millimeters = 200
     HOPPER_FUEL_LEVEL_MID: units.millimeters = 400
@@ -384,15 +382,17 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.Shuttle: Pose3d(1.500, 1.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.Shuttle: Pose3d(1.000, 2.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.TrenchLeft: Pose3d(3.500, 7.050, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.TrenchRight: Pose3d(3.500, 1.050, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.TowerLeft: Pose3d(1.575, 4.220, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.TowerRight: Pose3d(1.575, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.CornerLeft: Pose3d(0.500, 7.650, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.Outpost: Pose3d(0.500, 0.800, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.ClimbLeft: Pose3d(1.106, 4.820, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbRight: Pose3d(1.016, 2.680, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.Outpost: Pose3d(0.500, 0.750, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.ClimbLeft: Pose3d(1.090, 4.800, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ClimbStageLeft: Pose3d(1.090, 5.150, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ClimbRight: Pose3d(1.035, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.ClimbStageRight: Pose3d(1.035, 2.350, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),
