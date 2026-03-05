@@ -164,3 +164,4 @@ class RobotCore:
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())
+    SmartDashboard.putString("Robot/Sensors/FuelLevel", self.game.getFuelLevel().name)
