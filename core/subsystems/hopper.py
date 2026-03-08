@@ -1,5 +1,5 @@
-from commands2 import Subsystem, Command, cmd
-from wpilib import SmartDashboard, Timer
+from commands2 import Subsystem, Command
+from wpilib import SmartDashboard
 from lib import logger, utils
 import core.constants as constants
 from lib.components.velocity_control_module import VelocityControlModule
@@ -15,18 +15,12 @@ class Hopper(Subsystem):
     self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
-    self._indexerRunPatternTimer = Timer()
-
-    self._isAgitating: bool = False
-  
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        # self._indexerRunPatternTimer.advanceIfElapsed(1.5),
-        # self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < 1.25 else 0),
         self._indexer.setSpeed(self._constants.INDEXER_SPEED),
         self._roller.setSpeed(self._constants.ROLLER_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
@@ -35,22 +29,16 @@ class Hopper(Subsystem):
       lambda: self.reset()
     ).beforeStarting(lambda: self._indexerRunPatternTimer.restart()).withName("Hopper:Run")
 
-  def agitate(self) -> Command:
+  def reverse(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexer.setSpeed(-self._constants.INDEXER_SPEED * self._constants.AGITATE_SPEED_RATIO),
-        self._roller.setSpeed(-self._constants.ROLLER_SPEED * self._constants.AGITATE_SPEED_RATIO),
-        self._feeder.setSpeed(-self._constants.FEEDER_SPEED * self._constants.AGITATE_SPEED_RATIO),
-        self._elevator.setSpeed(-self._constants.ELEVATOR_SPEED * self._constants.AGITATE_SPEED_RATIO)
+        self._indexer.setSpeed(-self._constants.INDEXER_SPEED * self._constants.REVERSE_SPEED_RATIO),
+        self._roller.setSpeed(-self._constants.ROLLER_SPEED * self._constants.REVERSE_SPEED_RATIO),
+        self._feeder.setSpeed(-self._constants.FEEDER_SPEED * self._constants.REVERSE_SPEED_RATIO),
+        self._elevator.setSpeed(-self._constants.ELEVATOR_SPEED * self._constants.REVERSE_SPEED_RATIO)
       ],
       lambda: self.reset()
     ).withName("Hopper:Agitate")
-  
-  def launchFuel(self) -> Command:
-    cmd.repeatingSequence(
-      self.agitate().onlyWhile(lambda: self._isAgitating),
-      self.run_().onlyWhile(lambda: not self._isAgitating)
-    )
   
   def isRunning(self) -> bool:
     return (
@@ -59,15 +47,6 @@ class Hopper(Subsystem):
       self._feeder.getSpeed() != 0 and 
       self._elevator.getSpeed() != 0
     )
-  
-  def _setIsAgitating(self, isAgitating: bool) -> None:
-    self._isAgitating = isAgitating
-  
-  def setIsAgitating(self, isAgitating: bool) -> Command:
-    cmd.runOnce(
-      lambda: self._setIsAgitating(isAgitating)
-    )
-    
 
   def reset(self) -> None:
     self._indexer.reset()

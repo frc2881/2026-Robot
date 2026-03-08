@@ -42,7 +42,7 @@ class Intake(Subsystem):
         self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
       ],
       lambda: self.reset()
-    ).beforeStarting(lambda: self._armAgitatePatternTimer.restart()).withName("Intake:Agitate")
+    ).beforeStarting(lambda: self._armAgitatePatternTimer.restart())
   
   def retract(self) -> Command:
     return self.startEnd(

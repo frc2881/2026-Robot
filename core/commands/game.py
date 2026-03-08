@@ -57,7 +57,7 @@ class Game:
         self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
         .andThen(self._robot.hopper.run_())
-      ).onlyWhile(lambda: target != Target.Shuttle or self._robot.turret.isAlignedToTargetHeading()) # TODO: FIX / does this actually prevent shuttling completely?
+      )
       .withName(f'Game:LaunchFuel:{ target.name }')
     )
   
@@ -79,10 +79,10 @@ class Game:
       .withName("Game:AgitateIntake")
     )
   
-  def agitateHopper(self) -> Command:
+  def reverseHopper(self) -> Command:
     return (
-      self._robot.hopper.agitate()
-      .withName("Game:AgitateHopper")
+      self._robot.hopper.reverse()
+      .withName("Game:ReverseHopper")
     )
 
   def getFuelLevel(self) -> FuelLevel:

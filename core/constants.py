@@ -133,7 +133,7 @@ class Subsystems:
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 7.5
-    ARM_AGITATE_RANGE = Range(0.1, 0.7)
+    ARM_AGITATE_RANGE = Range(0.1, 0.6)
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
@@ -185,7 +185,7 @@ class Subsystems:
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
-    AGITATE_SPEED_RATIO: units.percent = 0.3
+    REVERSE_SPEED_RATIO: units.percent = 0.3
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -261,7 +261,7 @@ class Services:
     VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
     VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
-    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.3, 0.3, units.degreesToRadians(15.0))
+    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.5, 0.5, units.degreesToRadians(45.0))
 
 class Sensors: 
   class Gyro:
@@ -353,7 +353,6 @@ class Game:
     NAME: str = "Rosetta Stone"
 
   class Commands:
-    AUTO_ALIGNMENT_TIMEOUT: units.seconds = 2.0
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
 
   class Field:
@@ -366,10 +365,8 @@ class Game:
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
           Target.Shuttle: Pose3d(1.000, 5.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.TrenchLeft: Pose3d(3.250, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.TrenchRight: Pose3d(3.250, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
-          Target.TowerLeft: Pose3d(1.590, 4.220, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerRight: Pose3d(1.590, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
+          Target.ScoreLeft: Pose3d(3.250, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ScoreRight: Pose3d(3.250, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
           Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),

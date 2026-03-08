@@ -5,10 +5,8 @@ from wpimath import units
 class Target(Enum):
   Hub = auto()
   Shuttle = auto()
-  TrenchLeft = auto()
-  TrenchRight = auto()
-  TowerLeft = auto()
-  TowerRight = auto()
+  ScoreLeft = auto()
+  ScoreRight = auto()
   BumpLeftIn = auto()
   BumpLeftOut = auto()
   BumpRightIn = auto()
