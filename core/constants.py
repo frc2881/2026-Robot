@@ -78,10 +78,10 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(3.0, 0, 0),
-      translationMaxVelocity = 2.0,
+      translationMaxVelocity = 3.0,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 540.0,
+      rotationMaxVelocity = 720.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -181,7 +181,7 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.40
+    INDEXER_SPEED: units.percent = 0.4
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
@@ -255,29 +255,6 @@ class Subsystems:
       TargetLaunchSpeed(9.0, 0.85),
       TargetLaunchSpeed(10.0, 0.93)
     )
-
-  class Climber:
-    CLIMB_CONFIG = RelativePositionControlModuleConfig("Climb", 19, True, RelativePositionControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 80,
-      motorPID = PID(3.0, 0, 0),
-      motorOutputRange = Range(-0.7, 1.0),
-      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 24000.0,
-      motorMotionMaxAcceleration = 24000.0,
-      motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 100.0,
-      motorSoftLimitReverse = 0.0,
-      motorHomingSpeed = 0.1,
-      motorHomedPosition = 0.0
-    ))
-
-    CLIMBER_UP_POSITION = 0.0
-    CLIMBER_DOWN_POSITION = 90.0
-    CLIMBER_DRIVE_ENGAGEMENT_SPEED = 0.05
-    CLIMBER_DRIVE_ENGAGEMENT_TIMEOUT = 2.0
 
 class Services:
   class Localization:
@@ -391,14 +368,8 @@ class Game:
           Target.Shuttle: Pose3d(1.000, 5.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.TrenchLeft: Pose3d(3.250, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.TrenchRight: Pose3d(3.250, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
-          Target.TowerLeft: Pose3d(1.575, 4.220, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.TowerRight: Pose3d(1.575, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.CornerLeft: Pose3d(0.500, 7.650, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.Outpost: Pose3d(0.500, 0.750, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.ClimbLeft: Pose3d(1.115, 4.800, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbStageLeft: Pose3d(1.115, 5.150, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbRight: Pose3d(1.060, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.ClimbStageRight: Pose3d(1.060, 2.350, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.TowerLeft: Pose3d(1.590, 4.220, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.TowerRight: Pose3d(1.590, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),

@@ -17,7 +17,6 @@ from core.subsystems.intake import Intake
 from core.subsystems.hopper import Hopper
 from core.subsystems.turret import Turret
 from core.subsystems.launcher import Launcher
-from core.subsystems.climber import Climber
 from core.services.localization import Localization
 from core.services.match import Match
 from core.services.lights import Lights
@@ -50,13 +49,13 @@ class RobotCore:
     self.hopper = Hopper()
     self.turret = Turret()
     self.launcher = Launcher()
-    self.climber = Climber()
     
   def _initServices(self) -> None:
     self.localization = Localization(
       self.gyro.getHeading, 
       self.drive.getModulePositions, 
-      self.poseSensors, self.objectSensor
+      self.poseSensors, 
+      self.objectSensor
     )
     self.match = Match()
     self.lights = Lights(
@@ -84,15 +83,10 @@ class RobotCore:
       cmd.parallel(
         self.intake.resetToHome(), 
         self.turret.resetToHome(),
-        self.climber.resetToHome(),
         self.drive.holdCoastMode()
       ).onlyWhile(lambda: utils.getRobotState() == RobotState.Disabled)
       .ignoringDisable(True)
     .withName("HomingButton:Pressed"))
-
-    Trigger(lambda: utils.getRobotMode() == RobotMode.Teleop and utils.isValueInRange(utils.getMatchTime(), 135, 140)).whileTrue(
-      self.game.climbDown()
-    )
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
@@ -102,11 +96,11 @@ class RobotCore:
     self.driver.rightTrigger().whileTrue(self.game.runIntake())
     self.driver.leftBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchLeft))
     self.driver.rightBumper().whileTrue(self.game.alignRobotToTargetPose(Target.TrenchRight))
-    self.driver.povUp().whileTrue(self.game.climbUp())
-    self.driver.povDown().whileTrue(self.game.climbDown())
-    self.driver.povLeft().whileTrue(self.game.alignRobotToClimb(Target.ClimbLeft))
-    self.driver.povRight().whileTrue(self.game.alignRobotToClimb(Target.ClimbRight))
-    self.driver.a().whileTrue(self.game.alignRobotToNearestCorner())
+    # self.driver.povUp().whileTrue(cmd.none())
+    # self.driver.povDown().whileTrue(cmd.none())
+    # self.driver.povLeft().whileTrue(cmd.none())
+    # self.driver.povRight().whileTrue(cmd.none())
+    # self.driver.a().whileTrue(cmd.none())
     self.driver.b().whileTrue(self.game.alignRobotToTargetPose(Target.TowerRight))
     self.driver.y().whileTrue(self.game.alignRobotToNearestBump())
     self.driver.x().whileTrue(self.game.alignRobotToTargetPose(Target.TowerLeft))
@@ -155,8 +149,6 @@ class RobotCore:
 
   def teleopInit(self) -> None:
     self.reset()
-    # if self.climber.getPosition() > 10:
-    #   self.climber.setPosition(constants.Subsystems.Climber.CLIMBER_DOWN_POSITION)
 
   def testInit(self) -> None:
     self.reset()
@@ -168,7 +160,7 @@ class RobotCore:
     self.drive.reset()
 
   def isHomed(self) -> bool:
-    return self.intake.isHomed() and self.turret.isHomed() and self.climber.isHomed()
+    return self.intake.isHomed() and self.turret.isHomed()
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())

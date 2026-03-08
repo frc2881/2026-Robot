@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 from commands2 import Command, cmd
 from wpilib import RobotBase
 from lib import logger, utils
@@ -35,22 +35,6 @@ class Game:
     return (
       self.alignRobotToNearestTargetPose([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
     )
-  
-  def alignRobotToNearestCorner(self) -> Command:
-    return (
-      self.alignRobotToNearestTargetPose([Target.CornerLeft, Target.Outpost])
-    )
-  
-  def alignRobotToClimb(self, target: Target) -> Command:
-    return (
-      self.alignRobotToTargetPose(Target.ClimbStageLeft if target == Target.ClimbLeft else Target.ClimbStageRight).withTimeout(constants.Game.Commands.AUTO_ALIGNMENT_TIMEOUT)
-      .andThen(self.alignRobotToTargetPose(target)).withTimeout(2.0)
-      .andThen(self._robot.drive.drive(
-        lambda: 0, 
-        lambda: constants.Subsystems.Climber.CLIMBER_DRIVE_ENGAGEMENT_SPEED * (-1 if target == Target.ClimbLeft else 1), 
-        lambda: 0
-      ).withTimeout(constants.Subsystems.Climber.CLIMBER_DRIVE_ENGAGEMENT_TIMEOUT))
-    )
 
   def alignRobotToNearestFuel(self) -> Command:
     return (
@@ -73,7 +57,7 @@ class Game:
         self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
         .andThen(self._robot.hopper.run_())
-      ).onlyWhile(lambda: target != Target.Shuttle or self._robot.turret.isAlignedToTargetHeading())
+      ).onlyWhile(lambda: target != Target.Shuttle or self._robot.turret.isAlignedToTargetHeading()) # TODO: FIX / does this actually prevent shuttling completely?
       .withName(f'Game:LaunchFuel:{ target.name }')
     )
   
@@ -101,19 +85,6 @@ class Game:
       .withName("Game:AgitateHopper")
     )
 
-  def climbUp(self) -> Command:
-    return (
-      self._robot.turret.setHeading(21)
-      .alongWith(cmd.waitSeconds(0.5).andThen(self._robot.climber.down()))
-      .withName("Game:ClimbUp")
-    )
-  
-  def climbDown(self) -> Command:
-    return (
-      self._robot.climber.up()
-      .withName("Game:ClimbDown")
-    )
-  
   def getFuelLevel(self) -> FuelLevel:
     if utils.isValueInRange(self._robot.hopperSensor.getDistance(), 0, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL):
       return FuelLevel.Full
