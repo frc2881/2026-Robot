@@ -21,6 +21,12 @@ class Climber(Subsystem):
       lambda: self._climber.setPosition(self._constants.CLIMBER_DOWN_POSITION),
       lambda: self._climber.reset()
     ).withName("Climber:Down")
+  
+  def getPosition(self) -> float:
+    return self._climber.getPosition()
+  
+  def setPosition(self, position: float) -> None:
+    self._climber.setPosition(position)
 
   def periodic(self) -> None:
     self._updateTelemetry()

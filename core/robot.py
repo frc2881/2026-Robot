@@ -1,9 +1,10 @@
 from commands2 import cmd
+from commands2.button import Trigger
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.controllers.xbox import XboxController
 from lib.controllers.button import ButtonController
-from lib.classes import RobotState
+from lib.classes import RobotState, RobotMode
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
 from lib.sensors.object import ObjectSensor
@@ -78,6 +79,7 @@ class RobotCore:
   def _initTriggers(self) -> None:
     self._setupDriver()
     self._setupOperator()
+
     self.homingButton.pressed().debounce(1.0).whileTrue(
       cmd.parallel(
         self.intake.resetToHome(), 
@@ -87,6 +89,10 @@ class RobotCore:
       ).onlyWhile(lambda: utils.getRobotState() == RobotState.Disabled)
       .ignoringDisable(True)
     .withName("HomingButton:Pressed"))
+
+    Trigger(lambda: utils.getRobotMode() == RobotMode.Teleop and utils.isValueInRange(utils.getMatchTime(), 135, 140)).whileTrue(
+      self.game.climbDown()
+    )
 
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
@@ -112,7 +118,7 @@ class RobotCore:
     # self.operator.rightStick().whileTrue(cmd.none())
     self.operator.leftTrigger().whileTrue(self.game.agitateIntake())
     self.operator.rightTrigger().whileTrue(self.game.launchFuel(Target.Hub))
-    self.operator.leftBumper().whileTrue(self.game.agitateHopper())
+    self.operator.leftBumper().whileTrue(self.game.agitateHopper()) #.onTrue(self.hopper.setIsAgitating(True)).onFalse(self.hopper.setIsAgitating(False))
     self.operator.rightBumper().whileTrue(self.game.launchFuel(Target.Shuttle))
     self.operator.povDown().debounce(1.0).whileTrue(self.intake.resetToHome())
     self.operator.povUp().debounce(1.0).whileTrue(self.turret.resetToHome())
@@ -149,6 +155,8 @@ class RobotCore:
 
   def teleopInit(self) -> None:
     self.reset()
+    # if self.climber.getPosition() > 10:
+    #   self.climber.setPosition(constants.Subsystems.Climber.CLIMBER_DOWN_POSITION)
 
   def testInit(self) -> None:
     self.reset()

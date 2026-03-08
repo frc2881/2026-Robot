@@ -35,7 +35,7 @@ class Intake(Subsystem):
         self._arm.setPosition(
           self._constants.ARM_INTAKE_POSITION * (
             self._constants.ARM_AGITATE_RANGE.max 
-            if self._armAgitatePatternTimer.get() < 0.75 else 
+            if self._armAgitatePatternTimer.get() < 0.5 else 
             self._constants.ARM_AGITATE_RANGE.min
           )
         ),

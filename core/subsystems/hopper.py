@@ -1,4 +1,4 @@
-from commands2 import Subsystem, Command
+from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, Timer
 from lib import logger, utils
 import core.constants as constants
@@ -16,6 +16,8 @@ class Hopper(Subsystem):
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
     self._indexerRunPatternTimer = Timer()
+
+    self._isAgitating: bool = False
   
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -23,9 +25,9 @@ class Hopper(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexerRunPatternTimer.advanceIfElapsed(1.0),
-        self._indexer.setSpeed(0.8 if self._indexerRunPatternTimer.get() < 0.75 else 0),
-        # self._indexer.setSpeed(self._constants.INDEXER_SPEED),
+        # self._indexerRunPatternTimer.advanceIfElapsed(1.5),
+        # self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < 1.25 else 0),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED),
         self._roller.setSpeed(self._constants.ROLLER_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
@@ -44,6 +46,12 @@ class Hopper(Subsystem):
       lambda: self.reset()
     ).withName("Hopper:Agitate")
   
+  def launchFuel(self) -> Command:
+    cmd.repeatingSequence(
+      self.agitate().onlyWhile(lambda: self._isAgitating),
+      self.run_().onlyWhile(lambda: not self._isAgitating)
+    )
+  
   def isRunning(self) -> bool:
     return (
       self._indexer.getSpeed() != 0 and 
@@ -51,6 +59,15 @@ class Hopper(Subsystem):
       self._feeder.getSpeed() != 0 and 
       self._elevator.getSpeed() != 0
     )
+  
+  def _setIsAgitating(self, isAgitating: bool) -> None:
+    self._isAgitating = isAgitating
+  
+  def setIsAgitating(self, isAgitating: bool) -> Command:
+    cmd.runOnce(
+      lambda: self._setIsAgitating(isAgitating)
+    )
+    
 
   def reset(self) -> None:
     self._indexer.reset()

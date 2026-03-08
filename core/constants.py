@@ -78,10 +78,10 @@ class Subsystems:
 
     TARGET_POSE_ALIGNMENT_CONSTANTS = PoseAlignmentConstants(
       translationPID = PID(3.0, 0, 0),
-      translationMaxVelocity = 2.5,
+      translationMaxVelocity = 2.0,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 720.0,
+      rotationMaxVelocity = 540.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -133,9 +133,9 @@ class Subsystems:
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 7.5
-    ARM_AGITATE_RANGE = Range(0.4, 0.7)
+    ARM_AGITATE_RANGE = Range(0.1, 0.7)
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.2
+    ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
   class Hopper:
     INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
@@ -181,11 +181,11 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.4
+    INDEXER_SPEED: units.percent = 0.40
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
-    AGITATE_SPEED_RATIO: units.percent = 0.2
+    AGITATE_SPEED_RATIO: units.percent = 0.3
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -242,13 +242,18 @@ class Subsystems:
     LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
 
     TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
-      TargetLaunchSpeed(1.0, 0.38),
-      TargetLaunchSpeed(2.0, 0.40),
-      TargetLaunchSpeed(2.4, 0.44),
-      TargetLaunchSpeed(3.3, 0.48),
-      TargetLaunchSpeed(4.6, 0.54),
-      TargetLaunchSpeed(5.4, 0.58),
-      TargetLaunchSpeed(6.0, 0.62)
+      TargetLaunchSpeed(0.0, 0.34),
+      TargetLaunchSpeed(1.0, 0.37),
+      TargetLaunchSpeed(2.0, 0.39),
+      TargetLaunchSpeed(2.4, 0.43),
+      TargetLaunchSpeed(3.3, 0.47),
+      TargetLaunchSpeed(4.6, 0.53),
+      TargetLaunchSpeed(5.4, 0.57),
+      TargetLaunchSpeed(6.0, 0.61),
+      TargetLaunchSpeed(7.0, 0.69),
+      TargetLaunchSpeed(8.0, 0.77),
+      TargetLaunchSpeed(9.0, 0.85),
+      TargetLaunchSpeed(10.0, 0.93)
     )
 
   class Climber:
@@ -272,7 +277,7 @@ class Subsystems:
     CLIMBER_UP_POSITION = 0.0
     CLIMBER_DOWN_POSITION = 90.0
     CLIMBER_DRIVE_ENGAGEMENT_SPEED = 0.05
-    CLIMBER_DRIVE_ENGAGEMENT_TIMEOUT = 1.0
+    CLIMBER_DRIVE_ENGAGEMENT_TIMEOUT = 2.0
 
 class Services:
   class Localization:
@@ -294,7 +299,7 @@ class Sensors:
           Translation3d(x = units.inchesToMeters(9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
           Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.0), yaw = units.degreesToRadians(50.0))
         ),
-        stream = "http://10.28.81.6:1186/?action=stream",
+        stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
@@ -312,7 +317,7 @@ class Sensors:
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
           Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-30.0), yaw = units.degreesToRadians(135.0))
         ),
-        stream = "http://10.28.81.6:1184/?action=stream",
+        stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
@@ -330,7 +335,7 @@ class Sensors:
     OBJECT_SENSOR_CONFIG = ObjectSensorConfig(
       name = "Fuel", 
       transform = Transform3d(Translation3d(units.inchesToMeters(-11.0), units.inchesToMeters(-4.0), units.inchesToMeters(24.0)), Rotation3d(0, units.degreesToRadians(25.0), units.degreesToRadians(0))),
-      stream = "http://10.28.81.6:1182/?action=stream",
+      stream = "http://10.28.81.6:1184/?action=stream",
       objectHeight = units.inchesToMeters(5.71)
     )
 
@@ -349,15 +354,15 @@ class Sensors:
       minTargetDistance = 0, 
       maxTargetDistance = 400
     )
-    HOPPER_FUEL_LEVEL_FULL: units.millimeters = 200
-    HOPPER_FUEL_LEVEL_MID: units.millimeters = 400
+    HOPPER_FUEL_LEVEL_FULL: units.millimeters = 250
+    HOPPER_FUEL_LEVEL_MID: units.millimeters = 500
 
   class Binary:
     FEEDER_SENSOR_CONFIG = BinarySensorConfig(name = "Feeder", channel = 4)
     ELEVATOR_SENSOR_CONFIG = BinarySensorConfig(name = "Elevator", channel = 2)
 
 class Cameras:
-  DRIVER_STREAM = "http://10.28.81.6:1182/?action=stream"
+  DRIVER_STREAM = "http://10.28.81.6:1184/?action=stream"
 
 class Controllers:
   DRIVER_CONTROLLER_PORT: int = 0
@@ -382,18 +387,18 @@ class Game:
     class Targets:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
-          Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.Shuttle: Pose3d(1.000, 2.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.TrenchLeft: Pose3d(3.500, 7.050, 0, Rotation3d(Rotation2d.fromDegrees(90))),
-          Target.TrenchRight: Pose3d(3.500, 1.050, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
+          Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
+          Target.Shuttle: Pose3d(1.000, 5.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.TrenchLeft: Pose3d(3.250, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.TrenchRight: Pose3d(3.250, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
           Target.TowerLeft: Pose3d(1.575, 4.220, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.TowerRight: Pose3d(1.575, 3.300, 0, Rotation3d(Rotation2d.fromDegrees(90))),
           Target.CornerLeft: Pose3d(0.500, 7.650, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
           Target.Outpost: Pose3d(0.500, 0.750, 0, Rotation3d(Rotation2d.fromDegrees(-90))),
-          Target.ClimbLeft: Pose3d(1.090, 4.800, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbStageLeft: Pose3d(1.090, 5.150, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ClimbRight: Pose3d(1.035, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.ClimbStageRight: Pose3d(1.035, 2.350, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.ClimbLeft: Pose3d(1.115, 4.800, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ClimbStageLeft: Pose3d(1.115, 5.150, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ClimbRight: Pose3d(1.060, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          Target.ClimbStageRight: Pose3d(1.060, 2.350, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
           Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),
