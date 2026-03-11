@@ -43,6 +43,7 @@ class LightsMode(Enum):
   RobotNotConnected = auto()
   RobotNotHomed = auto()
   VisionNotReady = auto()
+  RobotIsHoming = auto()
   HubStateActive = auto()
   HubStateActiveEnding = auto()
   HubStateInactive = auto()

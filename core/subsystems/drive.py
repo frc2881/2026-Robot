@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, SendableChooser
 from wpimath import units
@@ -39,7 +39,7 @@ class Drive(Subsystem):
     self._targetHeadingAlignmentController.enableContinuousInput(-180.0, 180.0)
     self._targetHeadingAlignmentRotationInput: units.percent = 0
 
-    self._targetPose: Pose2d | None = None
+    self._targetPose: Optional[Pose2d] = None
     self._targetPoseAlignmentState = State.Stopped
     self._targetPoseAlignmentController = HolonomicDriveController(
       PIDController(*self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationPID),
@@ -183,7 +183,7 @@ class Drive(Subsystem):
       for index, module in enumerate(self._modules): 
         module.setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45 if index in { 0, 3 } else -45)))
 
-  def alignToTargetPose(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
+  def alignToTargetPose(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d]) -> Command:
     return self.startRun(
       lambda: self._initTargetPoseAlignment(getTargetPose()),
       lambda: self._runTargetPoseAlignment(getRobotPose())
@@ -193,8 +193,8 @@ class Drive(Subsystem):
       lambda end: self._endTargetPoseAlignment()
     )
   
-  def _initTargetPoseAlignment(self, targetPose: Pose2d) -> None:
-    self._targetPose = targetPose
+  def _initTargetPoseAlignment(self, targetPose: Pose3d) -> None:
+    self._targetPose = targetPose.toPose2d()
     self._targetPoseAlignmentState = State.Running
 
   def _runTargetPoseAlignment(self, robotPose: Pose2d) -> None:
@@ -215,7 +215,7 @@ class Drive(Subsystem):
   def isAlignedToTargetPose(self) -> bool:
     return self._targetPoseAlignmentState == State.Completed
 
-  def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose2d]) -> Command:
+  def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d]) -> Command:
     return cmd.startRun(
       lambda: self._initTargetHeadingAlignment(getTargetPose()),
       lambda: self._runTargetHeadingAlignment(getRobotPose())
@@ -223,8 +223,8 @@ class Drive(Subsystem):
       lambda end: self._endTargetHeadingAlignment()
     )
 
-  def _initTargetHeadingAlignment(self, targetPose) -> None:
-    self._targetPose = targetPose
+  def _initTargetHeadingAlignment(self, targetPose: Pose3d) -> None:
+    self._targetPose = targetPose.toPose2d()
     self._targetHeadingAlignmentController.reset()
     self._targetHeadingAlignmentState = State.Running
 

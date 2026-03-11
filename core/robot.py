@@ -1,5 +1,4 @@
 from commands2 import cmd
-from commands2.button import Trigger
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.controllers.xbox import XboxController
@@ -17,6 +16,7 @@ from core.subsystems.hopper import Hopper
 from core.subsystems.turret import Turret
 from core.subsystems.launcher import Launcher
 from core.services.localization import Localization
+from core.services.targeting import Targeting
 from core.services.match import Match
 from core.services.lights import Lights
 from core.classes import Target
@@ -50,13 +50,9 @@ class RobotCore:
     
   def _initServices(self) -> None:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors)
+    self.targeting = Targeting(self.localization.getRobotPose, self.drive.getChassisSpeeds)
     self.match = Match()
-    self.lights = Lights(
-      self.isHomed, 
-      self.localization.hasValidVisionTarget,
-      self.match.getHubState,
-      self.match.getMatchStateTime
-    )
+    self.lights = Lights(self.isHoming, self.isHomed, self.localization.hasValidVisionTarget, self.match.getHubState, self.match.getMatchStateTime)
 
   def _initCommands(self) -> None:
     self.game = Game(self)
@@ -113,7 +109,7 @@ class RobotCore:
     # self.operator.povLeft().whileTrue(cmd.none())
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
     # self.operator.b().whileTrue(cmd.none())
-    self.operator.y().whileTrue(self.turret.setHeading(0))
+    self.operator.y().whileTrue(self.turret.setHeading(lambda: 0))
     # self.operator.x().whileTrue(cmd.none())
     # self.operator.start().whileTrue(cmd.none())
     # self.operator.back().whileTrue(cmd.none())
@@ -152,9 +148,13 @@ class RobotCore:
   def reset(self) -> None:
     self.drive.reset()
 
+  def isHoming(self) -> bool:
+    return self.intake.isHoming() or self.turret.isHoming()
+
   def isHomed(self) -> bool:
     return self.intake.isHomed() and self.turret.isHomed()
 
   def _updateTelemetry(self) -> None:
+    SmartDashboard.putBoolean("Robot/Status/IsHoming", self.isHoming())
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())
     SmartDashboard.putString("Robot/Sensors/FuelLevel", self.game.getFuelLevel().name)

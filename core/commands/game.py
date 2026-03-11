@@ -13,21 +13,21 @@ class Game:
 
   def alignRobotToTargetPose(self, target: Target) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getTargetPose(target))
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .withName(f'Game:AlignRobotToTargetPose:{ target.name }')
     )
-  
+
   def alignRobotToNearestTargetPose(self, targets: list[Target]) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.localization.getNearestTargetPose(targets).toPose2d())
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets))
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .withName(f'Game:AlignRobotToNearestTargetPose')
     )
-  
+
   def alignRobotToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
+      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getTargetPose(target))
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
 
@@ -38,7 +38,7 @@ class Game:
 
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
-      self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
+      self._robot.turret.setHeading(lambda: self._robot.targeting.getLaunchHeading(target))
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
   
@@ -46,7 +46,7 @@ class Game:
     return (
       self.alignTurretToTargetHeading(target)
       .alongWith(
-        self._robot.launcher.run_(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target)),
+        self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
         .andThen(self._robot.hopper.run_())
       )

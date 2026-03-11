@@ -240,7 +240,15 @@ class Subsystems:
     ACCELERATOR_SPEED_RATIO: units.percent = 1.0
     LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
 
-    TARGET_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
+class Services:
+  class Localization:
+    VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
+    VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
+    VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
+    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.5, 0.5, units.degreesToRadians(45.0))
+    
+  class Targeting:
+    TARGET_LAUNCH_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
       TargetLaunchSpeed(0.0, 0.34),
       TargetLaunchSpeed(1.0, 0.37),
       TargetLaunchSpeed(2.0, 0.39),
@@ -254,13 +262,6 @@ class Subsystems:
       TargetLaunchSpeed(9.0, 0.85),
       TargetLaunchSpeed(10.0, 0.93)
     )
-
-class Services:
-  class Localization:
-    VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
-    VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
-    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.5, 0.5, units.degreesToRadians(45.0))
 
 class Sensors: 
   class Gyro:

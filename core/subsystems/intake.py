@@ -59,6 +59,9 @@ class Intake(Subsystem):
   def resetToHome(self) -> Command:
     return self._arm.resetToHome(self).withName("Intake:ResetToHome")
 
+  def isHoming(self) -> bool:
+    return self._arm.isHoming()
+
   def isHomed(self) -> bool:
     return self._arm.isHomed()
 

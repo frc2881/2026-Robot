@@ -9,11 +9,13 @@ from core.classes import LightsMode, HubState
 class Lights():
   def __init__(
       self,
+      isHoming: Callable[[], bool],
       isHomed: Callable[[], bool],
       hasValidVisionTarget: Callable[[], bool],
       getHubState: Callable[[], HubState],
       getMatchStateTime: Callable[[], units.seconds]
     ) -> None:
+    self._isHoming = isHoming
     self._isHomed = isHomed
     self._hasValidVisionTarget = hasValidVisionTarget
     self._getHubState = getHubState
@@ -32,6 +34,9 @@ class Lights():
       return
     
     if utils.getRobotState() == RobotState.Disabled:
+      if self._isHoming():
+        self._lightsController.setMode(LightsMode.RobotIsHoming)
+        return
       if not self._isHomed():
         self._lightsController.setMode(LightsMode.RobotNotHomed)
         return

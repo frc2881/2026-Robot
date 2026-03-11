@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING, Callable
 from wpilib import SmartDashboard, Timer
 from wpimath import units
-from wpimath.geometry import Pose2d, Pose3d, Rotation2d
+from wpimath.geometry import Pose2d, Rotation2d
 if TYPE_CHECKING: from wpimath.kinematics import SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from ntcore import NetworkTableInstance
 from lib import logger, utils
 if TYPE_CHECKING: from lib.sensors.pose import PoseSensor
-from core.classes import Target
 import core.constants as constants
 
 class Localization():
@@ -28,8 +27,6 @@ class Localization():
       Pose2d()
     )
     
-    self._alliance = None
-    self._targets: dict[Target, Pose3d] = {}
     self._robotPose = Pose2d()
     self._hasValidVisionTarget: bool = False
     self._validVisionTargetBufferTimer = Timer()
@@ -39,14 +36,8 @@ class Localization():
     utils.addRobotPeriodic(self._periodic)
 
   def _periodic(self) -> None:
-    self._updateTargets()
     self._updateRobotPose()
     self._updateTelemetry()
-
-  def _updateTargets(self) -> None:
-    if utils.getAlliance() != self._alliance:
-      self._alliance = utils.getAlliance()
-      self._targets = constants.Game.Field.Targets.TARGETS[self._alliance]
 
   def _updateRobotPose(self) -> None:
     self._poseEstimator.update(Rotation2d.fromDegrees(self._getGyroHeading()), self._getDriveModulePositions())
@@ -57,7 +48,7 @@ class Localization():
         estimatedPose = estimatedRobotPose.estimatedPose.toPose2d()
         if utils.isPoseInBounds(estimatedPose, constants.Game.Field.BOUNDS):
           for target in estimatedRobotPose.targetsUsed:
-            if self._isValidTarget(target.getPoseAmbiguity(), target.getBestCameraToTarget().translation().norm()):
+            if self._isValidVisionTarget(target.getPoseAmbiguity(), target.getBestCameraToTarget().translation().norm()):
               hasValidVisionTarget = True
           if hasValidVisionTarget:
             self._poseEstimator.addVisionMeasurement(
@@ -75,7 +66,7 @@ class Localization():
       if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.2):
         self._hasValidVisionTarget = False
 
-  def _isValidTarget(self, ambiguity: units.percent, distance: units.meters) -> bool:
+  def _isValidVisionTarget(self, ambiguity: units.percent, distance: units.meters) -> bool:
     return (
       utils.isValueInRange(ambiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY) and
       distance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE  
@@ -89,14 +80,6 @@ class Localization():
 
   def resetRobotPose(self, pose: Pose2d) -> None:
     self._poseEstimator.resetPose(pose)
-
-  def getTargetPose(self, target: Target) -> Pose3d:
-    targetPose = self._targets.get(target)
-    return targetPose if targetPose is not None else Pose3d(self._robotPose)
-  
-  def getNearestTargetPose(self, targets: list[Target]) -> Pose3d:
-    targetPose = Pose3d(self._robotPose).nearest([self._targets[target] for target in self._targets if target in targets])
-    return targetPose if targetPose is not None else Pose3d(self._robotPose)
   
   def _updateTelemetry(self) -> None:
     self._robotPosePublisher.set(self.getRobotPose())
