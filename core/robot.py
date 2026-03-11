@@ -4,10 +4,9 @@ from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.controllers.xbox import XboxController
 from lib.controllers.button import ButtonController
-from lib.classes import RobotState, RobotMode
+from lib.classes import RobotState
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
-from lib.sensors.object import ObjectSensor
 from lib.sensors.distance import DistanceSensor
 from lib.sensors.binary import BinarySensor
 from core.commands.auto import Auto
@@ -37,7 +36,6 @@ class RobotCore:
   def _initSensors(self) -> None:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.COM_TYPE)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS)
-    self.objectSensor = ObjectSensor(constants.Sensors.Object.OBJECT_SENSOR_CONFIG)
     self.hopperSensor = DistanceSensor(constants.Sensors.Distance.HOPPER_SENSOR_CONFIG)
     self.indexerSensor = DistanceSensor(constants.Sensors.Distance.INDEXER_SENSOR_CONFIG)
     self.feederSensor = BinarySensor(constants.Sensors.Binary.FEEDER_SENSOR_CONFIG)
@@ -51,12 +49,7 @@ class RobotCore:
     self.launcher = Launcher()
     
   def _initServices(self) -> None:
-    self.localization = Localization(
-      self.gyro.getHeading, 
-      self.drive.getModulePositions, 
-      self.poseSensors, 
-      self.objectSensor
-    )
+    self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors)
     self.match = Match()
     self.lights = Lights(
       self.isHomed, 

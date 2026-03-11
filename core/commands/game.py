@@ -36,14 +36,6 @@ class Game:
       self.alignRobotToNearestTargetPose([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
     )
 
-  def alignRobotToNearestFuel(self) -> Command:
-    return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, self._robot.localization.getObjectsPose)
-      .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
-      .onlyIf(lambda: self._robot.localization.getObjectsCount() >= 10)
-      .withName(f'Game:AlignRobotToNearestFuel')
-    )
-  
   def alignTurretToTargetHeading(self, target: Target) -> Command:
     return (
       self._robot.turret.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.localization.getTargetPose(target).toPose2d())
