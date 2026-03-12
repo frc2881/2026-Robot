@@ -35,7 +35,7 @@ from lib.classes import (
   DistanceSensorConfig,
   BinarySensorConfig
 )
-from core.classes import Target, TargetLaunchSpeed
+from core.classes import Target, TargetLaunchMetric
 import lib.constants
 
 _aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2026-rebuilt-andymark.json')
@@ -248,19 +248,21 @@ class Services:
     VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.5, 0.5, units.degreesToRadians(45.0))
     
   class Targeting:
-    TARGET_LAUNCH_SPEEDS: tuple[TargetLaunchSpeed, ...] = (
-      TargetLaunchSpeed(0.0, 0.34),
-      TargetLaunchSpeed(1.0, 0.37),
-      TargetLaunchSpeed(2.0, 0.39),
-      TargetLaunchSpeed(2.4, 0.43),
-      TargetLaunchSpeed(3.3, 0.47),
-      TargetLaunchSpeed(4.6, 0.53),
-      TargetLaunchSpeed(5.4, 0.57),
-      TargetLaunchSpeed(6.0, 0.61),
-      TargetLaunchSpeed(7.0, 0.69),
-      TargetLaunchSpeed(8.0, 0.77),
-      TargetLaunchSpeed(9.0, 0.85),
-      TargetLaunchSpeed(10.0, 0.93)
+    TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
+      TargetLaunchMetric(distance = 0.0, speed = 0.34, time = 0.80),
+      TargetLaunchMetric(distance = 1.0, speed = 0.37, time = 0.90),
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.00),
+      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.05),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.10),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.15),
+      TargetLaunchMetric(distance = 4.0, speed = 0.50, time = 1.20),
+      TargetLaunchMetric(distance = 4.5, speed = 0.52, time = 1.25),
+      TargetLaunchMetric(distance = 5.0, speed = 0.55, time = 1.30),
+      TargetLaunchMetric(distance = 6.0, speed = 0.61, time = 1.40),
+      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.50),
+      TargetLaunchMetric(distance = 8.0, speed = 0.77, time = 1.60),
+      TargetLaunchMetric(distance = 9.0, speed = 0.85, time = 1.70),
+      TargetLaunchMetric(distance = 10.0, speed = 0.93, time = 1.80)
     )
 
 class Sensors: 

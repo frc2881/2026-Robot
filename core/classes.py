@@ -14,9 +14,10 @@ class Target(Enum):
   
 
 @dataclass(frozen=True, slots=True)
-class TargetLaunchSpeed:
+class TargetLaunchMetric:
   distance: units.meters
   speed: units.percent
+  time: units.seconds
 
 class FuelLevel(IntEnum):
   Empty = 0

@@ -19,8 +19,9 @@ class Targeting():
 
     self._alliance: Optional[Alliance] = None
     self._targets: dict[Target, Pose3d] = {}
-    self._targetLaunchDistances = tuple(t.distance for t in constants.Services.Targeting.TARGET_LAUNCH_SPEEDS)
-    self._targetLaunchSpeeds = tuple(t.speed for t in constants.Services.Targeting.TARGET_LAUNCH_SPEEDS)
+    self._targetLaunchDistances = tuple(t.distance for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
+    self._targetLaunchSpeeds = tuple(t.speed for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
+    self._targetLaunchTimes = tuple(t.time for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
     
     SmartDashboard.putNumber("Robot/Targeting/Launch/SpeedOverride", 0)
 
