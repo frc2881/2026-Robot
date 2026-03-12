@@ -346,6 +346,7 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
+    AUTO_NZ_LEAVE_MATCHTIME: units.seconds = 2.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

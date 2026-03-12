@@ -17,6 +17,8 @@ class AutoPath(Enum):
   BR_NZ_SF = auto()
   TR_OP_SF = auto()
   TL_DP_SF = auto()
+  BL_LV_NZ = auto()
+  BR_LV_NZ = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -81,13 +83,15 @@ class Auto:
   def auto_BL_NZ_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BL_NZ_SF).deadlineFor(self._intake()),
-      self._score()
+      self._score().until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
+      self._move(AutoPath.BL_LV_NZ)
     ).withName("Auto:[BL]_NZ_SF")
 
   def auto_BR_NZ_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_SF).deadlineFor(self._intake()),
-      self._score()
+      self._score().until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
+      self._move(AutoPath.BR_LV_NZ)
     ).withName("Auto:[BR]_NZ_SF")
   
   def auto_TR_OP_SF(self) -> Command:
