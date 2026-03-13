@@ -43,10 +43,10 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("[BL]_NZ_LP_SF", self.auto_BL_NZ_LP_SF)
-    self._autos.addOption("[BL]_NZ_ST_SF", self.auto_BL_NZ_ST_SF)
-    self._autos.addOption("[BR]_NZ_LP_SF", self.auto_BR_NZ_LP_SF)
-    self._autos.addOption("[BR]_NZ_ST_SF", self.auto_BL_NZ_ST_SF)
+    self._autos.addOption("[BL]_NZ_LP_SF_LV", self.auto_BL_NZ_LP_SF_LV)
+    self._autos.addOption("[BL]_NZ_ST_SF_LV", self.auto_BL_NZ_ST_SF_LV)
+    self._autos.addOption("[BR]_NZ_LP_SF_LV", self.auto_BR_NZ_LP_SF_LV)
+    self._autos.addOption("[BR]_NZ_ST_SF_LV", self.auto_BR_NZ_ST_SF_LV)
     self._autos.addOption("[TL]_DP_SF", self.auto_TL_DP_SF)
     self._autos.addOption("[TR]_OP_SF", self.auto_TR_OP_SF)
 
@@ -84,33 +84,33 @@ class Auto:
       .deadlineFor(logger.log_("Auto:Score")))
     )
 
-  def auto_BL_NZ_LP_SF(self) -> Command:
+  def auto_BL_NZ_LP_SF_LV(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BL_NZ_LP_SF).deadlineFor(self._intake()),
       self._score().until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
       self._move(AutoPath.BL_LV_NZ)
-    ).withName("Auto:[BL]_NZ_LP_SF")
+    ).withName("Auto:[BL]_NZ_LP_SF_LV")
   
-  def auto_BL_NZ_ST_SF(self) -> Command:
+  def auto_BL_NZ_ST_SF_LV(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BL_NZ_ST_SF).deadlineFor(self._intake()),
       self._score().until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
       self._move(AutoPath.BL_LV_NZ)
-    ).withName("Auto:[BL]_NZ_ST_SF")
+    ).withName("Auto:[BL]_NZ_ST_SF_LV")
 
-  def auto_BR_NZ_LP_SF(self) -> Command:
+  def auto_BR_NZ_LP_SF_LV(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_LP_SF).deadlineFor(self._intake()),
       self._score().until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
       self._move(AutoPath.BR_LV_NZ)
-    ).withName("Auto:[BR]_NZ_LP_SF")
+    ).withName("Auto:[BR]_NZ_LP_SF_LV")
   
-  def auto_BR_NZ_ST_SF(self) -> Command:
+  def auto_BR_NZ_ST_SF_LV(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_ST_SF).deadlineFor(self._intake()),
       self._score().until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
       self._move(AutoPath.BR_LV_NZ)
-    ).withName("Auto:[BR]_NZ_ST_SF")
+    ).withName("Auto:[BR]_NZ_ST_SF_LV")
   
   def auto_TR_OP_SF(self) -> Command:
     return cmd.sequence(
