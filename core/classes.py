@@ -4,7 +4,8 @@ from wpimath import units
 
 class Target(Enum):
   Hub = auto()
-  Shuttle = auto()
+  ShuttleLeft = auto()
+  ShuttleRight = auto()
   ScoreLeft = auto()
   ScoreRight = auto()
   BumpLeftIn = auto()
@@ -18,6 +19,12 @@ class TargetLaunchMetric:
   distance: units.meters
   speed: units.percent
   time: units.seconds
+
+@dataclass(frozen=False, slots=True)
+class TargetLaunchInfo:
+  distance: units.meters = 0
+  speed: units.percent = 0
+  heading: units.degrees = 0
 
 class FuelLevel(IntEnum):
   Empty = 0

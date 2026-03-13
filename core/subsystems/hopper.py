@@ -3,14 +3,13 @@ from wpilib import SmartDashboard
 from lib import logger, utils
 import core.constants as constants
 from lib.components.velocity_control_module import VelocityControlModule
-from lib.components.speed_module import SpeedModule
 
 class Hopper(Subsystem):
   def __init__(self) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Hopper
 
-    self._indexer = SpeedModule(self._constants.INDEXER_CONFIG)
+    self._indexer = VelocityControlModule(self._constants.INDEXER_CONFIG)
     self._roller = VelocityControlModule(self._constants.ROLLER_CONFIG)
     self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)

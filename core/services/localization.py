@@ -48,7 +48,10 @@ class Localization():
         estimatedPose = estimatedRobotPose.estimatedPose.toPose2d()
         if utils.isPoseInBounds(estimatedPose, constants.Game.Field.BOUNDS):
           for target in estimatedRobotPose.targetsUsed:
-            if self._isValidVisionTarget(target.getPoseAmbiguity(), target.getBestCameraToTarget().translation().norm()):
+            if (
+              utils.isValueInRange(target.getPoseAmbiguity(), -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY) and
+              target.getBestCameraToTarget().translation().norm() <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE  
+            ):
               hasValidVisionTarget = True
           if hasValidVisionTarget:
             self._poseEstimator.addVisionMeasurement(
@@ -66,21 +69,15 @@ class Localization():
       if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.2):
         self._hasValidVisionTarget = False
 
-  def _isValidVisionTarget(self, ambiguity: units.percent, distance: units.meters) -> bool:
-    return (
-      utils.isValueInRange(ambiguity, -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY) and
-      distance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE  
-    )
-
-  def hasValidVisionTarget(self) -> bool:
-    return self._hasValidVisionTarget
-
   def getRobotPose(self) -> Pose2d:
-    return self._robotPose
+    return Pose2d(1.5, 6.0, Rotation2d.fromDegrees(160)) # self._robotPose
 
   def resetRobotPose(self, pose: Pose2d) -> None:
     self._poseEstimator.resetPose(pose)
   
+  def hasValidVisionTarget(self) -> bool:
+    return self._hasValidVisionTarget
+
   def _updateTelemetry(self) -> None:
     self._robotPosePublisher.set(self.getRobotPose())
     SmartDashboard.putBoolean("Robot/Localization/HasValidVisionTarget", self.hasValidVisionTarget())

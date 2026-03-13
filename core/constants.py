@@ -26,8 +26,6 @@ from lib.classes import (
   RelativePositionControlModuleConfig,
   VelocityControlModuleConfig,
   VelocityControlModuleConstants,
-  SpeedModuleConstants,
-  SpeedModuleConfig,
   FollowerModuleConfig,
   FollowerModuleConstants,
   ButtonControllerConfig,
@@ -137,10 +135,15 @@ class Subsystems:
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
   class Hopper:
-    INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
+    INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 40,
+      motorPID = PID(0.0001, 0, 0),
+      motorOutputRange = Range(-1.0, 1.0),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
+      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxAcceleration = 6000.0,
       motorVelocityConversionFactor = 1.0
     ))
 
@@ -184,7 +187,7 @@ class Subsystems:
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
-    REVERSE_SPEED_RATIO: units.percent = 0.3
+    REVERSE_SPEED_RATIO: units.percent = 0.2
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -248,6 +251,7 @@ class Services:
     VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.5, 0.5, units.degreesToRadians(45.0))
     
   class Targeting:
+    # TODO: measure actual time of flight values for future on-the-fly launch implementation in targeting service
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
       TargetLaunchMetric(distance = 0.0, speed = 0.34, time = 0.80),
       TargetLaunchMetric(distance = 1.0, speed = 0.37, time = 0.90),
@@ -359,7 +363,8 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.Shuttle: Pose3d(1.000, 5.500, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ShuttleLeft: Pose3d(1.200, 6.800, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ShuttleRight: Pose3d(1.200, 1.200, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ScoreLeft: Pose3d(3.250, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ScoreRight: Pose3d(3.250, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
           Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
