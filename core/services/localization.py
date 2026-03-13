@@ -70,7 +70,7 @@ class Localization():
         self._hasValidVisionTarget = False
 
   def getRobotPose(self) -> Pose2d:
-    return Pose2d(1.5, 6.0, Rotation2d.fromDegrees(160)) # self._robotPose
+    return self._robotPose
 
   def resetRobotPose(self, pose: Pose2d) -> None:
     self._poseEstimator.resetPose(pose)

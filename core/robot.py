@@ -108,7 +108,7 @@ class RobotCore:
     # self.operator.povRight().whileTrue(cmd.none())
     # self.operator.povLeft().whileTrue(cmd.none())
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
-    self.operator.b().whileTrue(self.game.launchFuel(Target.Hub))
+    # self.operator.b().whileTrue(cmd.none())
     self.operator.y().whileTrue(self.turret.setHeading(lambda: 0))
     self.operator.x().whileTrue(self.game.reverseHopper())
     # self.operator.start().whileTrue(cmd.none())
