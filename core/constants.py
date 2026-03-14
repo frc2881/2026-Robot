@@ -125,12 +125,12 @@ class Subsystems:
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
-      motorVelocityConversionFactor = 1.0
+      motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 6.2
-    ARM_AGITATE_RANGE = Range(0.1, 0.6)
+    ARM_AGITATE_RANGE = Range(0.6, 0.8)
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
