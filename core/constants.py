@@ -99,7 +99,7 @@ class Subsystems:
     INPUT_RATE_LIMIT_DEMO: units.percent = 0.5
 
   class Intake:
-    ARM_CONFIG = RelativePositionControlModuleConfig("Intake/Arm", 18, False, RelativePositionControlModuleConstants(
+    ARM_CONFIG = RelativePositionControlModuleConfig("Intake/Arm", 18, True, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
@@ -110,7 +110,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 12000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 7.5,
+      motorSoftLimitForward = 6.2,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = 0
@@ -119,7 +119,7 @@ class Subsystems:
     ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 100, 
+      motorCurrentLimit = 80, 
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
@@ -129,7 +129,7 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 7.5
+    ARM_INTAKE_POSITION: float = 6.2
     ARM_AGITATE_RANGE = Range(0.1, 0.6)
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
@@ -183,7 +183,7 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.4
+    INDEXER_SPEED: units.percent = 0.8
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
@@ -279,8 +279,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontLeft",
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.0), yaw = units.degreesToRadians(50.0))
+          Translation3d(x = units.inchesToMeters(2.75), y = units.inchesToMeters(13.5), z = units.inchesToMeters(10.25)),
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.5), yaw = units.degreesToRadians(55.0))
         ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -288,8 +288,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontRight",
         transform = Transform3d(
-        Translation3d(x = units.inchesToMeters(9.75), y = units.inchesToMeters(-12.75), z = units.inchesToMeters(12.0)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.0), yaw = units.degreesToRadians(-50.0))
+        Translation3d(x = units.inchesToMeters(1.25), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-21.0), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -298,7 +298,7 @@ class Sensors:
         name = "RearLeft",
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-30.0), yaw = units.degreesToRadians(135.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-31.5), yaw = units.degreesToRadians(135.0))
         ),
         stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -307,7 +307,7 @@ class Sensors:
         name = "RearRight",
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(-12.75), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-30.0), yaw = units.degreesToRadians(-135.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-32.5), yaw = units.degreesToRadians(-160.0))
         ),
         stream = "http://10.28.81.7:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
