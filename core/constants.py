@@ -183,7 +183,7 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.8
+    INDEXER_SPEED: units.percent = 0.3
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
