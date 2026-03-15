@@ -109,8 +109,8 @@ class Subsystems:
       motorMotionCruiseVelocity = 24000.0,
       motorMotionMaxAcceleration = 12000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.0,
-      motorSoftLimitForward = 6.2,
+      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0,
+      motorSoftLimitForward = 26.2,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = 0
@@ -129,8 +129,10 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 6.2
-    ARM_AGITATE_RANGE = Range(0.6, 0.8)
+    ARM_INTAKE_POSITION: float = 25.5
+    ARM_AGITATE_RANGE = Range(0.3, 0.8)
+    # ARM_INTAKE_HOLD_SPEED: units.percent = 0.1
+    ARM_INTAKE_RUN_POSITION: float = 23.0
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
@@ -183,7 +185,8 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.3
+    INDEXER_SPEED: units.percent = 0.75
+    INDEXER_REVERSE_SPEED: units.percent = 0.6
     ROLLER_SPEED: units.percent = 1.0
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
@@ -352,7 +355,7 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
-    AUTO_NZ_LEAVE_MATCHTIME: units.seconds = 2.0
+    AUTO_NZ_LEAVE_MATCHTIME: units.seconds = 3.5
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

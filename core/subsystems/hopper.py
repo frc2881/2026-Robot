@@ -1,18 +1,21 @@
 from commands2 import Subsystem, Command
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, Timer
 from lib import logger, utils
 import core.constants as constants
 from lib.components.velocity_control_module import VelocityControlModule
+from lib.components.speed_module import SpeedModule
 
 class Hopper(Subsystem):
   def __init__(self) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Hopper
 
-    self._indexer = VelocityControlModule(self._constants.INDEXER_CONFIG)
+    self._indexer = SpeedModule(self._constants.INDEXER_CONFIG)
     self._roller = VelocityControlModule(self._constants.ROLLER_CONFIG)
     self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
+
+    self._indexerRunPatternTimer = Timer()
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -20,13 +23,15 @@ class Hopper(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED),
+        self._indexerRunPatternTimer.advanceIfElapsed(1.5),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < 1.0 else -self._constants.INDEXER_REVERSE_SPEED),
+        # self._indexer.setSpeed(self._constants.INDEXER_SPEED),
         self._roller.setSpeed(self._constants.ROLLER_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],
       lambda: self.reset()
-    ).withName("Hopper:Run")
+    ).beforeStarting(lambda: self._indexerRunPatternTimer.restart()).withName("Hopper:Run") # 
 
   def reverse(self) -> Command:
     return self.runEnd(

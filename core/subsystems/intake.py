@@ -1,5 +1,5 @@
 import math
-from commands2 import Subsystem, Command
+from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, Timer
 from lib import logger, utils
 from lib.components.relative_position_control_module import RelativePositionControlModule
@@ -27,6 +27,21 @@ class Intake(Subsystem):
       ],
       lambda: self.reset()
     ).withName("Intake:Run")
+  
+  def runDelay(self) -> Command:
+    return (
+      self.startEnd(
+        lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
+        lambda: self._arm.reset())
+      .alongWith(
+        cmd.waitUntil(lambda: self._arm.getPosition() > self._constants.ARM_INTAKE_RUN_POSITION).andThen(
+          cmd.runEnd(
+            lambda: self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED),
+            lambda: self._rollers.reset()
+          )
+        )
+      )
+      ).withName("Intake:RunDelay")
 
   def agitate(self) -> Command:
     return self.runEnd(
