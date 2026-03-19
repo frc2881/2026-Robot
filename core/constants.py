@@ -104,10 +104,10 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorPID = PID(0.2, 0, 0),
-      motorOutputRange = Range(-1.0, 0.2),
+      motorOutputRange = Range(-1.0, 0.15),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 24000.0,
-      motorMotionMaxAcceleration = 12000.0,
+      motorMotionCruiseVelocity = 48000.0,
+      motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0,
       motorSoftLimitForward = 26.2,
@@ -130,7 +130,7 @@ class Subsystems:
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 25.5
-    ARM_AGITATE_RANGE = Range(0.3, 0.8)
+    ARM_AGITATE_RANGE = Range(0.1, 0.8)
     # ARM_INTAKE_HOLD_SPEED: units.percent = 0.1
     ARM_INTAKE_RUN_POSITION: float = 23.0
     ROLLERS_INTAKE_SPEED: units.percent = 1.0

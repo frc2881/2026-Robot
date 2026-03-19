@@ -46,11 +46,11 @@ class Intake(Subsystem):
   def agitate(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._armAgitatePatternTimer.advanceIfElapsed(1.0),
+        self._armAgitatePatternTimer.advanceIfElapsed(1.5),
         self._arm.setPosition(
           self._constants.ARM_INTAKE_POSITION * (
             self._constants.ARM_AGITATE_RANGE.max 
-            if self._armAgitatePatternTimer.get() < 0.5 else 
+            if self._armAgitatePatternTimer.get() < 0.75 else 
             self._constants.ARM_AGITATE_RANGE.min
           )
         ),
