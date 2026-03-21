@@ -11,7 +11,7 @@ class Hopper(Subsystem):
     self._constants = constants.Subsystems.Hopper
 
     self._indexer = SpeedModule(self._constants.INDEXER_CONFIG)
-    self._roller = VelocityControlModule(self._constants.ROLLER_CONFIG)
+    self._roller = SpeedModule(self._constants.ROLLER_CONFIG)
     self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
@@ -23,10 +23,11 @@ class Hopper(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexerRunPatternTimer.advanceIfElapsed(1.5),
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < 1.0 else -self._constants.INDEXER_REVERSE_SPEED),
+        self._indexerRunPatternTimer.advanceIfElapsed(self._constants.HOPPER_FORWARD_TIME + self._constants.HOPPER_REVERSE_TIME),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < self._constants.HOPPER_FORWARD_TIME else -self._constants.INDEXER_REVERSE_SPEED),
         # self._indexer.setSpeed(self._constants.INDEXER_SPEED),
-        self._roller.setSpeed(self._constants.ROLLER_SPEED),
+        # self._roller.setSpeed(self._constants.ROLLER_SPEED),
+        self._roller.setSpeed(self._constants.ROLLER_SPEED if self._indexerRunPatternTimer.get() < self._constants.HOPPER_FORWARD_TIME else -self._constants.ROLLER_REVERSE_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],

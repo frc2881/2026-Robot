@@ -16,6 +16,8 @@ from lib.classes import (
   Range,
   MotorModel,
   FeedForwardGains,
+  SpeedModuleConfig,
+  SpeedModuleConstants,
   SwerveModuleGearKit,
   SwerveModuleConstants, 
   SwerveModuleConfig, 
@@ -137,34 +139,29 @@ class Subsystems:
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
   class Hopper:
-    INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
+    INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0),
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
-      motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0,
+      motorCurrentLimit = 30,
       motorVelocityConversionFactor = 1.0
     ))
 
-    ROLLER_CONFIG = VelocityControlModuleConfig("Hopper/Roller", 20, True, VelocityControlModuleConstants(
+    ROLLER_CONFIG = SpeedModuleConfig("Hopper/Roller", 20, True, SpeedModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40,
-      motorPID = PID(0.0001, 0, 0),
-      motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
-      motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0,
+      motorCurrentLimit = 30,
+      # motorPID = PID(0.0001, 0, 0),
+      # motorOutputRange = Range(-1.0, 1.0),
+      # motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
+      # motorMotionMaxVelocity = 6000.0,
+      # motorMotionMaxAcceleration = 6000.0,
       motorVelocityConversionFactor = 1.0
     ))
 
     FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 40,
+      motorCurrentLimit = 35,
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
@@ -188,9 +185,13 @@ class Subsystems:
     INDEXER_SPEED: units.percent = 0.75
     INDEXER_REVERSE_SPEED: units.percent = 0.6
     ROLLER_SPEED: units.percent = 1.0
+    ROLLER_REVERSE_SPEED: units.percent = 0.8
     FEEDER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
     REVERSE_SPEED_RATIO: units.percent = 0.2
+
+    HOPPER_FORWARD_TIME: float = 1.3
+    HOPPER_REVERSE_TIME: float = 0.35
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -263,10 +264,10 @@ class Services:
       TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.10),
       TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.15),
       TargetLaunchMetric(distance = 4.0, speed = 0.50, time = 1.20),
-      TargetLaunchMetric(distance = 4.5, speed = 0.52, time = 1.25),
-      TargetLaunchMetric(distance = 5.0, speed = 0.55, time = 1.30),
-      TargetLaunchMetric(distance = 6.0, speed = 0.61, time = 1.40),
-      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.50),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.25),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.30),
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.40),
+      TargetLaunchMetric(distance = 7.0, speed = 0.71, time = 1.50),
       TargetLaunchMetric(distance = 8.0, speed = 0.77, time = 1.60),
       TargetLaunchMetric(distance = 9.0, speed = 0.85, time = 1.70),
       TargetLaunchMetric(distance = 10.0, speed = 0.93, time = 1.80)
