@@ -133,8 +133,7 @@ class Subsystems:
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 25.5
     ARM_AGITATE_RANGE = Range(0.1, 0.8)
-    # ARM_INTAKE_HOLD_SPEED: units.percent = 0.1
-    ARM_INTAKE_RUN_POSITION: float = 23.0
+    ARM_INTAKE_RUN_POSITION_MIN: float = 23.0
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
@@ -150,11 +149,6 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 30,
-      # motorPID = PID(0.0001, 0, 0),
-      # motorOutputRange = Range(-1.0, 1.0),
-      # motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
-      # motorMotionMaxVelocity = 6000.0,
-      # motorMotionMaxAcceleration = 6000.0,
       motorVelocityConversionFactor = 1.0
     ))
 
@@ -249,11 +243,14 @@ class Subsystems:
 
 class Services:
   class Localization:
-    VISION_MAX_POSE_AMBIGUITY: units.percent = 0.2
+    VISION_MAX_TARGET_AMBIGUITY: units.percent = 0.2
+    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 3.0
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
-    VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.05, 0.05, units.degreesToRadians(5.0))
-    VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS: tuple[units.meters, units.meters, units.radians] = (0.5, 0.5, units.degreesToRadians(45.0))
-    
+    VISION_STDDEV_XY_COEFF: float = 0.08
+    VISION_STDDEV_Z_COEFF: float = 0.1
+    VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 5.0
+    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 3.33
+
   class Targeting:
     # TODO: measure actual time of flight values for future on-the-fly launch implementation in targeting service
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (

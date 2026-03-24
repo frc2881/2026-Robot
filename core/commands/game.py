@@ -55,7 +55,7 @@ class Game:
   
   def runIntake(self) -> Command:
     return (
-      self._robot.intake.runDelay()
+      self._robot.intake.run_()
       .withName("Game:RunIntake")
     )
   

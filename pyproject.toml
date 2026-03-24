@@ -1,5 +1,5 @@
 [tool.robotpy]
-robotpy_version = "2026.2.1.1"
+robotpy_version = "2026.2.2"
 components = [
   "apriltag",
   "commands2"
@@ -8,5 +8,5 @@ requires = [
   "robotpy-rev==2026.0.4",
   "robotpy-navx==2026.0.1.1",
   "robotpy-pathplannerlib==2026.1.2",
-  "photonlibpy==2026.3.1"
+  "photonlibpy==2026.3.2"
 ]

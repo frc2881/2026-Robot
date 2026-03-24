@@ -43,30 +43,34 @@ class Localization():
     self._poseEstimator.update(Rotation2d.fromDegrees(self._getGyroHeading()), self._getDriveModulePositions())
     hasValidVisionTarget = False
     for poseSensor in self._poseSensors:
-      estimatedRobotPose = poseSensor.getEstimatedRobotPose()
-      if estimatedRobotPose is not None:
-        estimatedPose = estimatedRobotPose.estimatedPose.toPose2d()
-        if utils.isPoseInBounds(estimatedPose, constants.Game.Field.BOUNDS):
-          for target in estimatedRobotPose.targetsUsed:
-            if (
-              utils.isValueInRange(target.getPoseAmbiguity(), -1, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY) and
-              target.getBestCameraToTarget().translation().norm() <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE  
-            ):
-              hasValidVisionTarget = True
-          if hasValidVisionTarget:
-            self._poseEstimator.addVisionMeasurement(
-              estimatedPose, 
-              estimatedRobotPose.timestampSeconds,
-              constants.Services.Localization.VISION_ESTIMATE_MULTI_TAG_STANDARD_DEVIATIONS
-              if len(estimatedRobotPose.targetsUsed) > 1 else
-              constants.Services.Localization.VISION_ESTIMATE_SINGLE_TAG_STANDARD_DEVIATIONS
-            )     
+      poseSensorResult = poseSensor.getLatestResult()
+      if (
+        poseSensorResult is not None and
+        utils.isPoseInBounds(poseSensorResult.estimatedPose.toPose2d(), constants.Game.Field.BOUNDS) and
+        poseSensorResult.bestTargetDistance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE and
+        poseSensorResult.bestTargetAmbiguity <= constants.Services.Localization.VISION_MAX_TARGET_AMBIGUITY and
+        poseSensorResult.bestTargetReprojectionError <= constants.Services.Localization.VISION_MAX_TARGET_REPROJECTION_ERROR
+      ):
+        stdDevXY = constants.Services.Localization.VISION_STDDEV_XY_COEFF * poseSensorResult.bestTargetDistance
+        stdDevZ = constants.Services.Localization.VISION_STDDEV_Z_COEFF * poseSensorResult.bestTargetDistance
+        if poseSensorResult.bestTargetReprojectionError >= 0:
+          stdDevXY *= constants.Services.Localization.VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR * poseSensorResult.bestTargetReprojectionError
+          stdDevZ *= constants.Services.Localization.VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR * poseSensorResult.bestTargetReprojectionError
+        else: 
+          stdDevXY *= constants.Services.Localization.VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR * poseSensorResult.bestTargetAmbiguity
+          stdDevZ = float("inf")
+        self._poseEstimator.addVisionMeasurement(
+          poseSensorResult.estimatedPose.toPose2d(), 
+          poseSensorResult.timestamp,
+          (stdDevXY, stdDevXY, stdDevZ)
+        )
+        hasValidVisionTarget = True
     self._robotPose = self._poseEstimator.getEstimatedPosition()
     if hasValidVisionTarget:
       self._hasValidVisionTarget = True
       self._validVisionTargetBufferTimer.restart()
     else:
-      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.2):
+      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.1):
         self._hasValidVisionTarget = False
 
   def getRobotPose(self) -> Pose2d:

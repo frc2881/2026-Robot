@@ -20,28 +20,10 @@ class Intake(Subsystem):
     self._updateTelemetry()
 
   def run_(self) -> Command:
-    return self.startEnd(
-      lambda: [
-        self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
-        self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED)
-      ],
-      lambda: self.reset()
-    ).withName("Intake:Run")
-  
-  def runDelay(self) -> Command:
-    return (
-      self.startEnd(
-        lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
-        lambda: self._arm.reset())
-      .alongWith(
-        cmd.waitUntil(lambda: self._arm.getPosition() > self._constants.ARM_INTAKE_RUN_POSITION).andThen(
-          cmd.runEnd(
-            lambda: self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED),
-            lambda: self._rollers.reset()
-          )
-        )
-      )
-      ).withName("Intake:RunDelay")
+    return self.startRun(
+      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
+      lambda: self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self._arm.getPosition() > self._constants.ARM_INTAKE_RUN_POSITION_MIN else 0)
+    ).finallyDo(lambda end: self.reset()).withName("Intake:Run")    
 
   def agitate(self) -> Command:
     return self.runEnd(

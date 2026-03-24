@@ -24,12 +24,12 @@ class Launcher(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def run_(self, getLaunchSpeed: Callable[[], units.percent]) -> Command:
+  def run_(self, getSpeed: Callable[[], units.percent]) -> Command:
     return self.runEnd(
       lambda: [
-        launchSpeed := getLaunchSpeed(),
-        self._launcher.setSpeed(launchSpeed),
-        self._accelerator.setSpeed(launchSpeed * self._constants.ACCELERATOR_SPEED_RATIO)
+        speed := getSpeed(),
+        self._launcher.setSpeed(speed),
+        self._accelerator.setSpeed(speed * self._constants.ACCELERATOR_SPEED_RATIO)
       ],
       lambda: self.reset()
     ).withName("Launcher:Run")
