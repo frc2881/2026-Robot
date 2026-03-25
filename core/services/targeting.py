@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Callable, Optional
 from wpilib import SmartDashboard
 from wpimath import units
-from wpimath.geometry import Pose2d, Pose3d, Translation3d, Rotation3d
+from wpimath.geometry import Pose2d, Pose3d, Translation3d
 if TYPE_CHECKING: from wpimath.kinematics import ChassisSpeeds
 from lib import logger, utils
 from lib.classes import Alliance
@@ -30,6 +30,11 @@ class Targeting():
       Target.ShuttleRight: TargetLaunchInfo()
     }
 
+    SmartDashboard.putNumber("Robot/Targeting/DistanceMin", self._targetLaunchDistances[0])
+    SmartDashboard.putNumber("Robot/Targeting/DistanceMax", self._targetLaunchDistances[-1])
+    SmartDashboard.putNumber("Robot/Targeting/HeadingMin", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitReverse)
+    SmartDashboard.putNumber("Robot/Targeting/HeadingMax", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitForward)
+
     SmartDashboard.putNumber("Robot/Targeting/SpeedOverride", 0)
 
     utils.addRobotPeriodic(self._periodic)
@@ -45,9 +50,11 @@ class Targeting():
       self._targets = constants.Game.Field.Targets.TARGETS[self._alliance]
 
   def _updateTargetLaunchInfos(self) -> None:
+    launcherPose = self._getLauncherPose()
+    launcherHeading = launcherPose.rotation().toRotation2d().degrees()
     chassisSpeeds = self._getChassisSpeeds()
     launcherVector = Translation3d(chassisSpeeds.vx, chassisSpeeds.vy, 0)
-    launcherTranslation = self._getLauncherPose().translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
+    launcherTranslation = launcherPose.translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
     for target in self._targetLaunchInfos:
       targetTranslation = self.getTargetPose(target).translation() - launcherTranslation
       targetDistance = targetTranslation.norm()
@@ -55,7 +62,7 @@ class Targeting():
       targetEffectiveDistance = utils.getInterpolatedValue(targetVector.norm(), self._targetLaunchVelocities, self._targetLaunchDistances)
       self._targetLaunchInfos[target].distance = targetEffectiveDistance
       self._targetLaunchInfos[target].speed = utils.getInterpolatedValue(targetEffectiveDistance, self._targetLaunchDistances, self._targetLaunchSpeeds)
-      self._targetLaunchInfos[target].heading = utils.wrapAngle(targetVector.toTranslation2d().angle().degrees(), constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
+      self._targetLaunchInfos[target].heading = utils.wrapAngle(targetVector.toTranslation2d().angle().degrees() - launcherHeading, constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
 
   def getTargetPose(self, target: Target) -> Pose3d:
     return self._targets.get(target, Pose3d(self._getRobotPose()))

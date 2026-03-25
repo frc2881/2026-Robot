@@ -253,8 +253,8 @@ class Services:
 
   class Targeting:
     # TODO: measure and record real-world fuel time of flight values (launcher exit to target entry/landing)
+    # TODO: calculate minimum viable launch distance to configure as first entry in LUT
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 0.0, speed = 0.34, time = 0.95),
       TargetLaunchMetric(distance = 1.0, speed = 0.37, time = 1.05),
       TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.15),
       TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.25),
