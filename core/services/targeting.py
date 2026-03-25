@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING, Callable, Optional
 from wpilib import SmartDashboard
 from wpimath import units
-from wpimath.geometry import Pose2d, Pose3d
+from wpimath.geometry import Pose2d, Pose3d, Translation3d, Rotation3d
 if TYPE_CHECKING: from wpimath.kinematics import ChassisSpeeds
+from wpimath.kinematics import ChassisSpeeds
 from lib import logger, utils
 from lib.classes import Alliance
 from core.classes import Target, TargetLaunchInfo
@@ -22,13 +23,14 @@ class Targeting():
     self._targetLaunchDistances = tuple(t.distance for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
     self._targetLaunchSpeeds = tuple(t.speed for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
     self._targetLaunchTimes = tuple(t.time for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
+    self._targetLaunchVelocities = tuple(t.distance / t.time for t in constants.Services.Targeting.TARGET_LAUNCH_METRICS)
 
     self._targetLaunchInfos: dict[Target, TargetLaunchInfo] = {
       Target.Hub: TargetLaunchInfo(),
       Target.ShuttleLeft: TargetLaunchInfo(),
       Target.ShuttleRight: TargetLaunchInfo()
     }
-    
+
     SmartDashboard.putNumber("Robot/Targeting/SpeedOverride", 0)
 
     utils.addRobotPeriodic(self._periodic)
@@ -44,23 +46,25 @@ class Targeting():
       self._targets = constants.Game.Field.Targets.TARGETS[self._alliance]
 
   def _updateTargetLaunchInfos(self) -> None:
+    chassisSpeeds = self._getChassisSpeeds()
+    launcherVector = Translation3d(chassisSpeeds.vx, chassisSpeeds.vy, 0)
+    launcherPosition = self._getLauncherPose().translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
     for target in self._targetLaunchInfos:
-      launchPose = self._getLaunchPose()
-      targetPose = self.getTargetPose(target)
-      distance = utils.getTargetDistance(launchPose, targetPose)
-      speed = utils.getInterpolatedValue(distance, self._targetLaunchDistances, self._targetLaunchSpeeds)
-      heading = utils.wrapAngle(utils.getTargetHeading(launchPose, targetPose, isRobotRelative = True), constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
-      self._targetLaunchInfos[target].distance = distance
-      self._targetLaunchInfos[target].speed = speed
-      self._targetLaunchInfos[target].heading = heading
-      
+      targetTranslation = self.getTargetPose(target).translation() - launcherPosition
+      targetDistance = targetTranslation.norm()
+      targetVector = (targetTranslation / targetDistance) * (targetDistance / utils.getInterpolatedValue(targetDistance, self._targetLaunchDistances, self._targetLaunchTimes)) - launcherVector
+      targetEffectiveDistance = utils.getInterpolatedValue(targetVector.norm(), self._targetLaunchVelocities, self._targetLaunchDistances)
+      self._targetLaunchInfos[target].distance = targetEffectiveDistance
+      self._targetLaunchInfos[target].speed = utils.getInterpolatedValue(targetEffectiveDistance, self._targetLaunchDistances, self._targetLaunchSpeeds)
+      self._targetLaunchInfos[target].heading = utils.wrapAngle(targetVector.toTranslation2d().angle().degrees(), constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
+
   def getTargetPose(self, target: Target) -> Pose3d:
     return self._targets.get(target, Pose3d(self._getRobotPose()))
   
   def getNearestTargetPose(self, targets: list[Target]) -> Pose3d:
     return Pose3d(self._getRobotPose()).nearest([self._targets[target] for target in self._targets if target in targets])
   
-  def _getLaunchPose(self) -> Pose3d:
+  def _getLauncherPose(self) -> Pose3d:
     return Pose3d(self._getRobotPose()).transformBy(constants.Subsystems.Launcher.LAUNCHER_TRANSFORM)
 
   def getLaunchHeading(self, target: Target) -> units.degrees:
@@ -72,7 +76,7 @@ class Targeting():
   
   def _updateTelemetry(self) -> None:
     for target in self._targetLaunchInfos:
-      params = self._targetLaunchInfos[target]
-      SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Distance', params.distance)
-      SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Speed', params.speed)
-      SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Heading', params.heading)
+      info = self._targetLaunchInfos[target]
+      SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Distance', info.distance)
+      SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Speed', info.speed)
+      SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Heading', info.heading)

@@ -252,23 +252,25 @@ class Services:
     VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 3.33
 
   class Targeting:
-    # TODO: measure actual time of flight values for future on-the-fly launch implementation in targeting service
+    # TODO: measure and record real-world fuel time of flight values (launcher exit to target entry/landing)
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 0.0, speed = 0.34, time = 0.80),
-      TargetLaunchMetric(distance = 1.0, speed = 0.37, time = 0.90),
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.00),
-      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.05),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.10),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.15),
-      TargetLaunchMetric(distance = 4.0, speed = 0.50, time = 1.20),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.25),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.30),
-      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.40),
-      TargetLaunchMetric(distance = 7.0, speed = 0.71, time = 1.50),
-      TargetLaunchMetric(distance = 8.0, speed = 0.77, time = 1.60),
-      TargetLaunchMetric(distance = 9.0, speed = 0.85, time = 1.70),
-      TargetLaunchMetric(distance = 10.0, speed = 0.93, time = 1.80)
+      TargetLaunchMetric(distance = 0.0, speed = 0.34, time = 0.95),
+      TargetLaunchMetric(distance = 1.0, speed = 0.37, time = 1.05),
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.15),
+      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.25),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.35),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.45),
+      TargetLaunchMetric(distance = 4.0, speed = 0.50, time = 1.55),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.65),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.75),
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.85),
+      TargetLaunchMetric(distance = 7.0, speed = 0.71, time = 1.95),
+      TargetLaunchMetric(distance = 8.0, speed = 0.77, time = 2.05),
+      TargetLaunchMetric(distance = 9.0, speed = 0.85, time = 2.15),
+      TargetLaunchMetric(distance = 10.0, speed = 0.93, time = 2.25)
     )
+    # TODO: measure / tune to actual localization processing latency on the robot
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
 
 class Sensors: 
   class Gyro:
