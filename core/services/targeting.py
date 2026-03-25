@@ -3,7 +3,6 @@ from wpilib import SmartDashboard
 from wpimath import units
 from wpimath.geometry import Pose2d, Pose3d, Translation3d, Rotation3d
 if TYPE_CHECKING: from wpimath.kinematics import ChassisSpeeds
-from wpimath.kinematics import ChassisSpeeds
 from lib import logger, utils
 from lib.classes import Alliance
 from core.classes import Target, TargetLaunchInfo
@@ -48,9 +47,9 @@ class Targeting():
   def _updateTargetLaunchInfos(self) -> None:
     chassisSpeeds = self._getChassisSpeeds()
     launcherVector = Translation3d(chassisSpeeds.vx, chassisSpeeds.vy, 0)
-    launcherPosition = self._getLauncherPose().translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
+    launcherTranslation = self._getLauncherPose().translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
     for target in self._targetLaunchInfos:
-      targetTranslation = self.getTargetPose(target).translation() - launcherPosition
+      targetTranslation = self.getTargetPose(target).translation() - launcherTranslation
       targetDistance = targetTranslation.norm()
       targetVector = (targetTranslation / targetDistance) * (targetDistance / utils.getInterpolatedValue(targetDistance, self._targetLaunchDistances, self._targetLaunchTimes)) - launcherVector
       targetEffectiveDistance = utils.getInterpolatedValue(targetVector.norm(), self._targetLaunchVelocities, self._targetLaunchDistances)

@@ -25,8 +25,6 @@ class Hopper(Subsystem):
       lambda: [
         self._indexerRunPatternTimer.advanceIfElapsed(self._constants.HOPPER_FORWARD_TIME + self._constants.HOPPER_REVERSE_TIME),
         self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < self._constants.HOPPER_FORWARD_TIME else -self._constants.INDEXER_REVERSE_SPEED),
-        # self._indexer.setSpeed(self._constants.INDEXER_SPEED),
-        # self._roller.setSpeed(self._constants.ROLLER_SPEED),
         self._roller.setSpeed(self._constants.ROLLER_SPEED if self._indexerRunPatternTimer.get() < self._constants.HOPPER_FORWARD_TIME else -self._constants.ROLLER_REVERSE_SPEED),
         self._feeder.setSpeed(self._constants.FEEDER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
