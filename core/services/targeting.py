@@ -53,7 +53,7 @@ class Targeting():
     launcherPose = self._getLauncherPose()
     launcherHeading = launcherPose.rotation().toRotation2d().degrees()
     chassisSpeeds = self._getChassisSpeeds()
-    launcherVector = Translation3d(chassisSpeeds.vx, chassisSpeeds.vy, 0)
+    launcherVector = Translation3d(-chassisSpeeds.vx, -chassisSpeeds.vy, 0)
     launcherTranslation = launcherPose.translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
     for target in self._targetLaunchInfos:
       targetTranslation = self.getTargetPose(target).translation() - launcherTranslation
