@@ -111,7 +111,7 @@ class Subsystems:
       motorMotionCruiseVelocity = 48000.0,
       motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0,
+      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0, # 45/1
       motorSoftLimitForward = 26.2,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.1,
@@ -127,7 +127,7 @@ class Subsystems:
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
-      motorVelocityConversionFactor = 3.0 / 1.0
+      motorVelocityConversionFactor = 3.0 / 1.0 # 9/1
     ))
 
     ARM_RETRACT_POSITION: float = 0
@@ -253,17 +253,17 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.40, time = 0.83),
-      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 0.91),
-      TargetLaunchMetric(distance = 3.0, speed = 0.46, time = 0.99),
-      TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.14),
-      TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.24),
-      TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.28),
-      TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.36),
-      TargetLaunchMetric(distance = 6.0, speed = 0.62, time = 1.50),
-      TargetLaunchMetric(distance = 7.0, speed = 0.68, time = 1.64),
-      TargetLaunchMetric(distance = 8.0, speed = 0.74, time = 1.70),
-      TargetLaunchMetric(distance = 9.0, speed = 0.80, time = 1.76)
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.90),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 0.95),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.00),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.05),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.10),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.15),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.20),
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.30),
+      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.40),
+      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.50),
+      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.60)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
 
