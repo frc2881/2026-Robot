@@ -196,10 +196,10 @@ class Subsystems:
       motorPID = PID(0.02, 0, 0.002),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 120000.0,
-      motorMotionMaxAcceleration = 60000.0,
+      motorMotionCruiseVelocity = 40000.0,
+      motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 320.0,
+      motorSoftLimitForward = 300.0,
       motorSoftLimitReverse = -10.0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = -19.45
@@ -216,7 +216,7 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0,
+      motorMotionMaxAcceleration = 12000.0,
       motorVelocityConversionFactor = 1.0
     ))
 
@@ -234,7 +234,7 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
-      motorMotionMaxAcceleration = 6000.0,
+      motorMotionMaxAcceleration = 12000.0,
       motorVelocityConversionFactor = 1.0
     ))
 
@@ -253,17 +253,17 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.90),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 0.95),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.00),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.05),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.10),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.15),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.20),
-      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.30),
-      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.40),
-      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.50),
-      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.60)
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.85),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 0.90),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 0.95),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.00),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.05),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.10),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.15),
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.25),
+      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.35),
+      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.45),
+      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.55)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
 
