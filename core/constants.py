@@ -16,8 +16,6 @@ from lib.classes import (
   Range,
   MotorModel,
   FeedForwardGains,
-  SpeedModuleConfig,
-  SpeedModuleConstants,
   SwerveModuleGearKit,
   SwerveModuleConstants, 
   SwerveModuleConfig, 
@@ -32,8 +30,7 @@ from lib.classes import (
   FollowerModuleConstants,
   ButtonControllerConfig,
   PoseSensorConfig,
-  DistanceSensorConfig,
-  BinarySensorConfig
+  DistanceSensorConfig
 )
 from core.classes import Target, TargetLaunchMetric
 import lib.constants
@@ -111,7 +108,7 @@ class Subsystems:
       motorMotionCruiseVelocity = 48000.0,
       motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0, # 45/1
+      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0, # TODO: update to use 45/1 reduction and calibrate closed loop values
       motorSoftLimitForward = 26.2,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.1,
@@ -127,15 +124,12 @@ class Subsystems:
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
-      motorVelocityConversionFactor = 3.0 / 1.0 # 9/1
+      motorVelocityConversionFactor = 3.0 / 1.0 # TODO: update to use 9/1 reduction and calibrate closed loop values
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 25.5
-    ARM_AGITATE_RANGE = Range(0.1, 0.8)
-    ARM_INTAKE_RUN_POSITION_MIN: float = 23.0
+    ARM_INTAKE_POSITION: float = 25.5 # TODO: recalibrate value for strong position hold against bumper
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -145,7 +139,7 @@ class Subsystems:
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0,
+      motorMotionMaxVelocity = 6000.0, # TODO: calibrate closed loop values for max coordinated throughput 
       motorMotionMaxAcceleration = 6000.0,
       motorVelocityConversionFactor = 3.0 / 1.0
     ))
@@ -157,12 +151,12 @@ class Subsystems:
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 12000.0,
+      motorMotionMaxVelocity = 12000.0, # TODO: calibrate closed loop values for max coordinated throughput 
       motorMotionMaxAcceleration = 6000.0,
       motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.5
+    INDEXER_SPEED: units.percent = 0.5 # TODO: calibrate closed loop values for max coordinated throughput 
     ELEVATOR_SPEED: units.percent = 1.0
 
   class Turret:
@@ -174,7 +168,7 @@ class Subsystems:
       motorPID = PID(0.02, 0, 0.002),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 40000.0,
+      motorMotionCruiseVelocity = 40000.0, # TODO: calibrate closed loop values for max coordinated throughput 
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
       motorSoftLimitForward = 300.0,
@@ -216,14 +210,14 @@ class Subsystems:
       motorVelocityConversionFactor = 1.0
     ))
 
-    ACCELERATOR_SPEED_RATIO: units.percent = 1.0
     LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
 
 class Services:
   class Localization:
     VISION_MAX_TARGET_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 3.0
+    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 2.0
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
+    VISION_MAX_POSE_CHANGE: units.meters = 1.5 # TODO: test/validate logic and value
     VISION_STDDEV_XY_COEFF: float = 0.08
     VISION_STDDEV_Z_COEFF: float = 0.1
     VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 5.0
@@ -293,24 +287,14 @@ class Sensors:
   class Distance:
     HOPPER_SENSOR_CONFIG = DistanceSensorConfig(
       name = "Hopper", 
-      channel = 0, 
+      channel = 1, 
       pulseWidthConversionFactor = 2.0, 
       minTargetDistance = 0, 
       maxTargetDistance = 800
     ) 
-    INDEXER_SENSOR_CONFIG = DistanceSensorConfig(
-      name = "Indexer",
-      channel = 1, 
-      pulseWidthConversionFactor = 0.75, 
-      minTargetDistance = 0, 
-      maxTargetDistance = 400
-    )
-    HOPPER_FUEL_LEVEL_FULL: units.millimeters = 250
-    HOPPER_FUEL_LEVEL_MID: units.millimeters = 500
-
-  class Binary:
-    FEEDER_SENSOR_CONFIG = BinarySensorConfig(name = "Feeder", channel = 4)
-    ELEVATOR_SENSOR_CONFIG = BinarySensorConfig(name = "Elevator", channel = 2)
+    HOPPER_FUEL_LEVEL_FULL: units.millimeters = 250 # TODO: calibrate value
+    HOPPER_FUEL_LEVEL_MID: units.millimeters = 500 # TODO: calibrate value
+    HOPPER_FUEL_LEVEL_LOW: units.millimeters = 750 # TODO: calibrate value
 
 class Cameras:
   DRIVER_STREAM = "http://10.28.81.6:1184/?action=stream"
@@ -319,7 +303,7 @@ class Controllers:
   DRIVER_CONTROLLER_PORT: int = 0
   OPERATOR_CONTROLLER_PORT: int = 1
   INPUT_DEADBAND: units.percent = 0.1
-  HOMING_BUTTON_CONFIG = ButtonControllerConfig(name = "Homing", channel = 3)
+  HOMING_BUTTON_CONFIG = ButtonControllerConfig(name = "Homing", channel = 0)
 
 class Game:
   class Robot:
@@ -327,8 +311,7 @@ class Game:
     NAME: str = "Rosetta Stone"
 
   class Commands:
-    LAUNCHER_READY_TIMEOUT: units.seconds = 1.5
-    AUTO_NZ_LEAVE_MATCHTIME: units.seconds = 3.5
+    LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

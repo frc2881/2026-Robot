@@ -17,7 +17,7 @@ class Hopper(Subsystem):
     self._updateTelemetry()
 
   def run_(self) -> Command:
-    return self.runEnd(
+    return self.startEnd(
       lambda: [
         self._indexer.setSpeed(self._constants.INDEXER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
@@ -26,10 +26,7 @@ class Hopper(Subsystem):
     ).withName("Hopper:Run")
   
   def isRunning(self) -> bool:
-    return (
-      self._indexer.getSpeed() != 0 and 
-      self._elevator.getSpeed() != 0
-    )
+    return self._indexer.getSpeed() != 0 and self._elevator.getSpeed() != 0
 
   def reset(self) -> None:
     self._indexer.reset()

@@ -29,7 +29,7 @@ class Launcher(Subsystem):
       lambda: [
         speed := getSpeed(),
         self._launcher.setSpeed(speed),
-        self._accelerator.setSpeed(speed * self._constants.ACCELERATOR_SPEED_RATIO)
+        self._accelerator.setSpeed(speed)
       ],
       lambda: self.reset()
     ).withName("Launcher:Run")

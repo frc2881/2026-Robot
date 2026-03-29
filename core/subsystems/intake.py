@@ -1,6 +1,5 @@
-import math
-from commands2 import Subsystem, Command, cmd
-from wpilib import SmartDashboard, Timer
+from commands2 import Subsystem, Command
+from wpilib import SmartDashboard
 from lib import logger, utils
 from lib.components.relative_position_control_module import RelativePositionControlModule
 from lib.components.velocity_control_module import VelocityControlModule
@@ -14,36 +13,24 @@ class Intake(Subsystem):
     self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
     self._rollers = VelocityControlModule(self._constants.ROLLERS_CONFIG)
 
-    self._armAgitatePatternTimer = Timer()
-
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def run_(self) -> Command:
-    return self.startRun(
-      lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
-      lambda: self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self._arm.getPosition() > self._constants.ARM_INTAKE_RUN_POSITION_MIN else 0)
-    ).finallyDo(lambda end: self.reset()).withName("Intake:Run")    
-
-  def agitate(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._armAgitatePatternTimer.advanceIfElapsed(1.5),
-        self._arm.setPosition(
-          self._constants.ARM_INTAKE_POSITION * (
-            self._constants.ARM_AGITATE_RANGE.max 
-            if self._armAgitatePatternTimer.get() < 0.75 else 
-            self._constants.ARM_AGITATE_RANGE.min
-          )
-        ),
-        self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
+        lambda: self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
+        lambda: self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9 else 0)
       ],
       lambda: self.reset()
-    ).beforeStarting(lambda: self._armAgitatePatternTimer.restart())
-  
+    ).withName("Intake:Run")
+
   def retract(self) -> Command:
-    return self.startEnd(
-      lambda: self._arm.setPosition(self._constants.ARM_RETRACT_POSITION),
+    return self.runEnd(
+      lambda: [ 
+        self._arm.setPosition(self._constants.ARM_RETRACT_POSITION),
+        self._rollers.setSpeed(0)
+      ],
       lambda: self.reset()
     ).withName("Intake:Retract")
 

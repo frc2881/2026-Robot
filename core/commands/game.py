@@ -65,21 +65,16 @@ class Game:
       .withName("Game:RetractIntake")
     )
 
-  def agitateIntake(self) -> Command:
-    return (
-      self._robot.intake.agitate()
-      .withName("Game:AgitateIntake")
-    )
-  
   def getFuelLevel(self) -> FuelLevel:
-    if utils.isValueInRange(self._robot.hopperSensor.getDistance(), 0, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL):
+    level = self._robot.hopperSensor.getDistance()
+    if utils.isValueInRange(level, 0, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL):
       return FuelLevel.Full
-    if utils.isValueInRange(self._robot.hopperSensor.getDistance(), constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_MID):
+    if level <= constants.Sensors.Distance.HOPPER_FUEL_LEVEL_MID: 
       return FuelLevel.Mid
-    if self._robot.indexerSensor.hasTarget() or self._robot.feederSensor.hasTarget():
+    if level <= constants.Sensors.Distance.HOPPER_FUEL_LEVEL_LOW: 
       return FuelLevel.Low
     return FuelLevel.Empty
-    
+
   def rumbleControllers(
     self, 
     mode: ControllerRumbleMode = ControllerRumbleMode.Both, 

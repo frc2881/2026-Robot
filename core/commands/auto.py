@@ -19,8 +19,6 @@ class AutoPath(Enum):
   BR_NZ_ST_SF = auto()
   TR_OP_SF = auto()
   TL_DP_SF = auto()
-  BL_LV_NZ = auto()
-  BR_LV_NZ = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -43,12 +41,12 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("[BLeft]_Loop", self.auto_BL_NZ_LP_SF_LV)
-    self._autos.addOption("[BLeft]_Straight", self.auto_BL_NZ_ST_SF_LV)
-    self._autos.addOption("[BRight]_Loop", self.auto_BR_NZ_LP_SF_LV)
-    self._autos.addOption("[BRight]_Straight", self.auto_BR_NZ_ST_SF_LV)
-    self._autos.addOption("[TL]_Depot", self.auto_TL_DP_SF)
-    self._autos.addOption("[TR]_Outpost", self.auto_TR_OP_SF)
+    self._autos.addOption("[Bump Left] + Loop", self.auto_BL_NZ_LP_SF)
+    self._autos.addOption("[Bump Left] + Straight", self.auto_BL_NZ_ST_SF)
+    self._autos.addOption("[Bump Right] + Loop", self.auto_BR_NZ_LP_SF)
+    self._autos.addOption("[Bump Right] + Straight", self.auto_BR_NZ_ST_SF)
+    self._autos.addOption("[Trench Left] + Depot", self.auto_TL_DP_SF)
+    self._autos.addOption("[Trench Right] + Outpost", self.auto_TR_OP_SF)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -79,38 +77,33 @@ class Auto:
   
   def _score(self) -> Command:
     return (
-      (self._robot.game.launchFuel(Target.Hub)
-      .deadlineFor(self._robot.game.agitateIntake())
-      .deadlineFor(logger.log_("Auto:Score")))
+      (self._robot.game.launchFuel(Target.Hub).deadlineFor(self._robot.game.retractIntake()))
+      .deadlineFor(logger.log_("Auto:Score"))
     )
 
-  def auto_BL_NZ_LP_SF_LV(self) -> Command:
+  def auto_BL_NZ_LP_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BL_NZ_LP_SF).deadlineFor(self._intake()),
-      self._score()# .until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
-      # self._move(AutoPath.BL_LV_NZ).deadlineFor(self._intake())
-    ).withName("Auto:[BL]_NZ_LP_SF_LV")
+      self._score()
+    ).withName("Auto:[BL]_NZ_LP_SF")
   
-  def auto_BL_NZ_ST_SF_LV(self) -> Command:
+  def auto_BL_NZ_ST_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BL_NZ_ST_SF).deadlineFor(self._intake()),
-      self._score()# .until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
-      # self._move(AutoPath.BL_LV_NZ).deadlineFor(self._intake())
-    ).withName("Auto:[BL]_NZ_ST_SF_LV") 
+      self._score()
+    ).withName("Auto:[BL]_NZ_ST_SF") 
 
-  def auto_BR_NZ_LP_SF_LV(self) -> Command:
+  def auto_BR_NZ_LP_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_LP_SF).deadlineFor(self._intake()),
-      self._score()# .until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
-      # self._move(AutoPath.BR_LV_NZ).deadlineFor(self._intake())
-    ).withName("Auto:[BR]_NZ_LP_SF_LV")
+      self._score()
+    ).withName("Auto:[BR]_NZ_LP_SF")
   8
-  def auto_BR_NZ_ST_SF_LV(self) -> Command:
+  def auto_BR_NZ_ST_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_ST_SF).deadlineFor(self._intake()),
-      self._score()# .until(lambda: utils.getMatchTime() <= constants.Game.Commands.AUTO_NZ_LEAVE_MATCHTIME),
-      # self._move(AutoPath.BR_LV_NZ).deadlineFor(self._intake())
-    ).withName("Auto:[BR]_NZ_ST_SF_LV")
+      self._score()
+    ).withName("Auto:[BR]_NZ_ST_SF")
   
   def auto_TR_OP_SF(self) -> Command:
     return cmd.sequence(
