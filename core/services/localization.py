@@ -62,10 +62,10 @@ class Localization():
     return (         
       poseSensorResult is not None and
       utils.isPoseInBounds(poseSensorResult.estimatedPose.toPose2d(), constants.Game.Field.BOUNDS) and
-      (
-        utils.getRobotState() == RobotState.Enabled and 
-        utils.getTargetDistance(poseSensorResult.estimatedPose, self._poseEstimator.getEstimatedPosition()) <= constants.Services.Localization.VISION_MAX_POSE_CHANGE
-      ) and
+      # (
+      #   utils.getRobotState() == RobotState.Enabled and 
+      #   utils.getTargetDistance(poseSensorResult.estimatedPose, self._poseEstimator.getEstimatedPosition()) <= constants.Services.Localization.VISION_MAX_POSE_CHANGE
+      # ) and
       poseSensorResult.bestTargetDistance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE and
       poseSensorResult.bestTargetAmbiguity <= constants.Services.Localization.VISION_MAX_TARGET_AMBIGUITY and
       poseSensorResult.bestTargetReprojectionError <= constants.Services.Localization.VISION_MAX_TARGET_REPROJECTION_ERROR

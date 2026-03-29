@@ -95,7 +95,7 @@ class RobotCore:
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    # self.operator.leftTrigger().whileTrue(cmd.none())
+    self.operator.leftTrigger().whileTrue(self.game.agitateIntake())
     self.operator.rightTrigger().whileTrue(self.game.launchFuel(Target.Hub))
     self.operator.leftBumper().whileTrue(self.game.launchFuel(Target.ShuttleLeft))
     self.operator.rightBumper().whileTrue(self.game.launchFuel(Target.ShuttleRight))

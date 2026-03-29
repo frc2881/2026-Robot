@@ -13,13 +13,16 @@ class Hopper(Subsystem):
     self._indexer = VelocityControlModule(self._constants.INDEXER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
+    SmartDashboard.putNumber("Robot/Hopper/IndexerSpeedOverride", self._constants.INDEXER_SPEED)
+
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def run_(self) -> Command:
     return self.startEnd(
       lambda: [
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED),
+        indexerSpeedOverride := SmartDashboard.getNumber("Robot/Hopper/IndexerSpeedOverride", self._constants.INDEXER_SPEED),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED if indexerSpeedOverride == 0 else indexerSpeedOverride),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],
       lambda: self.reset()

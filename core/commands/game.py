@@ -49,6 +49,7 @@ class Game:
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
         .andThen(self._robot.hopper.run_())
+        # TODO: add logic for turret is close to target position
       )
       .withName(f'Game:LaunchFuel:{ target.name }')
     )
@@ -63,6 +64,12 @@ class Game:
     return (
       self._robot.intake.retract()
       .withName("Game:RetractIntake")
+    )
+  
+  def agitateIntake(self) -> Command:
+    return (
+      self._robot.intake.agitate()
+      .withName("Game:AgitateIntake")
     )
 
   def getFuelLevel(self) -> FuelLevel:
