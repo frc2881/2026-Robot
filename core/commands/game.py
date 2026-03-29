@@ -71,12 +71,6 @@ class Game:
       .withName("Game:AgitateIntake")
     )
   
-  def reverseHopper(self) -> Command:
-    return (
-      self._robot.hopper.reverse()
-      .withName("Game:ReverseHopper")
-    )
-
   def getFuelLevel(self) -> FuelLevel:
     if utils.isValueInRange(self._robot.hopperSensor.getDistance(), 0, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL):
       return FuelLevel.Full

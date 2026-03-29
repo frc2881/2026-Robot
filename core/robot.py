@@ -88,7 +88,7 @@ class RobotCore:
     # self.driver.povUp().whileTrue(cmd.none())
     # self.driver.povDown().whileTrue(cmd.none())
     # self.driver.povLeft().whileTrue(cmd.none())
-    self.driver.povRight().whileTrue(self.drive.drive(lambda: 0, lambda: -0.2, lambda: 0))
+    # self.driver.povRight().whileTrue(cmd.none())
     # self.driver.a().whileTrue(cmd.none())
     # self.driver.b().whileTrue(cmd.none())
     self.driver.y().whileTrue(self.game.alignRobotToNearestBump())
@@ -110,7 +110,7 @@ class RobotCore:
     self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
     # self.operator.b().whileTrue(cmd.none())
     self.operator.y().whileTrue(self.turret.setHeading(lambda: 0))
-    self.operator.x().whileTrue(self.game.reverseHopper())
+    # self.operator.x().whileTrue(cmd.none())
     # self.operator.start().whileTrue(cmd.none())
     # self.operator.back().whileTrue(cmd.none())
 

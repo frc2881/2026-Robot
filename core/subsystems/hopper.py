@@ -10,12 +10,8 @@ class Hopper(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Hopper
 
-    self._indexer = SpeedModule(self._constants.INDEXER_CONFIG)
-    self._roller = SpeedModule(self._constants.ROLLER_CONFIG)
-    self._feeder = VelocityControlModule(self._constants.FEEDER_CONFIG)
+    self._indexer = VelocityControlModule(self._constants.INDEXER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
-
-    self._indexerRunPatternTimer = Timer()
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -23,38 +19,20 @@ class Hopper(Subsystem):
   def run_(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexerRunPatternTimer.advanceIfElapsed(self._constants.HOPPER_FORWARD_TIME + self._constants.HOPPER_REVERSE_TIME),
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED if self._indexerRunPatternTimer.get() < self._constants.HOPPER_FORWARD_TIME else -self._constants.INDEXER_REVERSE_SPEED),
-        self._roller.setSpeed(self._constants.ROLLER_SPEED if self._indexerRunPatternTimer.get() < self._constants.HOPPER_FORWARD_TIME else -self._constants.ROLLER_REVERSE_SPEED),
-        self._feeder.setSpeed(self._constants.FEEDER_SPEED),
+        self._indexer.setSpeed(self._constants.INDEXER_SPEED),
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
       ],
       lambda: self.reset()
-    ).beforeStarting(lambda: self._indexerRunPatternTimer.restart()).withName("Hopper:Run") # 
-
-  def reverse(self) -> Command:
-    return self.runEnd(
-      lambda: [
-        self._indexer.setSpeed(-self._constants.INDEXER_SPEED * self._constants.REVERSE_SPEED_RATIO),
-        self._roller.setSpeed(-self._constants.ROLLER_SPEED * self._constants.REVERSE_SPEED_RATIO),
-        self._feeder.setSpeed(-self._constants.FEEDER_SPEED * self._constants.REVERSE_SPEED_RATIO),
-        self._elevator.setSpeed(-self._constants.ELEVATOR_SPEED * self._constants.REVERSE_SPEED_RATIO)
-      ],
-      lambda: self.reset()
-    ).withName("Hopper:Agitate")
+    ).withName("Hopper:Run")
   
   def isRunning(self) -> bool:
     return (
       self._indexer.getSpeed() != 0 and 
-      self._roller.getSpeed() != 0 and 
-      self._feeder.getSpeed() != 0 and 
       self._elevator.getSpeed() != 0
     )
 
   def reset(self) -> None:
     self._indexer.reset()
-    self._roller.reset()
-    self._feeder.reset()
     self._elevator.reset()
 
   def _updateTelemetry(self) -> None:

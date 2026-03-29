@@ -138,33 +138,19 @@ class Subsystems:
     ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
   class Hopper:
-    INDEXER_CONFIG = SpeedModuleConfig("Hopper/Indexer", 14, True, SpeedModuleConstants(
+    INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 30,
-      motorVelocityConversionFactor = 1.0
-    ))
-
-    ROLLER_CONFIG = SpeedModuleConfig("Hopper/Roller", 20, True, SpeedModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 30,
-      motorVelocityConversionFactor = 1.0
-    ))
-
-    FEEDER_CONFIG = VelocityControlModuleConfig("Hopper/Feeder", 15, False, VelocityControlModuleConstants(
-      motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
-      motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 35,
+      motorCurrentLimit = 80,
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
-      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEO]),
+      motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0,
       motorMotionMaxAcceleration = 6000.0,
-      motorVelocityConversionFactor = 1.0
+      motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
-    ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, True, VelocityControlModuleConstants(
+    ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
@@ -173,19 +159,11 @@ class Subsystems:
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 6000.0,
-      motorVelocityConversionFactor = 1.0
+      motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.75
-    INDEXER_REVERSE_SPEED: units.percent = 0.6
-    ROLLER_SPEED: units.percent = 1.0
-    ROLLER_REVERSE_SPEED: units.percent = 0.8
-    FEEDER_SPEED: units.percent = 1.0
+    INDEXER_SPEED: units.percent = 0.5
     ELEVATOR_SPEED: units.percent = 1.0
-    REVERSE_SPEED_RATIO: units.percent = 0.2
-
-    HOPPER_FORWARD_TIME: float = 1.3
-    HOPPER_REVERSE_TIME: float = 0.35
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
