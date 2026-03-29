@@ -56,12 +56,13 @@ class Targeting():
     launcherVector = Translation3d(launcherVelocity.vx, launcherVelocity.vy, 0)
     launcherTranslation = launcherPose.translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
     for target in self._targetLaunchInfos:
-      targetTranslation = self.getTargetPose(target).translation() - launcherTranslation
-      targetDistance = targetTranslation.norm()
-      targetVector = (targetTranslation / targetDistance) * (targetDistance / utils.getInterpolatedValue(targetDistance, self._targetLaunchDistances, self._targetLaunchTimes)) - launcherVector
-      targetEffectiveDistance = utils.getInterpolatedValue(targetVector.norm(), self._targetLaunchVelocities, self._targetLaunchDistances)
-      self._targetLaunchInfos[target].distance = targetEffectiveDistance
-      self._targetLaunchInfos[target].speed = utils.getInterpolatedValue(targetEffectiveDistance, self._targetLaunchDistances, self._targetLaunchSpeeds)
+      translation = self.getTargetPose(target).translation() - launcherTranslation
+      distance = translation.norm()
+      time = utils.getInterpolatedValue(distance, self._targetLaunchDistances, self._targetLaunchTimes)
+      targetVector = ((translation / distance) * (distance / time)) - launcherVector
+      targetDistance = utils.getInterpolatedValue(targetVector.norm(), self._targetLaunchVelocities, self._targetLaunchDistances)
+      self._targetLaunchInfos[target].distance = targetDistance
+      self._targetLaunchInfos[target].speed = utils.getInterpolatedValue(targetDistance, self._targetLaunchDistances, self._targetLaunchSpeeds)
       self._targetLaunchInfos[target].heading = utils.wrapAngle(targetVector.toTranslation2d().angle().degrees() - launcherRotation.degrees(), constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
 
   def getTargetPose(self, target: Target) -> Pose3d:
