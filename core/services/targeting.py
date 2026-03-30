@@ -35,8 +35,6 @@ class Targeting():
     SmartDashboard.putNumber("Robot/Targeting/HeadingMin", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitReverse)
     SmartDashboard.putNumber("Robot/Targeting/HeadingMax", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitForward)
 
-    SmartDashboard.putNumber("Robot/Targeting/SpeedOverride", 0)
-
     utils.addRobotPeriodic(self._periodic)
 
   def _periodic(self) -> None:
@@ -78,8 +76,7 @@ class Targeting():
     return self._targetLaunchInfos[target].heading
 
   def getLaunchSpeed(self, target: Target) -> units.percent:
-    speedOverride = SmartDashboard.getNumber("Robot/Targeting/SpeedOverride", 0)
-    return speedOverride if speedOverride != 0 else self._targetLaunchInfos[target].speed
+    return self._targetLaunchInfos[target].speed
   
   def _updateTelemetry(self) -> None:
     for target in self._targetLaunchInfos:

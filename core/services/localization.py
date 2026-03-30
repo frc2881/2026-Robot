@@ -6,7 +6,7 @@ if TYPE_CHECKING: from wpimath.kinematics import SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from ntcore import NetworkTableInstance
 from lib import logger, utils
-from lib.classes import RobotState, PoseSensorResult
+from lib.classes import RobotState, PoseSensorResult, PoseSensorResultType
 if TYPE_CHECKING: from lib.sensors.pose import PoseSensor
 import core.constants as constants
 
@@ -60,13 +60,25 @@ class Localization():
 
   def _isResultValid(self, poseSensorResult: PoseSensorResult) -> bool:
     return (         
-      poseSensorResult is not None and
-      utils.isPoseInBounds(poseSensorResult.estimatedPose.toPose2d(), constants.Game.Field.BOUNDS) and
-      poseSensorResult.bestTargetDistance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE and
-      poseSensorResult.bestTargetAmbiguity <= constants.Services.Localization.VISION_MAX_TARGET_AMBIGUITY and
-      poseSensorResult.bestTargetReprojectionError <= constants.Services.Localization.VISION_MAX_TARGET_REPROJECTION_ERROR and
+      poseSensorResult is not None 
+      and
+      utils.isPoseInBounds(poseSensorResult.estimatedPose.toPose2d(), constants.Game.Field.BOUNDS) 
+      and
+      poseSensorResult.bestTargetDistance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE 
+      and
+      (
+        poseSensorResult.resultType == PoseSensorResultType.SINGLE_TAG or 
+        poseSensorResult.bestTargetReprojectionError <= constants.Services.Localization.VISION_MAX_TARGET_REPROJECTION_ERROR
+      )
+      and
+      (
+        poseSensorResult.resultType == PoseSensorResultType.MULTI_TAG or
+        poseSensorResult.bestTargetAmbiguity <= constants.Services.Localization.VISION_MAX_TARGET_AMBIGUITY
+      )
+      and
       (
         utils.getRobotState() == RobotState.Disabled or 
+        poseSensorResult.resultType == PoseSensorResultType.MULTI_TAG or
         utils.getTargetDistance(poseSensorResult.estimatedPose, self._poseEstimator.getEstimatedPosition()) <= constants.Services.Localization.VISION_MAX_POSE_CHANGE
       )
     )
@@ -74,7 +86,7 @@ class Localization():
   def _getStandardDeviations(self, poseSensorResult: PoseSensorResult) -> tuple[float, float, float]:
     stdDevXY = constants.Services.Localization.VISION_STDDEV_XY_COEFF * poseSensorResult.bestTargetDistance
     stdDevZ = constants.Services.Localization.VISION_STDDEV_Z_COEFF * poseSensorResult.bestTargetDistance
-    if poseSensorResult.bestTargetReprojectionError >= 0:
+    if poseSensorResult.resultType == PoseSensorResultType.MULTI_TAG:
       stdDevXY *= constants.Services.Localization.VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR * poseSensorResult.bestTargetReprojectionError
       stdDevZ *= constants.Services.Localization.VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR * poseSensorResult.bestTargetReprojectionError
     else: 

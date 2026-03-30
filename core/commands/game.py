@@ -48,12 +48,11 @@ class Game:
       .alongWith(
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
-        .andThen(self._robot.hopper.run_())
-        # TODO: add logic for turret is close to target position
+        .andThen(self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.turret.getTargetHeading(), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE)))
       )
       .withName(f'Game:LaunchFuel:{ target.name }')
     )
-  
+
   def runIntake(self) -> Command:
     return (
       self._robot.intake.run_()
@@ -74,11 +73,13 @@ class Game:
 
   def getFuelLevel(self) -> FuelLevel:
     level = self._robot.hopperSensor.getDistance()
-    if utils.isValueInRange(level, 0, constants.Sensors.Distance.HOPPER_FUEL_LEVEL_FULL):
+    isIntakeExtended = self._robot.intake.isExtended()
+    # TODO: rework logic and distance values to account for intake extension/retraction state
+    if utils.isValueWithinRange(level, 0, 250):
       return FuelLevel.Full
-    if level <= constants.Sensors.Distance.HOPPER_FUEL_LEVEL_MID: 
+    if level <= 500: 
       return FuelLevel.Mid
-    if level <= constants.Sensors.Distance.HOPPER_FUEL_LEVEL_LOW: 
+    if level <= 700: 
       return FuelLevel.Low
     return FuelLevel.Empty
 

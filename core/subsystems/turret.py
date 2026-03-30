@@ -1,4 +1,3 @@
-import math
 from typing import Callable
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
@@ -26,6 +25,9 @@ class Turret(Subsystem):
   def getHeading(self) -> units.degrees:
     return self._turret.getPosition()
 
+  def getTargetHeading(self) -> units.degrees:
+    return self._turret.getTargetPosition()
+
   def isAtTargetHeading(self) -> bool:
     return self._turret.isAtTargetPosition()
   
@@ -45,5 +47,6 @@ class Turret(Subsystem):
     self._turret.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Turret/IsAtTargetHeading", self.isAtTargetHeading())
     SmartDashboard.putNumber("Robot/Turret/Heading", self.getHeading())
+    SmartDashboard.putBoolean("Robot/Turret/TargetHeading", self.getTargetHeading())
+    SmartDashboard.putBoolean("Robot/Turret/IsAtTargetHeading", self.isAtTargetHeading())

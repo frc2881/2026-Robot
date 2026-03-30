@@ -13,13 +13,15 @@ class Launcher(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Launcher
 
-    self._launcher = VelocityControlModule(self._constants.LAUNCHER_CONFIG)
+    self._launcherLeader = VelocityControlModule(self._constants.LAUNCHER_LEADER_CONFIG)
     self._launcherFollower = FollowerModule(self._constants.LAUNCHER_FOLLOWER_CONFIG)
-    self._accelerator = VelocityControlModule(self._constants.ACCELERATOR_CONFIG)
+    self._launcherAccelerator = VelocityControlModule(self._constants.LAUNCHER_ACCELERATOR_CONFIG)
 
-    self._launcher.setIdleMode(MotorIdleMode.Coast)
+    self._launcherLeader.setIdleMode(MotorIdleMode.Coast)
     self._launcherFollower.setIdleMode(MotorIdleMode.Coast)
-    self._accelerator.setIdleMode(MotorIdleMode.Coast)
+    self._launcherAccelerator.setIdleMode(MotorIdleMode.Coast)
+
+    SmartDashboard.putNumber("Robot/Launcher/SpeedOverride", 0)
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -27,24 +29,22 @@ class Launcher(Subsystem):
   def run_(self, getSpeed: Callable[[], units.percent]) -> Command:
     return self.runEnd(
       lambda: [
-        speed := getSpeed(),
-        self._launcher.setSpeed(speed),
-        self._accelerator.setSpeed(speed)
+        launcherSpeedOverride := SmartDashboard.getNumber("Robot/Launcher/SpeedOverride", 0),
+        launcherSpeed := getSpeed() if launcherSpeedOverride == 0 else launcherSpeedOverride,
+        self._launcherLeader.setSpeed(launcherSpeed),
+        self._launcherAccelerator.setSpeed(launcherSpeed)
       ],
       lambda: self.reset()
     ).withName("Launcher:Run")
   
   def isAtTargetSpeed(self) -> bool:
-    return self._launcher.isAtTargetSpeed() and self._accelerator.isAtTargetSpeed()
-
-  def isRunning(self) -> bool:
-    return self._launcher.getSpeed() != 0 and self._accelerator.getSpeed != 0
+    return self._launcherLeader.isAtTargetSpeed() and self._launcherAccelerator.isAtTargetSpeed()
 
   def reset(self) -> None:
-    self._launcher.reset()
-    self._accelerator.reset()
+    self._launcherLeader.reset()
+    self._launcherAccelerator.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Launcher/IsRunning", self.isRunning())
+    SmartDashboard.putNumber("Robot/Launcher/Speed", self._launcherLeader.getSpeed())
+    SmartDashboard.putNumber("Robot/Launcher/TargetSpeed", self._launcherLeader.getTargetSpeed())
     SmartDashboard.putBoolean("Robot/Launcher/IsAtTargetSpeed", self.isAtTargetSpeed())
-    SmartDashboard.putNumber("Robot/Launcher/Speed", self._launcher.getSpeed())

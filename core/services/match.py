@@ -33,27 +33,27 @@ class Match():
         self._matchStateTime = matchTime
         self._hubState = HubState.Active
       if utils.getRobotMode() == RobotMode.Teleop:
-        if utils.isValueInRange(matchTime, 131, 140):
+        if utils.isValueWithinRange(matchTime, 131, 140):
           self._matchState = MatchState.Transition
           self._matchStateTime = matchTime - 130
           self._hubState = HubState.Active
-        elif utils.isValueInRange(matchTime, 106, 131):
+        elif utils.isValueWithinRange(matchTime, 106, 131):
           self._matchState = MatchState.Shift1
           self._matchStateTime = matchTime - 105
           self._hubState = HubState.Active if alliance != self._selectedAlliance and self._selectedAlliance is not None else HubState.Inactive
-        elif utils.isValueInRange(matchTime, 81, 106):
+        elif utils.isValueWithinRange(matchTime, 81, 106):
           self._matchState = MatchState.Shift2
           self._matchStateTime = matchTime - 80
           self._hubState = HubState.Active if alliance == self._selectedAlliance and self._selectedAlliance is not None else HubState.Inactive
-        elif utils.isValueInRange(matchTime, 56, 81):
+        elif utils.isValueWithinRange(matchTime, 56, 81):
           self._matchState = MatchState.Shift3
           self._matchStateTime = matchTime - 55
           self._hubState = HubState.Active if alliance != self._selectedAlliance and self._selectedAlliance is not None else HubState.Inactive
-        elif utils.isValueInRange(matchTime, 31, 56):
+        elif utils.isValueWithinRange(matchTime, 31, 56):
           self._matchState = MatchState.Shift4
           self._matchStateTime = matchTime - 30
           self._hubState = HubState.Active if alliance == self._selectedAlliance and self._selectedAlliance is not None else HubState.Inactive
-        elif utils.isValueInRange(matchTime, 0, 31):
+        elif utils.isValueWithinRange(matchTime, 0, 31):
           self._matchState = MatchState.EndGame
           self._matchStateTime = matchTime
           self._hubState = HubState.Active
