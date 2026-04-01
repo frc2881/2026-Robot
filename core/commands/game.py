@@ -73,14 +73,13 @@ class Game:
     )
 
   def getFuelLevel(self) -> FuelLevel:
-    hopperSensorDistance: units.millimeters = self._robot.hopperSensor.getDistance()
-    indexerHasTarget: bool = self._robot.indexerSensor.hasTarget()
-    isIntakeExtended: bool = self._robot.intake.isExtended() # TODO: measure/adjust distance values below downward when intake is retracted
-    if utils.isValueWithinRange(hopperSensorDistance, 0, 150):
+    distance = self._robot.hopperSensor.getDistance()
+    position = self._robot.intake.getArmPosition()
+    if utils.isValueWithinRange(distance, 0, 175):
       return FuelLevel.Full
-    if utils.isValueWithinRange(hopperSensorDistance, 0, 400): 
+    if utils.isValueWithinRange(distance, 0, 400 - ((25 - position) * 2)): 
       return FuelLevel.Mid
-    if utils.isValueWithinRange(hopperSensorDistance, 0, 650) or indexerHasTarget: 
+    if utils.isValueWithinRange(distance, 0, 650 - ((25 - position) * 8)) or self._robot.indexerSensor.hasTarget(): 
       return FuelLevel.Low
     return FuelLevel.Empty
 

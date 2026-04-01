@@ -52,6 +52,9 @@ class Intake(Subsystem):
       lambda: self.reset()
     ).withName("Intake:Retract")
 
+  def getArmPosition(self) -> float:
+    return self._arm.getPosition()
+
   def isExtended(self) -> bool:
     return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9
   
