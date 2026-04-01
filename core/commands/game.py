@@ -78,9 +78,9 @@ class Game:
     isIntakeExtended: bool = self._robot.intake.isExtended() # TODO: measure/adjust distance values below downward when intake is retracted
     if utils.isValueWithinRange(hopperSensorDistance, 0, 150):
       return FuelLevel.Full
-    if hopperSensorDistance <= 400: 
+    if utils.isValueWithinRange(hopperSensorDistance, 0, 400): 
       return FuelLevel.Mid
-    if hopperSensorDistance <= 650 or indexerHasTarget: 
+    if utils.isValueWithinRange(hopperSensorDistance, 0, 650) or indexerHasTarget: 
       return FuelLevel.Low
     return FuelLevel.Empty
 
