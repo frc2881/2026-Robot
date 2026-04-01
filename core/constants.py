@@ -30,6 +30,7 @@ from lib.classes import (
   FollowerModuleConstants,
   ButtonControllerConfig,
   PoseSensorConfig,
+  BinarySensorConfig,
   DistanceSensorConfig
 )
 from core.classes import Target, TargetLaunchMetric
@@ -217,13 +218,13 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_TARGET_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 2.0
+    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 1.0
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
-    VISION_MAX_POSE_CHANGE: units.meters = 1.5
-    VISION_STDDEV_XY_COEFF: float = 0.08
-    VISION_STDDEV_Z_COEFF: float = 0.1
-    VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 10.0
-    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 3.33
+    VISION_MAX_POSE_CHANGE: units.meters = 1.0
+    VISION_STDDEV_XY_COEFF: float = 0.1
+    VISION_STDDEV_Z_COEFF: float = 0.5
+    VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 15.0
+    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 5.0
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
@@ -286,13 +287,19 @@ class Sensors:
       )
     )
 
+  class Binary:
+    INDEXER_SENSOR_CONFIG = BinarySensorConfig(
+      name = "Indexer", 
+      channel = 2
+    )
+
   class Distance:
     HOPPER_SENSOR_CONFIG = DistanceSensorConfig(
       name = "Hopper", 
       channel = 1, 
       pulseWidthConversionFactor = 2.0, 
       minTargetDistance = 0, 
-      maxTargetDistance = 800
+      maxTargetDistance = 700
     )
 
 class Cameras:

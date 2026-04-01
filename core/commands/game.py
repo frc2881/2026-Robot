@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from commands2 import Command, cmd
 from wpilib import RobotBase
+from wpimath import units
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
 from core.classes import Target, FuelLevel
@@ -72,14 +73,14 @@ class Game:
     )
 
   def getFuelLevel(self) -> FuelLevel:
-    level = self._robot.hopperSensor.getDistance()
-    isIntakeExtended = self._robot.intake.isExtended()
-    # TODO: rework logic and distance values to account for intake extension/retraction state
-    if utils.isValueWithinRange(level, 0, 250):
+    hopperSensorDistance: units.millimeters = self._robot.hopperSensor.getDistance()
+    indexerHasTarget: bool = self._robot.indexerSensor.hasTarget()
+    isIntakeExtended: bool = self._robot.intake.isExtended() # TODO: measure/adjust distance values below downward when intake is retracted
+    if utils.isValueWithinRange(hopperSensorDistance, 0, 150):
       return FuelLevel.Full
-    if level <= 500: 
+    if hopperSensorDistance <= 400: 
       return FuelLevel.Mid
-    if level <= 700: 
+    if hopperSensorDistance <= 650 or indexerHasTarget: 
       return FuelLevel.Low
     return FuelLevel.Empty
 

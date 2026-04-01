@@ -7,6 +7,7 @@ from lib.classes import RobotState
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
 from lib.sensors.distance import DistanceSensor
+from lib.sensors.binary import BinarySensor
 from core.commands.auto import Auto
 from core.commands.game import Game
 from core.subsystems.drive import Drive
@@ -36,6 +37,7 @@ class RobotCore:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.COM_TYPE)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS)
     self.hopperSensor = DistanceSensor(constants.Sensors.Distance.HOPPER_SENSOR_CONFIG)
+    self.indexerSensor = BinarySensor(constants.Sensors.Binary.INDEXER_SENSOR_CONFIG)
 
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
@@ -48,7 +50,7 @@ class RobotCore:
     self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors)
     self.targeting = Targeting(self.localization.getRobotPose, self.drive.getChassisSpeeds)
     self.match = Match()
-    self.lights = Lights(self.isHoming, self.isHomed, self.localization.hasValidVisionTarget, self.match.getHubState, self.match.getMatchStateTime)
+    self.lights = Lights(self.isHoming, self.isHomed, self.localization.hasValidVisionTarget, self.match.getMatchState, self.match.getMatchStateTime, self.match.getHubState)
 
   def _initCommands(self) -> None:
     self.game = Game(self)
@@ -153,4 +155,4 @@ class RobotCore:
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Status/IsHoming", self.isHoming())
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())
-    SmartDashboard.putString("Robot/Sensors/FuelLevel", self.game.getFuelLevel().name)
+    SmartDashboard.putString("Robot/Hopper/FuelLevel", self.game.getFuelLevel().name)

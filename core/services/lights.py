@@ -4,7 +4,7 @@ from wpimath import units
 from lib.classes import RobotState
 from lib.controllers.lights import LightsController
 from lib import logger, utils
-from core.classes import LightsMode, HubState
+from core.classes import LightsMode, MatchState, HubState
 
 class Lights():
   def __init__(
@@ -12,15 +12,17 @@ class Lights():
       isHoming: Callable[[], bool],
       isHomed: Callable[[], bool],
       hasValidVisionTarget: Callable[[], bool],
-      getHubState: Callable[[], HubState],
-      getMatchStateTime: Callable[[], units.seconds]
+      getMatchState: Callable[[], MatchState],
+      getMatchStateTime: Callable[[], units.seconds],
+      getHubState: Callable[[], HubState]
     ) -> None:
     self._isHoming = isHoming
     self._isHomed = isHomed
     self._hasValidVisionTarget = hasValidVisionTarget
-    self._getHubState = getHubState
+    self._getMatchState = getMatchState
     self._getMatchStateTime = getMatchStateTime
-
+    self._getHubState = getHubState
+    
     self._lightsController = LightsController()
 
     utils.addRobotPeriodic(self._periodic)
@@ -45,12 +47,13 @@ class Lights():
         return
     
     if utils.getRobotState() == RobotState.Enabled:
-      isMatchStateEnding = self._getMatchStateTime() < 5
-      self._lightsController.setMode(
-        (LightsMode.HubStateActiveEnding if isMatchStateEnding else LightsMode.HubStateActive)
-        if self._getHubState() == HubState.Active else 
-        (LightsMode.HubStateInactiveEnding if isMatchStateEnding else LightsMode.HubStateInactive)
-      )
-      return
+      if self._getMatchState() != MatchState.Stopped:
+        isMatchStateEnding = self._getMatchStateTime() < 5
+        self._lightsController.setMode(
+          (LightsMode.HubStateActiveEnding if isMatchStateEnding else LightsMode.HubStateActive)
+          if self._getHubState() == HubState.Active else 
+          (LightsMode.HubStateInactiveEnding if isMatchStateEnding else LightsMode.HubStateInactive)
+        )
+        return
 
     self._lightsController.setMode(LightsMode.Default)
