@@ -1,4 +1,5 @@
-from commands2 import Subsystem, Command
+from typing import Callable
+from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, Timer
 from lib import logger, utils
 from lib.components.relative_position_control_module import RelativePositionControlModule
@@ -13,47 +14,49 @@ class Intake(Subsystem):
     self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
     self._rollers = VelocityControlModule(self._constants.ROLLERS_CONFIG)
 
-    self._armAgitatePatternTimer = Timer()
+    self._isIntaking: bool = False
+    self._isAgitating: bool = False
+    self._isRetracting: bool = False
+
+    self._agitationTimer = Timer()
+    self._agitationTimer.start()
 
   def periodic(self) -> None:
+    self._updateState()
     self._updateTelemetry()
 
+  def _updateState(self) -> None:
+    if self._isIntaking:
+      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
+      self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9 else 0)
+    elif self._isRetracting:
+      self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
+      self._rollers.setSpeed(0)
+    elif self._isAgitating:
+      self._agitationTimer.advanceIfElapsed(1.5)
+      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION * (self._constants.ARM_AGITATE_RANGE.min if self._agitationTimer.get() < 0.75 else self._constants.ARM_AGITATE_RANGE.max))
+      self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
+    else:
+      if not self.isHoming():
+        self.reset()
+
   def run_(self) -> Command:
-    return self.runEnd(
-      lambda: [
-        self._arm.setPosition(self._constants.ARM_INTAKE_POSITION),
-        self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9 else 0)
-      ],
-      lambda: self.reset()
-    ).withName("Intake:Run")
+    return cmd.startEnd(
+      lambda: setattr(self, "_isIntaking", True),
+      lambda: setattr(self, "_isIntaking", False)
+    )
   
-  def agitate(self) -> Command:
-    return self.runEnd(
-      lambda: [
-        self._armAgitatePatternTimer.advanceIfElapsed(1.5),
-        self._arm.setPosition(
-          self._constants.ARM_INTAKE_POSITION * (
-            self._constants.ARM_AGITATE_RANGE.min 
-            if self._armAgitatePatternTimer.get() < 0.75 else 
-            self._constants.ARM_AGITATE_RANGE.max
-          )
-        ),
-        self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
-      ],
-      lambda: self.reset()
-    ).beforeStarting(lambda: self._armAgitatePatternTimer.restart())
-
   def retract(self) -> Command:
-    return self.runEnd(
-      lambda: [ 
-        self._arm.setPosition(self._constants.ARM_RETRACT_POSITION),
-        self._rollers.setSpeed(0)
-      ],
-      lambda: self.reset()
-    ).withName("Intake:Retract")
+    return cmd.startEnd(
+      lambda: setattr(self, "_isRetracting", True),
+      lambda: setattr(self, "_isRetracting", False)
+    )
 
-  def getArmPosition(self) -> float:
-    return self._arm.getPosition()
+  def agitate(self, isEnabled: Callable[[], bool]) -> Command:
+    return cmd.runEnd(
+      lambda: setattr(self, "_isAgitating", isEnabled()),
+      lambda: setattr(self, "_isAgitating", False)
+    )
 
   def isExtended(self) -> bool:
     return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9

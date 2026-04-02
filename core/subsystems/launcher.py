@@ -35,7 +35,7 @@ class Launcher(Subsystem):
         self._launcherAccelerator.setSpeed(launcherSpeed)
       ],
       lambda: self.reset()
-    ).withName("Launcher:Run")
+    )
   
   def isAtTargetSpeed(self) -> bool:
     return self._launcherLeader.isAtTargetSpeed() and self._launcherAccelerator.isAtTargetSpeed()

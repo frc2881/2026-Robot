@@ -13,7 +13,6 @@ class Target(Enum):
   BumpRightIn = auto()
   BumpRightOut = auto()
   
-
 @dataclass(frozen=True, slots=True)
 class TargetLaunchMetric:
   distance: units.meters

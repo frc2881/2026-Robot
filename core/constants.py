@@ -104,7 +104,7 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorPID = PID(0.2, 0, 0),
-      motorOutputRange = Range(-1.0, 0.3),
+      motorOutputRange = Range(-1.0, 0.4),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 48000.0,
       motorMotionMaxAcceleration = 24000.0,
@@ -129,7 +129,7 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_AGITATE_RANGE = Range(0.1, 1.0)
+    ARM_AGITATE_RANGE = Range(0.2, 0.8)
     ARM_INTAKE_POSITION: float = 27.0 
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.5
@@ -161,6 +161,7 @@ class Subsystems:
 
     INDEXER_SPEED: units.percent = 0.5
     ELEVATOR_SPEED: units.percent = 1.0
+    ELEVATOR_REVERSE_SPEED: units.percent = 0.5
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -299,7 +300,7 @@ class Sensors:
       channel = 1, 
       pulseWidthConversionFactor = 2.0, 
       minTargetDistance = 0, 
-      maxTargetDistance = 700
+      maxTargetDistance = 650
     )
 
 class Cameras:
@@ -318,7 +319,7 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
-    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 10.0
+    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

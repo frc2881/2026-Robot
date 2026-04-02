@@ -26,7 +26,16 @@ class Hopper(Subsystem):
         self._elevator.setSpeed(self._constants.ELEVATOR_SPEED if isEnabled() else 0)
       ],
       lambda: self.reset()
-    ).withName("Hopper:Run")
+    )
+  
+  def reverse(self) -> Command:
+    return self.runEnd(
+      lambda: [
+        self._indexer.setSpeed(0),
+        self._elevator.setSpeed(-self._constants.ELEVATOR_REVERSE_SPEED)
+      ],
+      lambda: self.reset()
+    )
   
   def isRunning(self) -> bool:
     return self._indexer.getSpeed() != 0 and self._elevator.getSpeed() != 0
