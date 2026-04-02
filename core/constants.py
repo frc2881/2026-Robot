@@ -104,12 +104,12 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorPID = PID(0.2, 0, 0),
-      motorOutputRange = Range(-1.0, 0.4),
+      motorOutputRange = Range(-1.0, 0.3),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 48000.0,
       motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0, # TODO: update to use 45/1 reduction and calibrate closed loop values
+      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0, # TODO: update to use actual 45/1 reduction and calibrate closed loop values
       motorSoftLimitForward = 27.0,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.3,
@@ -125,7 +125,7 @@ class Subsystems:
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
-      motorVelocityConversionFactor = 3.0 / 1.0 # TODO: update to use 9/1 reduction and calibrate closed loop values
+      motorVelocityConversionFactor = 3.0 / 1.0 # TODO: update to use actual 9/1 reduction and calibrate closed loop values
     ))
 
     ARM_RETRACT_POSITION: float = 0
@@ -150,7 +150,7 @@ class Subsystems:
     ELEVATOR_CONFIG = VelocityControlModuleConfig("Hopper/Elevator", 16, False, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 60,
+      motorCurrentLimit = 80,
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
@@ -159,7 +159,7 @@ class Subsystems:
       motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.9
+    INDEXER_SPEED: units.percent = 0.5
     ELEVATOR_SPEED: units.percent = 1.0
 
   class Turret:
@@ -171,8 +171,8 @@ class Subsystems:
       motorPID = PID(0.02, 0, 0.002),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 40000.0, 
-      motorMotionMaxAcceleration = 80000.0,
+      motorMotionCruiseVelocity = 30000.0, 
+      motorMotionMaxAcceleration = 60000.0,
       motorMotionAllowedProfileError = 0.25,
       motorSoftLimitForward = 310.0,
       motorSoftLimitReverse = -10.0,

@@ -14,9 +14,9 @@ if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
   BL_NZ_LP_SF = auto()
-  BL_NZ_ST_SF = auto()
+  BL_NZ_J_D_SF = auto()
   BR_NZ_LP_SF = auto()
-  BR_NZ_ST_SF = auto()
+  BR_NZ_J_SF = auto()
   TR_OP_SF = auto()
   TL_DP_SF = auto()
 
@@ -42,9 +42,9 @@ class Auto:
     self._autos.setDefaultOption("None", cmd.none)
     
     self._autos.addOption("[Bump Left] + Loop", self.auto_BL_NZ_LP_SF)
-    self._autos.addOption("[Bump Left] + Straight", self.auto_BL_NZ_ST_SF)
+    self._autos.addOption("[Bump Left] + J + Depot", self.auto_BL_NZ_J_D_SF)
     self._autos.addOption("[Bump Right] + Loop", self.auto_BR_NZ_LP_SF)
-    self._autos.addOption("[Bump Right] + Straight", self.auto_BR_NZ_ST_SF)
+    self._autos.addOption("[Bump Right] + J", self.auto_BR_NZ_J_SF)
     self._autos.addOption("[Trench Left] + Depot", self.auto_TL_DP_SF)
     self._autos.addOption("[Trench Right] + Outpost", self.auto_TR_OP_SF)
 
@@ -87,9 +87,9 @@ class Auto:
       self._score()
     ).withName("Auto:[BL]_NZ_LP_SF")
   
-  def auto_BL_NZ_ST_SF(self) -> Command:
+  def auto_BL_NZ_J_D_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BL_NZ_ST_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.BL_NZ_J_D_SF).deadlineFor(self._intake()),
       self._score()
     ).withName("Auto:[BL]_NZ_ST_SF") 
 
@@ -99,9 +99,9 @@ class Auto:
       self._score()
     ).withName("Auto:[BR]_NZ_LP_SF")
   8
-  def auto_BR_NZ_ST_SF(self) -> Command:
+  def auto_BR_NZ_J_SF(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BR_NZ_ST_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.BR_NZ_J_SF).deadlineFor(self._intake()),
       self._score()
     ).withName("Auto:[BR]_NZ_ST_SF")
   
