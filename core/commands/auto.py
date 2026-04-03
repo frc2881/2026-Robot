@@ -79,7 +79,7 @@ class Auto:
   
   def _score(self) -> Command:
     return (
-      (self._robot.game.launchFuel(Target.Hub).deadlineFor(self._robot.game.retractIntake()))
+      (self._robot.game.launchFuel(Target.Hub).deadlineFor(self._robot.game.agitateIntake()))
       .deadlineFor(logger.log_("Auto:Score"))
     )
 

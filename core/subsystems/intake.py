@@ -19,7 +19,6 @@ class Intake(Subsystem):
     self._isRetracting: bool = False
 
     self._agitationTimer = Timer()
-    self._agitationTimer.start()
 
   def periodic(self) -> None:
     self._updateState()
@@ -56,7 +55,7 @@ class Intake(Subsystem):
     return cmd.runEnd(
       lambda: setattr(self, "_isAgitating", isEnabled()),
       lambda: setattr(self, "_isAgitating", False)
-    )
+    ).beforeStarting(lambda: self._agitationTimer.restart())
 
   def isExtended(self) -> bool:
     return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9

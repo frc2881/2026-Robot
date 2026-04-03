@@ -31,7 +31,7 @@ class Hopper(Subsystem):
   def reverse(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._indexer.setSpeed(0),
+        self._indexer.setSpeed(-self._constants.INDEXER_REVERSE_SPEED),
         self._elevator.setSpeed(-self._constants.ELEVATOR_REVERSE_SPEED)
       ],
       lambda: self.reset()

@@ -129,7 +129,7 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_AGITATE_RANGE = Range(0.2, 0.8)
+    ARM_AGITATE_RANGE = Range(0.1, 0.8)
     ARM_INTAKE_POSITION: float = 27.0 
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.5
@@ -159,9 +159,10 @@ class Subsystems:
       motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.5
+    INDEXER_SPEED: units.percent = 0.75
     ELEVATOR_SPEED: units.percent = 1.0
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
+    INDEXER_REVERSE_SPEED: units.percent = 0.5
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -238,7 +239,7 @@ class Services:
       TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.55),
       TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.75),
       TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.95),
-      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 2.15),
+      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 2.05),
       TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 2.25)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
