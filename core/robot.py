@@ -87,7 +87,7 @@ class RobotCore:
     # self.driver.povDown().whileTrue(cmd.none())
     # self.driver.povLeft().whileTrue(cmd.none())
     # self.driver.povRight().whileTrue(cmd.none())
-    # self.driver.a().whileTrue(cmd.none())
+    self.driver.a().whileTrue(self.game.agitateRobot())
     # self.driver.b().whileTrue(cmd.none())
     self.driver.y().whileTrue(self.game.alignRobotToNearestBump())
     # self.driver.x().whileTrue(cmd.none())

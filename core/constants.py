@@ -132,7 +132,7 @@ class Subsystems:
     ARM_AGITATE_RANGE = Range(0.1, 0.8)
     ARM_INTAKE_POSITION: float = 27.0 
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.5
+    ROLLERS_AGITATE_SPEED: units.percent = 0.1
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -242,7 +242,7 @@ class Services:
       TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 2.05),
       TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 2.25)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.12
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.05
 
 class Sensors: 
   class Gyro:

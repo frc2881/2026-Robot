@@ -1,6 +1,7 @@
 from typing import Callable
 from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, Timer
+from core.classes import FuelLevel
 from lib import logger, utils
 from lib.components.relative_position_control_module import RelativePositionControlModule
 from lib.components.velocity_control_module import VelocityControlModule
@@ -17,6 +18,7 @@ class Intake(Subsystem):
     self._isIntaking: bool = False
     self._isAgitating: bool = False
     self._isRetracting: bool = False
+    self._fuelLevel: FuelLevel = FuelLevel.Empty
 
     self._agitationTimer = Timer()
 
@@ -32,8 +34,13 @@ class Intake(Subsystem):
       self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
       self._rollers.setSpeed(0)
     elif self._isAgitating:
-      self._agitationTimer.advanceIfElapsed(1.5)
-      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION * (self._constants.ARM_AGITATE_RANGE.min if self._agitationTimer.get() < 0.75 else self._constants.ARM_AGITATE_RANGE.max))
+      moveTime = 0.6
+      if self._fuelLevel == FuelLevel.Mid:
+        moveTime = 0.4
+      if self._fuelLevel == FuelLevel.Full:
+        moveTime = 0.2
+      self._agitationTimer.advanceIfElapsed(moveTime * 2)
+      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION * (self._constants.ARM_AGITATE_RANGE.min if self._agitationTimer.get() < moveTime else self._constants.ARM_AGITATE_RANGE.max))
       self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
     else:
       if not self.isHoming():
@@ -51,9 +58,12 @@ class Intake(Subsystem):
       lambda: setattr(self, "_isRetracting", False)
     )
 
-  def agitate(self, isEnabled: Callable[[], bool]) -> Command:
+  def agitate(self, fuelLevel: Callable[[], FuelLevel]) -> Command:
     return cmd.runEnd(
-      lambda: setattr(self, "_isAgitating", isEnabled()),
+      lambda: [
+        setattr(self, "_fuelLevel", fuelLevel()),
+        setattr(self, "_isAgitating", True)
+      ],
       lambda: setattr(self, "_isAgitating", False)
     ).beforeStarting(lambda: self._agitationTimer.restart())
 

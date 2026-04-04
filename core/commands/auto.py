@@ -8,18 +8,18 @@ from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.path import PathPlannerPath
 from lib import logger, utils
 from lib.classes import Alliance
-from core.classes import Target
+from core.classes import FuelLevel, Target
 import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
   BL_NZ_LP_SF = auto()
-  BL_NZ_J_D_SF = auto()
   BR_NZ_LP_SF = auto()
-  BR_NZ_J_SF = auto()
   TR_OP_SF = auto()
   TL_DP_SF = auto()
   BL_DP_SF = auto()
+
+  BR_NZ_S_SF = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -42,11 +42,12 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("[Bump Left] + Loop + Depot", self.auto_BL_NZ_LP_SF)
-    self._autos.addOption("[Bump Left] + Depot", self.auto_BL_DP_SF)
-    self._autos.addOption("[Bump Right] + Loop", self.auto_BR_NZ_LP_SF)
-    self._autos.addOption("[Trench Left] + Depot", self.auto_TL_DP_SF)
-    self._autos.addOption("[Trench Right] + Outpost", self.auto_TR_OP_SF)
+    self._autos.addOption("Bump Left + Loop + Depot", self.auto_BL_NZ_LP_SF)
+    self._autos.addOption("Bump Left + Depot", self.auto_BL_DP_SF)
+    self._autos.addOption("Bump Right + Loop", self.auto_BR_NZ_LP_SF)
+    self._autos.addOption("Bump Right + Straight", self.auto_BR_NZ_S_SF)
+    self._autos.addOption("Trench Left + Depot", self.auto_TL_DP_SF)
+    self._autos.addOption("Trench Right + Outpost", self.auto_TR_OP_SF)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -77,7 +78,14 @@ class Auto:
   
   def _score(self) -> Command:
     return (
-      (self._robot.game.launchFuel(Target.Hub).deadlineFor(self._robot.game.agitateIntake()))
+      (self._robot.game.launchFuel(Target.Hub)
+       .deadlineFor(
+          self._robot.game.agitateIntake()
+          # cmd.repeatingSequence(
+          #   self._robot.game.agitateRobot(),
+          #   cmd.waitSeconds(1.5)
+          # ).onlyWhile(lambda: self._robot.game.getFuelLevel() == FuelLevel.Mid)
+      ))
       .deadlineFor(logger.log_("Auto:Score"))
     )
 
@@ -87,24 +95,18 @@ class Auto:
       self._score()
     ).withName("Auto:[BL]_NZ_LP_SF")
   
-  def auto_BL_NZ_J_D_SF(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BL_NZ_J_D_SF).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:[BL]_NZ_ST_SF") 
-
   def auto_BR_NZ_LP_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BR_NZ_LP_SF).deadlineFor(self._intake()),
       self._score()
     ).withName("Auto:[BR]_NZ_LP_SF")
-  8
-  def auto_BR_NZ_J_SF(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BR_NZ_J_SF).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:[BR]_NZ_ST_SF")
   
+  def auto_BR_NZ_S_SF(self) -> Command:
+    return cmd.sequence(
+      self._move(AutoPath.BR_NZ_S_SF).deadlineFor(self._intake()),
+      self._score()
+    ).withName("Auto:[BR]_NZ_S_SF")
+    
   def auto_TR_OP_SF(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.TR_OP_SF).deadlineFor(self._intake()),

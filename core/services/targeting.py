@@ -34,6 +34,7 @@ class Targeting():
     SmartDashboard.putNumber("Robot/Targeting/DistanceMax", self._targetLaunchDistances[-1])
     SmartDashboard.putNumber("Robot/Targeting/HeadingMin", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitReverse)
     SmartDashboard.putNumber("Robot/Targeting/HeadingMax", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitForward)
+    SmartDashboard.putNumber("Robot/Localization/LatencyOverride", 0)
 
     utils.addRobotPeriodic(self._periodic)
 
@@ -52,7 +53,8 @@ class Targeting():
     launcherRotation = launcherPose.rotation().toRotation2d()
     launcherVelocity = ChassisSpeeds.fromRobotRelativeSpeeds(self._getChassisSpeeds(), launcherRotation)
     launcherVector = Translation3d(launcherVelocity.vx, launcherVelocity.vy, 0)
-    launcherTranslation = launcherPose.translation() + (launcherVector * constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION)
+    latencyOverride = SmartDashboard.getNumber("Robot/Localization/LatencyOverride", 0)
+    launcherTranslation = launcherPose.translation() + (launcherVector * (constants.Services.Targeting.LOCALIZATION_LATENCY_COMPENSATION if latencyOverride == 0 else latencyOverride))
     for target in self._targetLaunchInfos:
       translation = self.getTargetPose(target).translation() - launcherTranslation
       distance = translation.norm()
