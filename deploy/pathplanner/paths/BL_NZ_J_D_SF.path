@@ -20,12 +20,12 @@
         "y": 5.75
       },
       "prevControl": {
-        "x": 5.344673034667334,
-        "y": 5.825347089926768
+        "x": 5.333872169433474,
+        "y": 5.743290232166855
       },
       "nextControl": {
-        "x": 6.065819478367389,
-        "y": 5.612536485010667
+        "x": 7.375690789473684,
+        "y": 5.794769736842104
       },
       "isLocked": false,
       "linkedName": null
@@ -80,11 +80,11 @@
     },
     {
       "anchor": {
-        "x": 0.7597258771929825,
+        "x": 1.03859649122807,
         "y": 5.9582456140350875
       },
       "prevControl": {
-        "x": 1.009702586490104,
+        "x": 1.2885732005251915,
         "y": 5.961658063153014
       },
       "nextControl": null,
@@ -116,8 +116,8 @@
       "minWaypointRelativePos": 1.7019748653500877,
       "maxWaypointRelativePos": 2.0897666068222613,
       "constraints": {
-        "maxVelocity": 0.75,
-        "maxAcceleration": 0.75,
+        "maxVelocity": 0.5,
+        "maxAcceleration": 0.5,
         "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 540.0,
         "nominalVoltage": 12.0,
@@ -139,11 +139,11 @@
     },
     {
       "name": "Depot",
-      "minWaypointRelativePos": 4.85,
+      "minWaypointRelativePos": 4.479353680430881,
       "maxWaypointRelativePos": 5.0,
       "constraints": {
-        "maxVelocity": 0.5,
-        "maxAcceleration": 0.5,
+        "maxVelocity": 0.25,
+        "maxAcceleration": 0.25,
         "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 540.0,
         "nominalVoltage": 12.0,
@@ -154,8 +154,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.8,
-    "maxAcceleration": 2.4,
+    "maxVelocity": 2.4,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,

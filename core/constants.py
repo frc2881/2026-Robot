@@ -116,16 +116,16 @@ class Subsystems:
       motorHomedPosition = 0
     ))
         
-    ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, False, VelocityControlModuleConstants(
+    ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 80, 
+      motorCurrentLimit = 60, 
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
-      motorVelocityConversionFactor = 3.0 / 1.0 # TODO: update to use actual 9/1 reduction and calibrate closed loop values
+      motorVelocityConversionFactor = 2.0 / 1.0 
     ))
 
     ARM_RETRACT_POSITION: float = 0
@@ -173,10 +173,10 @@ class Subsystems:
       motorPID = PID(0.02, 0, 0.002),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 30000.0, 
-      motorMotionMaxAcceleration = 60000.0,
+      motorMotionCruiseVelocity = 40000.0, 
+      motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 310.0,
+      motorSoftLimitForward = 300.0,
       motorSoftLimitReverse = -10.0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = -19.45
@@ -220,29 +220,29 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_TARGET_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 1.0
+    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 1.5
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
-    VISION_MAX_POSE_CHANGE: units.meters = 1.0
+    VISION_MAX_POSE_CHANGE: units.meters = 1.5
     VISION_STDDEV_XY_COEFF: float = 0.1
     VISION_STDDEV_Z_COEFF: float = 0.5
     VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 15.0
-    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 5.0
+    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 3.33
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
       TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.95),
       TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.05),
       TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.15),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.25),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.35),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.45),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.55),
+      TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.25),
+      TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.35),
+      TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.45),
+      TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.55),
       TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.75),
       TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.95),
       TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 2.05),
       TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 2.25)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.12
 
 class Sensors: 
   class Gyro:
@@ -255,7 +255,7 @@ class Sensors:
         name = "FrontLeft",
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(2.75), y = units.inchesToMeters(13.5), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-25.5), yaw = units.degreesToRadians(55.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-26.0), yaw = units.degreesToRadians(55.0))
         ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -264,7 +264,7 @@ class Sensors:
         name = "FrontRight",
         transform = Transform3d(
         Translation3d(x = units.inchesToMeters(1.25), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-21.0), yaw = units.degreesToRadians(-90.0))
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-20.2), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -273,7 +273,7 @@ class Sensors:
         name = "RearLeft",
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-31.5), yaw = units.degreesToRadians(135.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-32.5), yaw = units.degreesToRadians(135.0))
         ),
         stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout

@@ -82,7 +82,7 @@ class Game:
     distance = self._robot.hopperSensor.getDistance()
     if utils.isValueWithinRange(distance, 0, 100):
       return FuelLevel.Full
-    if utils.isValueWithinRange(distance, 0, 300): 
+    if utils.isValueWithinRange(distance, 0, 250): 
       return FuelLevel.Mid
     if utils.isValueWithinRange(distance, 0, 425) or self._robot.indexerSensor.hasTarget(): 
       return FuelLevel.Low

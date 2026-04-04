@@ -42,10 +42,8 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("[Bump Left] + J + Depot", self.auto_BL_NZ_J_D_SF)
     self._autos.addOption("[Bump Left] + Loop + Depot", self.auto_BL_NZ_LP_SF)
     self._autos.addOption("[Bump Left] + Depot", self.auto_BL_DP_SF)
-    self._autos.addOption("[Bump Right] + J", self.auto_BR_NZ_J_SF)
     self._autos.addOption("[Bump Right] + Loop", self.auto_BR_NZ_LP_SF)
     self._autos.addOption("[Trench Left] + Depot", self.auto_TL_DP_SF)
     self._autos.addOption("[Trench Right] + Outpost", self.auto_TR_OP_SF)
