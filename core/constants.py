@@ -119,7 +119,7 @@ class Subsystems:
     ROLLERS_CONFIG = VelocityControlModuleConfig("Intake/Rollers", 17, True, VelocityControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
-      motorCurrentLimit = 60, 
+      motorCurrentLimit = 80, 
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
@@ -129,7 +129,7 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_AGITATE_RANGE = Range(0.1, 0.8)
+    ARM_AGITATE_RANGE = Range(0.1, 0.7)
     ARM_INTAKE_POSITION: float = 27.0 
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.1
@@ -159,7 +159,7 @@ class Subsystems:
       motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
-    INDEXER_SPEED: units.percent = 0.75
+    INDEXER_SPEED: units.percent = 1.0
     ELEVATOR_SPEED: units.percent = 1.0
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
     INDEXER_REVERSE_SPEED: units.percent = 0.5
@@ -230,17 +230,17 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.95),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.05),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.15),
+      TargetLaunchMetric(distance = 2.0, speed = 0.40, time = 0.95),
+      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.05),
+      TargetLaunchMetric(distance = 3.0, speed = 0.46, time = 1.15),
       TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.25),
       TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.35),
       TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.45),
       TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.55),
-      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.75),
-      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.95),
-      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 2.05),
-      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 2.25)
+      TargetLaunchMetric(distance = 6.0, speed = 0.64, time = 1.75),
+      TargetLaunchMetric(distance = 7.0, speed = 0.70, time = 1.95),
+      TargetLaunchMetric(distance = 8.0, speed = 0.76, time = 2.05),
+      TargetLaunchMetric(distance = 9.0, speed = 0.82, time = 2.25)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
 
@@ -335,10 +335,10 @@ class Game:
           Target.ShuttleRight: Pose3d(1.200, 1.200, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ScoreLeft: Pose3d(2.750, 6.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ScoreRight: Pose3d(2.750, 1.400, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
-          Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          Target.BumpRightOut: Pose3d(5.800, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(-135))),
+          Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
+          Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(135))),
+          Target.BumpRightOut: Pose3d(5.800, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(45))),
         },
         Alliance.Red: {}
       }

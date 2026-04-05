@@ -3,6 +3,7 @@ from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, Timer
 from core.classes import FuelLevel
 from lib import logger, utils
+from lib.classes import Range
 from lib.components.relative_position_control_module import RelativePositionControlModule
 from lib.components.velocity_control_module import VelocityControlModule
 import core.constants as constants
@@ -34,13 +35,16 @@ class Intake(Subsystem):
       self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
       self._rollers.setSpeed(0)
     elif self._isAgitating:
-      moveTime = 0.6
+      time = 0.6
+      range = Range(0.1, 0.7)
       if self._fuelLevel == FuelLevel.Mid:
-        moveTime = 0.4
+        time = 0.4
+        range = Range(0.3, 0.7)
       if self._fuelLevel == FuelLevel.Full:
-        moveTime = 0.2
-      self._agitationTimer.advanceIfElapsed(moveTime * 2)
-      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION * (self._constants.ARM_AGITATE_RANGE.min if self._agitationTimer.get() < moveTime else self._constants.ARM_AGITATE_RANGE.max))
+        time = 0.2
+        range = Range(0.5, 1.0)
+      self._agitationTimer.advanceIfElapsed(time * 2)
+      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION * (range.min if self._agitationTimer.get() < time else range.max))
       self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
     else:
       if not self.isHoming():

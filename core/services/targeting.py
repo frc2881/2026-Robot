@@ -57,7 +57,7 @@ class Targeting():
       translation = self.getTargetPose(target).translation().toTranslation2d() - launcherTranslation
       distance = translation.norm()
       time = utils.getInterpolatedValue(distance, self._targetLaunchDistances, self._targetLaunchTimes)
-      targetVector = ((translation / distance) * (distance / time)) - launcherVector
+      targetVector = ((translation / distance) * (distance / (time))) - launcherVector
       targetDistance = utils.getInterpolatedValue(targetVector.norm(), self._targetLaunchVelocities, self._targetLaunchDistances)
       self._targetLaunchInfos[target].distance = targetDistance
       self._targetLaunchInfos[target].speed = utils.getInterpolatedValue(targetDistance, self._targetLaunchDistances, self._targetLaunchSpeeds)
