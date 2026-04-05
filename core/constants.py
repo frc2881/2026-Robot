@@ -242,7 +242,7 @@ class Services:
       TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 2.05),
       TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 2.25)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.05
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
 
 class Sensors: 
   class Gyro:
