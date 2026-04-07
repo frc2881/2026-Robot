@@ -337,10 +337,10 @@ class Game:
           Target.ShuttleRight: Pose3d(1.200, 1.200, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ScoreLeft: Pose3d(2.750, 6.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
           Target.ScoreRight: Pose3d(2.750, 1.400, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
-          Target.BumpLeftIn: Pose3d(3.320, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(-135))),
-          Target.BumpLeftOut: Pose3d(5.800, 5.565, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
-          Target.BumpRightIn: Pose3d(3.320, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(135))),
-          Target.BumpRightOut: Pose3d(5.800, 2.600, 0, Rotation3d(Rotation2d.fromDegrees(45))),
+          Target.BumpLeftIn: Pose3d(3.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135))),
+          Target.BumpLeftOut: Pose3d(6.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
+          Target.BumpRightIn: Pose3d(3.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(135))),
+          Target.BumpRightOut: Pose3d(6.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(45))),
         },
         Alliance.Red: {}
       }
