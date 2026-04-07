@@ -242,7 +242,9 @@ class Services:
       TargetLaunchMetric(distance = 8.0, speed = 0.76, time = 2.05),
       TargetLaunchMetric(distance = 9.0, speed = 0.82, time = 2.25)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.1
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.04
+    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
+    FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.2
 
 class Sensors: 
   class Gyro:
@@ -319,7 +321,7 @@ class Game:
     NAME: str = "Rosetta Stone"
 
   class Commands:
-    LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
+    LAUNCHER_READY_TIMEOUT: units.seconds = 1.25
     TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
 
   class Field:
