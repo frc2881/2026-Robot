@@ -131,6 +131,7 @@ class Subsystems:
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 27.0
     ARM_AGITATE_RANGE = Range(0.1, 0.9)
+    ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.75
     ARM_AGITATE_TIME: units.seconds = 1.2
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.2

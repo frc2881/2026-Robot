@@ -34,7 +34,11 @@ class Intake(Subsystem):
       self._agitationTimer.advanceIfElapsed(self._constants.ARM_AGITATE_TIME)
       self._arm.setPosition(
         self._constants.ARM_INTAKE_POSITION * 
-        (range.min if self._agitationTimer.get() < self._constants.ARM_AGITATE_TIME * 0.5 else range.max)
+        (
+          self._constants.ARM_AGITATE_RANGE.min 
+          if self._agitationTimer.get() < self._constants.ARM_AGITATE_TIME * self._constants.ARM_AGITATE_RANGE_MIN_RATIO else 
+          self._constants.ARM_AGITATE_RANGE.max
+        )
       )
       self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
     else:
