@@ -260,7 +260,7 @@ class Sensors:
           Translation3d(x = units.inchesToMeters(2.75), y = units.inchesToMeters(13.5), z = units.inchesToMeters(10.25)),
           Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-26.0), yaw = units.degreesToRadians(55.0))
         ),
-        stream = "http://10.28.81.6:1182/?action=stream",
+        stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
@@ -278,7 +278,7 @@ class Sensors:
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
           Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-32.5), yaw = units.degreesToRadians(135.0))
         ),
-        stream = "http://10.28.81.6:1186/?action=stream",
+        stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
       ),
       PoseSensorConfig(
