@@ -2,24 +2,22 @@ from typing import TYPE_CHECKING
 from enum import Enum, auto
 from commands2 import Command, cmd
 from wpilib import SendableChooser, SmartDashboard
-from wpimath import units
 from wpimath.geometry import Transform2d
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.path import PathPlannerPath
 from lib import logger, utils
 from lib.classes import Alliance
-from core.classes import FuelLevel, Target
+from core.classes import Target
 import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
-  BL_NZ_LP_SF = auto()
-  BR_NZ_LP_SF = auto()
-  TR_OP_SF = auto()
-  TL_DP_SF = auto()
-  BL_DP_SF = auto()
-
-  BR_NZ_S_SF = auto()
+  BPL_NZN_LPL_DPO = auto()
+  BPL_NZN_LPR_DPO = auto()
+  BPL_NZN_CTR_DPO = auto()
+  BPR_NZN_LPL = auto()
+  BPR_NZN_LPR = auto()
+  HUB_DPO = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -42,12 +40,12 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("Bump Left + Loop + Depot", self.auto_BL_NZ_LP_SF)
-    self._autos.addOption("Bump Left + Depot", self.auto_BL_DP_SF)
-    self._autos.addOption("Bump Right + Loop", self.auto_BR_NZ_LP_SF)
-    self._autos.addOption("Bump Right + Straight", self.auto_BR_NZ_S_SF)
-    self._autos.addOption("Trench Left + Depot", self.auto_TL_DP_SF)
-    self._autos.addOption("Trench Right + Outpost", self.auto_TR_OP_SF)
+    self._autos.addOption("Bump Left > Loop Left > Depot", self.auto_BPL_NZN_LPL_DPO)
+    self._autos.addOption("Bump Left > Loop Right > Depot", self.auto_BPL_NZN_LPR_DPO)
+    self._autos.addOption("Bump Left > Center > Depot", self.auto_BPL_NZN_CTR_DPO)
+    self._autos.addOption("Bump Right > Loop Left", self.auto_BPR_NZN_LPL)
+    self._autos.addOption("Bump Right > Loop Right", self.auto_BPR_NZN_LPR)
+    self._autos.addOption("Hub > Depot", self.auto_HUB_DPO)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -62,66 +60,60 @@ class Auto:
     return (
       AutoBuilder.resetOdom(self._paths.get(path).getPathPoses()[0].transformBy(Transform2d(0, 0, self._paths.get(path).getInitialHeading())))
       .andThen(cmd.waitSeconds(0.1))
-    )
+    ).deadlineFor(logger.log_("Auto:Reset"))
   
   def _move(self, path: AutoPath) -> Command:
     return (
       AutoBuilder.followPath(self._paths.get(path))
-      .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
-    )
+    ).deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
   
   def _intake(self) -> Command:
     return (
-      self._robot.game.runIntake()
-      .deadlineFor(logger.log_("Auto:Intake"))
-    )
+      cmd.waitSeconds(1.2).andThen(self._robot.game.runIntake())
+    ).deadlineFor(logger.log_("Auto:Intake"))
   
   def _score(self) -> Command:
     return (
       (self._robot.game.launchFuel(Target.Hub)
        .deadlineFor(
-          self._robot.game.agitateIntake()
-          # cmd.repeatingSequence(
-          #   self._robot.game.agitateRobot(),
-          #   cmd.waitSeconds(1.5)
-          # ).onlyWhile(lambda: self._robot.game.getFuelLevel() == FuelLevel.Mid)
+          self._robot.game.agitateIntake(),
+          cmd.waitSeconds(3.0).andThen(self._robot.game.agitateRobot())
       ))
-      .deadlineFor(logger.log_("Auto:Score"))
-    )
+    ).deadlineFor(logger.log_("Auto:Score"))
 
-  def auto_BL_NZ_LP_SF(self) -> Command:
+  def auto_BPL_NZN_LPL_DPO(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BL_NZ_LP_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.BPL_NZN_LPL_DPO).deadlineFor(self._intake()),
       self._score()
-    ).withName("Auto:[BL]_NZ_LP_SF")
+    ).withName("Auto:BPL_NZN_LPL_DPO")
+
+  def auto_BPL_NZN_LPR_DPO(self) -> Command:
+    return cmd.sequence(
+      self._move(AutoPath.BPL_NZN_LPR_DPO).deadlineFor(self._intake()),
+      self._score()
+    ).withName("Auto:BPL_NZN_LPR_DPO")
   
-  def auto_BR_NZ_LP_SF(self) -> Command:
+  def auto_BPL_NZN_CTR_DPO(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BR_NZ_LP_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.BPL_NZN_CTR_DPO).deadlineFor(self._intake()),
       self._score()
-    ).withName("Auto:[BR]_NZ_LP_SF")
-  
-  def auto_BR_NZ_S_SF(self) -> Command:
+    ).withName("Auto:BPL_NZN_CTR_DPO")
+
+  def auto_BPR_NZN_LPL(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BR_NZ_S_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.BPR_NZN_LPL).deadlineFor(self._intake()),
       self._score()
-    ).withName("Auto:[BR]_NZ_S_SF")
-    
-  def auto_TR_OP_SF(self) -> Command:
+    ).withName("Auto:BPR_NZN_LPL")
+
+  def auto_BPR_NZN_LPR(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TR_OP_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.BPR_NZN_LPR).deadlineFor(self._intake()),
       self._score()
-    ).withName("Auto:[TR]_OP_SF")
-  
-  def auto_TL_DP_SF(self) -> Command:
+    ).withName("Auto:BPR_NZN_LPR")
+
+  def auto_HUB_DPO(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.TL_DP_SF).deadlineFor(self._intake()),
+      self._move(AutoPath.HUB_DPO).deadlineFor(self._intake()),
       self._score()
-    ).withName("Auto:[TL]_DP_SF")
-  
-  def auto_BL_DP_SF(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BL_DP_SF).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:[BL]_DP_SF")
+    ).withName("Auto:HUB_DPO")
   

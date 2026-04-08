@@ -104,7 +104,7 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorPID = PID(0.2, 0, 0),
-      motorOutputRange = Range(-1.0, 0.4),
+      motorOutputRange = Range(-1.0, 0.3),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 48000.0,
       motorMotionMaxAcceleration = 24000.0,
@@ -129,10 +129,11 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_AGITATE_RANGE = Range(0.1, 0.7)
-    ARM_INTAKE_POSITION: float = 27.0 
+    ARM_INTAKE_POSITION: float = 27.0
+    ARM_AGITATE_RANGE = Range(0.1, 0.6)
+    ARM_AGITATE_TIME: units.seconds = 1.2
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.1
+    ROLLERS_AGITATE_SPEED: units.percent = 0.2
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -160,9 +161,9 @@ class Subsystems:
     ))
 
     INDEXER_SPEED: units.percent = 1.0
+    INDEXER_REVERSE_SPEED: units.percent = 0.5
     ELEVATOR_SPEED: units.percent = 1.0
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
-    INDEXER_REVERSE_SPEED: units.percent = 0.5
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -220,13 +221,13 @@ class Subsystems:
 class Services:
   class Localization:
     VISION_MAX_TARGET_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 1.5
+    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 1.0
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
     VISION_MAX_POSE_CHANGE: units.meters = 1.5
     VISION_STDDEV_XY_COEFF: float = 0.1
     VISION_STDDEV_Z_COEFF: float = 0.5
     VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 15.0
-    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 3.33
+    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 2.5
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (

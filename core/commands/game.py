@@ -68,14 +68,14 @@ class Game:
   
   def agitateIntake(self) -> Command:
     return (
-      self._robot.intake.agitate(self.getFuelLevel)
+      self._robot.intake.agitate()
       .withName("Game:AgitateIntake")
     )
   
   def agitateRobot(self) -> Command:
     return (
-      self._robot.drive.drive(lambda: 0.25, lambda: 0, lambda: 0).withTimeout(0.05)
-      .andThen(self._robot.drive.reset())
+      self._robot.drive.drive(lambda: 0.2, lambda: 0, lambda: 0).withTimeout(0.05).andThen(self._robot.drive.reset())
+      .withName("Game:AgitateRobot")
     )
   
   def reverseHopper(self) -> Command:
