@@ -40,12 +40,12 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("1: Bump Left > Loop Left > Depot", self.auto_BPL_NZN_LPL_DPO)
-    self._autos.addOption("2: Bump Left > Loop Right > Depot", self.auto_BPL_NZN_LPR_DPO)
-    self._autos.addOption("3: Bump Left > Center > Depot", self.auto_BPL_NZN_CTR_DPO)
-    self._autos.addOption("4: Bump Right > Loop Left", self.auto_BPR_NZN_LPL)
-    self._autos.addOption("5: Bump Right > Loop Right", self.auto_BPR_NZN_LPR)
-    self._autos.addOption("6: Hub > Depot", self.auto_HUB_DPO)
+    self._autos.addOption("Bump Left > Loop Left > Depot", self.auto_BPL_NZN_LPL_DPO)
+    self._autos.addOption("Bump Left > Loop Right > Depot", self.auto_BPL_NZN_LPR_DPO)
+    self._autos.addOption("Bump Left > Center > Depot", self.auto_BPL_NZN_CTR_DPO)
+    self._autos.addOption("Bump Right > Loop Left", self.auto_BPR_NZN_LPL)
+    self._autos.addOption("Bump Right > Loop Right", self.auto_BPR_NZN_LPR)
+    self._autos.addOption("Hub > Depot", self.auto_HUB_DPO)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -55,6 +55,7 @@ class Auto:
   
   def set(self, auto: Command) -> None:
     self._auto = auto
+    SmartDashboard.putString("Robot/Auto/command", auto.getName().replace("Auto:", ""))
   
   def _reset(self, path: AutoPath) -> Command:
     return (
