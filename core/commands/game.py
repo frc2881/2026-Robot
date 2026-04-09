@@ -74,7 +74,7 @@ class Game:
   
   def agitateRobot(self) -> Command:
     return (
-      self._robot.drive.drive(lambda: 0.3, lambda: 0, lambda: 0).withTimeout(0.05).andThen(self._robot.drive.reset())
+      self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0).withTimeout(0.1).andThen(self._robot.drive.reset())
       .withName("Game:AgitateRobot")
     )
   
