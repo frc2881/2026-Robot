@@ -130,7 +130,7 @@ class Subsystems:
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 27.0
-    ARM_AGITATE_RANGE = Range(0.1, 0.9)
+    ARM_AGITATE_RANGE = Range(0.1, 0.8)
     ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.75
     ARM_AGITATE_TIME: units.seconds = 1.2
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
@@ -232,21 +232,21 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.40, time = 0.95),
-      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.05),
-      TargetLaunchMetric(distance = 3.0, speed = 0.46, time = 1.15),
-      TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.25),
-      TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.35),
-      TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.45),
-      TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.55),
-      TargetLaunchMetric(distance = 6.0, speed = 0.64, time = 1.75),
-      TargetLaunchMetric(distance = 7.0, speed = 0.70, time = 1.95),
-      TargetLaunchMetric(distance = 8.0, speed = 0.76, time = 2.05),
-      TargetLaunchMetric(distance = 9.0, speed = 0.82, time = 2.25)
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.95),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.05),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.15),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.25),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.35),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.45),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.55),
+      TargetLaunchMetric(distance = 6.0, speed = 0.61, time = 1.75),
+      TargetLaunchMetric(distance = 7.0, speed = 0.65, time = 1.95),
+      TargetLaunchMetric(distance = 8.0, speed = 0.69, time = 2.05),
+      TargetLaunchMetric(distance = 9.0, speed = 0.73, time = 2.25)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.04
-    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
-    FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.2
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
+    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.2
+    FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.1
 
 class Sensors: 
   class Gyro:
