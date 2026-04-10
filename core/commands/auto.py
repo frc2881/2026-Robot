@@ -17,6 +17,7 @@ class AutoPath(Enum):
   BUMP_RIGHT_LOOP = auto()
   DEPOT = auto()
   HUB = auto()
+  CUSTOM = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -37,12 +38,13 @@ class Auto:
     )
 
     self._autos = SendableChooser()
-    self._autos.setDefaultOption("None", cmd.none)
+    self._autos.setDefaultOption("0: None", cmd.none)
     
-    self._autos.addOption("Bump Left > Loop > Depot", self.auto_BUMP_LEFT_LOOP_DEPOT)
-    self._autos.addOption("Bump Left > Center > Depot", self.auto_BUMP_LEFT_CENTER_DEPOT)
-    self._autos.addOption("Bump Right > Loop", self.auto_BUMP_RIGHT_LOOP)
-    self._autos.addOption("Hub > Depot", self.auto_HUB_DEPOT)
+    self._autos.addOption("1: Bump Left > Loop > Depot", self.auto_BUMP_LEFT_LOOP_DEPOT)
+    self._autos.addOption("2: Bump Left > Center > Depot", self.auto_BUMP_LEFT_CENTER_DEPOT)
+    self._autos.addOption("3: Bump Right > Loop", self.auto_BUMP_RIGHT_LOOP)
+    self._autos.addOption("4: Hub > Depot", self.auto_HUB_DEPOT)
+    self._autos.addOption("5: Custom", self.auto_CUSTOM)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -101,3 +103,9 @@ class Auto:
       self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
       self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
     ).withName("Auto:HUB_DEPOT")
+  
+  def auto_CUSTOM(self) -> Command:
+    return cmd.sequence(
+      self._move(AutoPath.CUSTOM),
+      self._score()
+    ).withName("Auto:CUSTOM")
