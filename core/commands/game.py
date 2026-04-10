@@ -74,7 +74,7 @@ class Game:
   
   def agitateRobot(self) -> Command:
     return (
-      self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0).withTimeout(0.1).andThen(self._robot.drive.reset())
+      self._robot.drive.drive(lambda: 0.15, lambda: 0.15, lambda: 0.05).withTimeout(0.1).andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0))
       .withName("Game:AgitateRobot")
     )
   
@@ -86,7 +86,7 @@ class Game:
 
   def getFuelLevel(self) -> FuelLevel:
     distance = self._robot.hopperSensor.getDistance()
-    if utils.isValueWithinRange(distance, 0, 250):
+    if utils.isValueWithinRange(distance, 0, 275):
       return FuelLevel.Full
     if utils.isValueWithinRange(distance, 0, 375): 
       return FuelLevel.Mid

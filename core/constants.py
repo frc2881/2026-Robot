@@ -106,11 +106,11 @@ class Subsystems:
       motorPID = PID(0.2, 0, 0),
       motorOutputRange = Range(-1.0, 0.3),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 48000.0,
-      motorMotionMaxAcceleration = 24000.0,
+      motorMotionCruiseVelocity = 80000.0,
+      motorMotionMaxAcceleration = 40000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 1.8 / 1.0, # TODO: update to use actual 45/1 reduction and calibrate closed loop values
-      motorSoftLimitForward = 27.0,
+      motorRelativeEncoderPositionConversionFactor = 45.0 / 1.0,
+      motorSoftLimitForward = 680.0,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.3,
       motorHomedPosition = 0
@@ -129,12 +129,12 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 27.0
-    ARM_AGITATE_RANGE = Range(0.1, 0.8)
+    ARM_INTAKE_POSITION: float = 680.0
+    ARM_AGITATE_RANGE = Range(0.05, 0.75)
     ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.75
-    ARM_AGITATE_TIME: units.seconds = 1.2
+    ARM_AGITATE_TIME: units.seconds = 1.75
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.2
+    ROLLERS_AGITATE_SPEED: units.percent = 0.1
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -232,21 +232,21 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.95),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.05),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.15),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.25),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.35),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.45),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.55),
-      TargetLaunchMetric(distance = 6.0, speed = 0.61, time = 1.75),
-      TargetLaunchMetric(distance = 7.0, speed = 0.65, time = 1.95),
-      TargetLaunchMetric(distance = 8.0, speed = 0.69, time = 2.05),
-      TargetLaunchMetric(distance = 9.0, speed = 0.73, time = 2.25)
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.89),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 0.96),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.03),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.10),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.17),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.24),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.31),
+      TargetLaunchMetric(distance = 6.0, speed = 0.61, time = 1.45),
+      TargetLaunchMetric(distance = 7.0, speed = 0.65, time = 1.59),
+      TargetLaunchMetric(distance = 8.0, speed = 0.69, time = 1.73),
+      TargetLaunchMetric(distance = 9.0, speed = 0.73, time = 1.87)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.2
-    FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.1
+    FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
 
 class Sensors: 
   class Gyro:
@@ -305,7 +305,7 @@ class Sensors:
       channel = 1, 
       pulseWidthConversionFactor = 2.0, 
       minTargetDistance = 0, 
-      maxTargetDistance = 650
+      maxTargetDistance = 580
     )
 
 class Cameras:
