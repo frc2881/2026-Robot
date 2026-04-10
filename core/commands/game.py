@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 from commands2 import Command, cmd
 from wpilib import RobotBase
-from wpimath import units
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
 from core.classes import Target, FuelLevel
@@ -74,7 +73,9 @@ class Game:
   
   def agitateRobot(self) -> Command:
     return (
-      self._robot.drive.drive(lambda: 0.15, lambda: 0.15, lambda: 0.05).withTimeout(0.1).andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0))
+      self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0).withTimeout(0.1)
+      .andThen(self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: 0).withTimeout(0.1))
+      .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0))
       .withName("Game:AgitateRobot")
     )
   

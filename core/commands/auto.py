@@ -12,12 +12,11 @@ import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
 class AutoPath(Enum):
-  BPL_NZN_LPL_DPO = auto()
-  BPL_NZN_LPR_DPO = auto()
-  BPL_NZN_CTR_DPO = auto()
-  BPR_NZN_LPL = auto()
-  BPR_NZN_LPR = auto()
-  HUB_DPO = auto()
+  BUMP_LEFT_LOOP = auto()
+  BUMP_LEFT_CENTER = auto()
+  BUMP_RIGHT_LOOP = auto()
+  DEPOT = auto()
+  HUB = auto()
 
 class Auto:
   def __init__(self, robot: "RobotCore") -> None:
@@ -40,12 +39,10 @@ class Auto:
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
     
-    self._autos.addOption("Bump Left > Loop Left > Depot", self.auto_BPL_NZN_LPL_DPO)
-    self._autos.addOption("Bump Left > Loop Right > Depot", self.auto_BPL_NZN_LPR_DPO)
-    self._autos.addOption("Bump Left > Center > Depot", self.auto_BPL_NZN_CTR_DPO)
-    self._autos.addOption("Bump Right > Loop Left", self.auto_BPR_NZN_LPL)
-    self._autos.addOption("Bump Right > Loop Right", self.auto_BPR_NZN_LPR)
-    self._autos.addOption("Hub > Depot", self.auto_HUB_DPO)
+    self._autos.addOption("Bump Left > Loop > Depot", self.auto_BUMP_LEFT_LOOP_DEPOT)
+    self._autos.addOption("Bump Left > Center > Depot", self.auto_BUMP_LEFT_CENTER_DEPOT)
+    self._autos.addOption("Bump Right > Loop", self.auto_BUMP_RIGHT_LOOP)
+    self._autos.addOption("Hub > Depot", self.auto_HUB_DEPOT)
 
     self._autos.onChange(lambda auto: self.set(auto()))
     SmartDashboard.putData("Robot/Auto", self._autos)
@@ -70,51 +67,37 @@ class Auto:
   
   def _intake(self) -> Command:
     return (
-      cmd.waitSeconds(1.2).andThen(self._robot.game.runIntake())
+      self._robot.game.runIntake()
     ).deadlineFor(logger.log_("Auto:Intake"))
   
   def _score(self) -> Command:
     return (
-      (self._robot.game.launchFuel(Target.Hub)
-       .deadlineFor(
-          self._robot.game.agitateIntake(),
-          cmd.waitSeconds(3.0).andThen(self._robot.game.agitateRobot())
-      ))
+      self._robot.game.launchFuel(Target.Hub).deadlineFor(self._robot.game.agitateIntake())
     ).deadlineFor(logger.log_("Auto:Score"))
 
-  def auto_BPL_NZN_LPL_DPO(self) -> Command:
+  def auto_BUMP_LEFT_LOOP_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BPL_NZN_LPL_DPO).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:BPL_NZN_LPL_DPO")
+      self._move(AutoPath.BUMP_LEFT_LOOP).deadlineFor(cmd.waitSeconds(1.5).andThen(self._intake())),
+      self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
+      self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
+    ).withName("Auto:BUMP_LEFT_LOOP_DEPOT")
 
-  def auto_BPL_NZN_LPR_DPO(self) -> Command:
+  def auto_BUMP_LEFT_CENTER_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BPL_NZN_LPR_DPO).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:BPL_NZN_LPR_DPO")
+      self._move(AutoPath.BUMP_LEFT_CENTER).deadlineFor(cmd.waitSeconds(1.5).andThen(self._intake())),
+      self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
+      self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
+    ).withName("Auto:BUMP_LEFT_CENTER_DEPOT")
   
-  def auto_BPL_NZN_CTR_DPO(self) -> Command:
+  def auto_BUMP_RIGHT_LOOP(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BPL_NZN_CTR_DPO).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:BPL_NZN_CTR_DPO")
+      self._move(AutoPath.BUMP_RIGHT_LOOP).deadlineFor(cmd.waitSeconds(1.5).andThen(self._intake())),
+      self._score().deadlineFor(cmd.waitSeconds(4.0).andThen(self._robot.game.agitateRobot()))
+    ).withName("Auto:BUMP_RIGHT_LOOP")
 
-  def auto_BPR_NZN_LPL(self) -> Command:
+  def auto_HUB_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BPR_NZN_LPL).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:BPR_NZN_LPL")
-
-  def auto_BPR_NZN_LPR(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.BPR_NZN_LPR).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:BPR_NZN_LPR")
-
-  def auto_HUB_DPO(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.HUB_DPO).deadlineFor(self._intake()),
-      self._score()
-    ).withName("Auto:HUB_DPO")
-  
+      self._move(AutoPath.HUB),
+      self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
+      self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
+    ).withName("Auto:HUB_DEPOT")

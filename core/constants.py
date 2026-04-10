@@ -107,7 +107,7 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 0.3),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 80000.0,
-      motorMotionMaxAcceleration = 40000.0,
+      motorMotionMaxAcceleration = 40000.0, # TODO: test/tune whether acceleration should be swapped with velocity (more accel, less top end speed at the edges)
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 45.0 / 1.0,
       motorSoftLimitForward = 680.0,
@@ -244,8 +244,8 @@ class Services:
       TargetLaunchMetric(distance = 8.0, speed = 0.69, time = 1.73),
       TargetLaunchMetric(distance = 9.0, speed = 0.73, time = 1.87)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
-    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.2
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.04
+    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
 
 class Sensors: 
@@ -335,10 +335,8 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.ShuttleLeft: Pose3d(1.200, 6.800, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ShuttleRight: Pose3d(1.200, 1.200, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ScoreLeft: Pose3d(2.750, 6.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ScoreRight: Pose3d(2.750, 1.400, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
+          Target.ShuttleLeft: Pose3d(1.400, 6.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ShuttleRight: Pose3d(1.400, 1.400, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
           Target.BumpLeftIn: Pose3d(3.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135))),
           Target.BumpLeftOut: Pose3d(6.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
           Target.BumpRightIn: Pose3d(3.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(135))),
