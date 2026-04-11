@@ -106,8 +106,8 @@ class Subsystems:
       motorPID = PID(0.2, 0, 0),
       motorOutputRange = Range(-1.0, 0.3),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 80000.0,
-      motorMotionMaxAcceleration = 40000.0, # TODO: test/tune whether acceleration should be swapped with velocity (more accel, less top end speed at the edges)
+      motorMotionCruiseVelocity = 40000.0,
+      motorMotionMaxAcceleration = 80000.0, # TODO: test/tune whether acceleration should be swapped with velocity (more accel, less top end speed at the edges)
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 45.0 / 1.0,
       motorSoftLimitForward = 680.0,
@@ -175,8 +175,8 @@ class Subsystems:
       motorPID = PID(0.02, 0, 0.002),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains  = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 40000.0, 
-      motorMotionMaxAcceleration = 80000.0,
+      motorMotionCruiseVelocity = 30000.0, 
+      motorMotionMaxAcceleration = 60000.0,
       motorMotionAllowedProfileError = 0.25,
       motorSoftLimitForward = 300.0,
       motorSoftLimitReverse = -10.0,
@@ -244,7 +244,7 @@ class Services:
       TargetLaunchMetric(distance = 8.0, speed = 0.69, time = 1.73),
       TargetLaunchMetric(distance = 9.0, speed = 0.73, time = 1.87)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.04
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.03
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
 
@@ -256,7 +256,7 @@ class Sensors:
   class Pose:
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
-        name = "FrontLeft",
+        name = "FrontLeft", 
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(2.75), y = units.inchesToMeters(13.5), z = units.inchesToMeters(10.25)),
           Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-26.0), yaw = units.degreesToRadians(55.0))
