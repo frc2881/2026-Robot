@@ -93,8 +93,14 @@ class Auto:
   
   def auto_BUMP_RIGHT_LOOP(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BUMP_RIGHT_LOOP).deadlineFor(cmd.waitSeconds(1.5).andThen(self._intake())),
-      self._score().deadlineFor(cmd.waitSeconds(3.0).andThen(self._robot.game.agitateRobot()))
+      self._move(AutoPath.BUMP_RIGHT_LOOP).deadlineFor(
+        cmd.waitSeconds(1.5).andThen(self._intake()),
+        self._robot.game.setTurretHeading(180)
+      ),
+      self._score().deadlineFor(
+        cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()),
+        cmd.waitSeconds(4.0).andThen(self._robot.game.agitateRobot())
+      )
     ).withName("Auto:BUMP_RIGHT_LOOP")
 
   def auto_HUB_DEPOT(self) -> Command:

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from commands2 import Command, cmd
 from wpilib import RobotBase
+from wpimath import units
 from wpimath.kinematics import ChassisSpeeds
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
@@ -43,6 +44,12 @@ class Game:
       .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
     )
   
+  def setTurretHeading(self, heading: units.degrees) -> Command:
+    return (
+      self._robot.turret.setHeading(lambda: heading)
+      .withName(f'Game:SetTurretHeading:{ heading }')
+    )
+  
   def launchFuel(self, target: Target) -> Command:
     return (
       self.alignTurretToTargetHeading(target)
@@ -74,9 +81,11 @@ class Game:
   
   def agitateRobot(self) -> Command:
     return (
-      (self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0).withTimeout(0.1)
-      .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0)))
-      .finallyDo(lambda end: self._robot.drive.setChassisSpeeds(ChassisSpeeds()))
+      (
+        self._robot.drive.drive(lambda: 0.1, lambda: 0.1, lambda: 0).withTimeout(0.1)
+        .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0)).withTimeout(0.1)
+      )
+      .finallyDo(lambda end: self._robot.drive.reset())
       .withName("Game:AgitateRobot")
     )
   
