@@ -233,20 +233,20 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.94),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.01),
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.00),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.04),
       TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.08),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.15),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.22),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.29),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.36),
-      TargetLaunchMetric(distance = 6.0, speed = 0.62, time = 1.50),
-      TargetLaunchMetric(distance = 7.0, speed = 0.67, time = 1.64),
-      TargetLaunchMetric(distance = 8.0, speed = 0.72, time = 1.78),
-      TargetLaunchMetric(distance = 9.0, speed = 0.77, time = 1.92)
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.12),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.16),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.20),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.25),
+      TargetLaunchMetric(distance = 6.0, speed = 0.62, time = 1.35),
+      TargetLaunchMetric(distance = 7.0, speed = 0.67, time = 1.46),
+      TargetLaunchMetric(distance = 8.0, speed = 0.72, time = 1.59),
+      TargetLaunchMetric(distance = 9.0, speed = 0.77, time = 1.73)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.04
-    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.2
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.03
+    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
 
 class Sensors: 
@@ -326,6 +326,7 @@ class Game:
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
     TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
+    SCORING_DRIVE_INPUT_OVERRIDE: units.percent = 0.2
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

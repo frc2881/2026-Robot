@@ -60,6 +60,8 @@ class Drive(Subsystem):
     self._translationYInputLimiter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
     self._rotationInputLimiter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
 
+    self._inputOverride: units.percent = 0
+
     self._speedMode: SpeedMode = SpeedMode.Competition
     speedMode = SendableChooser()
     speedMode.setDefaultOption(SpeedMode.Competition.name, SpeedMode.Competition)
@@ -115,6 +117,11 @@ class Drive(Subsystem):
           if self._driftCorrectionController.atSetpoint():
             rotationInput = 0
 
+    if self._inputOverride != 0:
+      translationXInput = self._translationXInputLimiter.calculate(translationXInput * self._inputOverride) if translationXInput != 0 else 0
+      translationYInput = self._translationYInputLimiter.calculate(translationYInput * self._inputOverride) if translationYInput != 0 else 0
+      rotationInput = self._rotationInputLimiter.calculate(rotationInput * self._inputOverride) if rotationInput != 0 else 0
+
     if self._speedMode == SpeedMode.Demo:
       translationXInput = self._translationXInputLimiter.calculate(translationXInput * self._constants.INPUT_LIMIT_DEMO) if translationXInput != 0 else 0
       translationYInput = self._translationYInputLimiter.calculate(translationYInput * self._constants.INPUT_LIMIT_DEMO) if translationYInput != 0 else 0
@@ -128,6 +135,12 @@ class Drive(Subsystem):
       ChassisSpeeds.fromFieldRelativeSpeeds(translationXVelocity, translationYVelocity, units.degreesToRadians(rotationVelocity), Rotation2d.fromDegrees(self._getGyroHeading()))
       if self._orientation == DriveOrientation.Field else
       ChassisSpeeds(translationXVelocity, translationYVelocity, units.degreesToRadians(rotationVelocity))
+    )
+
+  def setInputOverride(self, inputOverride: Callable[[], units.percent]) -> Command:
+    return cmd.startEnd(
+      lambda: setattr(self, "_inputOverride", inputOverride()),
+      lambda: setattr(self, "_inputOverride", 0)
     )
 
   def setChassisSpeeds(self, chassisSpeeds: ChassisSpeeds, driveFeedforwards: DriveFeedforwards = None) -> None:
