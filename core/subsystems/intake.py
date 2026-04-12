@@ -58,7 +58,7 @@ class Intake(Subsystem):
     )
 
   def agitate(self) -> Command:
-    return cmd.startEnd(
+    return cmd.runEnd(
       lambda: setattr(self, "_isAgitating", True),
       lambda: setattr(self, "_isAgitating", False)
     ).beforeStarting(lambda: self._agitationTimer.restart())

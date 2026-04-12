@@ -18,10 +18,10 @@ class Turret(Subsystem):
 
   def setHeading(self, getHeading: Callable[[], units.degrees]) -> Command:
     return self.runEnd(
-      lambda: self._turret.setPosition(getHeading()),
+      lambda: self._turret.setPosition(utils.clampValue(getHeading(), self._constants.ROTATION_RANGE.min, self._constants.ROTATION_RANGE.max)),
       lambda: self.reset()
     )
-  
+
   def getHeading(self) -> units.degrees:
     return self._turret.getPosition()
 

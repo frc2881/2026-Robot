@@ -52,7 +52,7 @@
         "y": 3.8
       },
       "prevControl": {
-        "x": 7.899973631841356,
+        "x": 7.899973631841361,
         "y": 3.8036308930086173
       },
       "nextControl": {
@@ -133,8 +133,8 @@
   "constraintZones": [
     {
       "name": "Intake",
-      "minWaypointRelativePos": 1.9018867924528338,
-      "maxWaypointRelativePos": 2.902641509433962,
+      "minWaypointRelativePos": 2.25,
+      "maxWaypointRelativePos": 2.9,
       "constraints": {
         "maxVelocity": 0.75,
         "maxAcceleration": 0.75,
@@ -148,10 +148,10 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.4,
-    "maxAcceleration": 2.8,
+    "maxVelocity": 2.6,
+    "maxAcceleration": 3.4,
     "maxAngularVelocity": 720.0,
-    "maxAngularAcceleration": 540.0,
+    "maxAngularAcceleration": 960.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

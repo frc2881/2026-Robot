@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 from commands2 import Command, cmd
 from wpilib import RobotBase
 from wpimath import units
-from wpimath.kinematics import ChassisSpeeds
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
 from core.classes import Target, FuelLevel
@@ -56,7 +55,7 @@ class Game:
       .alongWith(
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
-        .andThen(self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.turret.getTargetHeading(), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE)))
+        .andThen(self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE)))
       )
       .withName(f'Game:LaunchFuel:{ target.name }')
     )
@@ -82,8 +81,9 @@ class Game:
   def agitateRobot(self) -> Command:
     return (
       (
-        self._robot.drive.drive(lambda: 0.1, lambda: 0.1, lambda: 0).withTimeout(0.1)
-        .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0)).withTimeout(0.1)
+        (self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0).withTimeout(0.1))
+        .andThen((self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: 0)).withTimeout(0.1))
+        .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0).withTimeout(0.02))
       )
       .finallyDo(lambda end: self._robot.drive.reset())
       .withName("Game:AgitateRobot")

@@ -16,6 +16,7 @@ class AutoPath(Enum):
   BUMP_LEFT_CENTER = auto()
   BUMP_RIGHT_LOOP = auto()
   DEPOT = auto()
+  DEPOT_RIGHT = auto()
   HUB = auto()
   CUSTOM = auto()
 
@@ -79,39 +80,48 @@ class Auto:
 
   def auto_BUMP_LEFT_LOOP_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BUMP_LEFT_LOOP).deadlineFor(cmd.waitSeconds(1.5).andThen(self._intake())),
-      self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
-      self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
+      self._move(AutoPath.BUMP_LEFT_LOOP).deadlineFor(
+        cmd.waitSeconds(1.25).andThen(self._intake()),
+        self._robot.game.setTurretHeading(180.0)
+      ),
+      self._move(AutoPath.DEPOT_RIGHT).deadlineFor(
+        self._intake(), 
+        self._score()
+      ),
+      self._score()
     ).withName("Auto:BUMP_LEFT_LOOP_DEPOT")
 
   def auto_BUMP_LEFT_CENTER_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.BUMP_LEFT_CENTER).deadlineFor(cmd.waitSeconds(1.5).andThen(self._intake())),
-      self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
-      self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
+      self._move(AutoPath.BUMP_LEFT_CENTER).deadlineFor(
+        cmd.waitSeconds(1.25).andThen(self._intake()),
+        self._robot.game.setTurretHeading(180.0)
+      ),
+      self._move(AutoPath.DEPOT_RIGHT).deadlineFor(self._intake(), self._score()),
+      self._score()
     ).withName("Auto:BUMP_LEFT_CENTER_DEPOT")
   
   def auto_BUMP_RIGHT_LOOP(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BUMP_RIGHT_LOOP).deadlineFor(
-        cmd.waitSeconds(1.5).andThen(self._intake()),
-        self._robot.game.setTurretHeading(180)
+        cmd.waitSeconds(1.25).andThen(self._intake()),
+        self._robot.game.setTurretHeading(180.0)
       ),
       self._score().deadlineFor(
-        cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()),
-        cmd.waitSeconds(4.0).andThen(self._robot.game.agitateRobot())
+        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateRobot())
+        .andThen(cmd.waitSeconds(1.0).andThen(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_RIGHT_LOOP")
 
   def auto_HUB_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.HUB),
+      self._move(AutoPath.HUB).deadlineFor(self._robot.game.setTurretHeading(180.0)),
       self._move(AutoPath.DEPOT).deadlineFor(self._intake(), self._score()),
-      self._score().deadlineFor(cmd.waitSeconds(2.0).andThen(self._robot.game.agitateRobot()))
+      self._score()
     ).withName("Auto:HUB_DEPOT")
   
   def auto_CUSTOM(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.CUSTOM),
+      self._move(AutoPath.CUSTOM).deadlineFor(self._robot.game.setTurretHeading(180.0)),
       self._score()
     ).withName("Auto:CUSTOM")

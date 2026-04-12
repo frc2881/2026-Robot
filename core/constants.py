@@ -78,7 +78,7 @@ class Subsystems:
       translationMaxVelocity = 3.0,
       translationPositionTolerance = 0.025,
       rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 720.0,
+      rotationMaxVelocity = 960.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -107,7 +107,7 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 0.3),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 40000.0,
-      motorMotionMaxAcceleration = 80000.0, # TODO: test/tune whether acceleration should be swapped with velocity (more accel, less top end speed at the edges)
+      motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 45.0 / 1.0,
       motorSoftLimitForward = 680.0,
@@ -130,11 +130,11 @@ class Subsystems:
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 680.0
-    ARM_AGITATE_RANGE = Range(0.05, 0.75)
-    ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.75
+    ARM_AGITATE_RANGE = Range(0.1, 1.0)
+    ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.6
     ARM_AGITATE_TIME: units.seconds = 1.75
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.1
+    ROLLERS_AGITATE_SPEED: units.percent = 0.5
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -178,13 +178,14 @@ class Subsystems:
       motorMotionCruiseVelocity = 30000.0, 
       motorMotionMaxAcceleration = 60000.0,
       motorMotionAllowedProfileError = 0.25,
-      motorSoftLimitForward = 300.0,
+      motorSoftLimitForward = 320.0,
       motorSoftLimitReverse = -10.0,
       motorHomingSpeed = 0.1,
       motorHomedPosition = -19.45
     ))
 
-    WRAP_ANGLE_INPUT_RANGE = Range(-10, 350)
+    ROTATION_RANGE = Range(-10.0, 320.0)
+    WRAP_ANGLE_INPUT_RANGE = Range(-10.0, 350.0)
 
   class Launcher:
     LAUNCHER_LEADER_CONFIG = VelocityControlModuleConfig("Launcher/Leader", 10, True, VelocityControlModuleConstants(
@@ -232,20 +233,20 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.89),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 0.96),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.03),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.10),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.17),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.24),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.31),
-      TargetLaunchMetric(distance = 6.0, speed = 0.61, time = 1.45),
-      TargetLaunchMetric(distance = 7.0, speed = 0.65, time = 1.59),
-      TargetLaunchMetric(distance = 8.0, speed = 0.69, time = 1.73),
-      TargetLaunchMetric(distance = 9.0, speed = 0.73, time = 1.87)
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.94),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.01),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.08),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.15),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.22),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.29),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.36),
+      TargetLaunchMetric(distance = 6.0, speed = 0.62, time = 1.50),
+      TargetLaunchMetric(distance = 7.0, speed = 0.67, time = 1.64),
+      TargetLaunchMetric(distance = 8.0, speed = 0.72, time = 1.78),
+      TargetLaunchMetric(distance = 9.0, speed = 0.77, time = 1.92)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.03
-    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.04
+    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.2
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
 
 class Sensors: 
@@ -323,7 +324,7 @@ class Game:
     NAME: str = "Rosetta Stone"
 
   class Commands:
-    LAUNCHER_READY_TIMEOUT: units.seconds = 1.25
+    LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
     TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
 
   class Field:
