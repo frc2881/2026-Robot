@@ -48,5 +48,5 @@ class Turret(Subsystem):
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putNumber("Robot/Turret/Heading", self.getHeading())
-    SmartDashboard.putBoolean("Robot/Turret/TargetHeading", self.getTargetHeading())
+    SmartDashboard.putNumber("Robot/Turret/TargetHeading", self.getTargetHeading())
     SmartDashboard.putBoolean("Robot/Turret/IsAtTargetHeading", self.isAtTargetHeading())

@@ -109,8 +109,8 @@ class Subsystems:
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 45.0 / 1.0,
-      motorSoftLimitForward = 680.0,
+      motorRelativeEncoderPositionConversionFactor = 60.0 / 1.0,
+      motorSoftLimitForward = 1200.0,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.3,
       motorHomedPosition = 0
@@ -129,10 +129,10 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 680.0
-    ARM_AGITATE_RANGE = Range(0.1, 1.0)
+    ARM_INTAKE_POSITION: float = 1200.0
+    ARM_AGITATE_RANGE = Range(0.2, 1.0)
     ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.6
-    ARM_AGITATE_TIME: units.seconds = 1.75
+    ARM_AGITATE_TIME: units.seconds = 1.5
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
     ROLLERS_AGITATE_SPEED: units.percent = 0.5
 
@@ -181,7 +181,7 @@ class Subsystems:
       motorSoftLimitForward = 320.0,
       motorSoftLimitReverse = -10.0,
       motorHomingSpeed = 0.1,
-      motorHomedPosition = -19.45
+      motorHomedPosition = -20.25
     ))
 
     ROTATION_RANGE = Range(-10.0, 320.0)
@@ -233,17 +233,17 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.00),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.04),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.08),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.12),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.16),
-      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.20),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.25),
-      TargetLaunchMetric(distance = 6.0, speed = 0.62, time = 1.35),
-      TargetLaunchMetric(distance = 7.0, speed = 0.67, time = 1.46),
-      TargetLaunchMetric(distance = 8.0, speed = 0.72, time = 1.59),
-      TargetLaunchMetric(distance = 9.0, speed = 0.77, time = 1.73)
+      TargetLaunchMetric(distance = 2.0, speed = 0.40, time = 1.00),
+      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.04),
+      TargetLaunchMetric(distance = 3.0, speed = 0.46, time = 1.08),
+      TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.12),
+      TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.16),
+      TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.20),
+      TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.25),
+      TargetLaunchMetric(distance = 6.0, speed = 0.65, time = 1.35),
+      TargetLaunchMetric(distance = 7.0, speed = 0.72, time = 1.46),
+      TargetLaunchMetric(distance = 8.0, speed = 0.79, time = 1.59),
+      TargetLaunchMetric(distance = 9.0, speed = 0.86, time = 1.73)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.03
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
@@ -326,7 +326,6 @@ class Game:
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
     TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
-    SCORING_DRIVE_INPUT_OVERRIDE: units.percent = 0.2
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

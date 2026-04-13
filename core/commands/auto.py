@@ -74,7 +74,7 @@ class Auto:
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.setTurretHeading(193.0)))
       ),
       self._robot.game.launchFuel(Target.Hub).deadlineFor(
-        self._move(AutoPath.DEPOT_RIGHT).deadlineFor(self._robot.game.runIntake()).andThen(self._robot.game.agitateRobot()),
+        self._move(AutoPath.DEPOT_RIGHT).deadlineFor(self._robot.game.runIntake()),
         self._robot.game.agitateIntake()
       )
     ).withName("Auto:BUMP_LEFT_LOOP_DEPOT")
@@ -85,7 +85,7 @@ class Auto:
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.setTurretHeading(193.0)))
       ),
       self._robot.game.launchFuel(Target.Hub).deadlineFor(
-        self._move(AutoPath.DEPOT_RIGHT).deadlineFor(self._robot.game.runIntake()).andThen(self._robot.game.agitateRobot()),
+        self._move(AutoPath.DEPOT_RIGHT).deadlineFor(self._robot.game.runIntake()),
         self._robot.game.agitateIntake()
       )
     ).withName("Auto:BUMP_LEFT_CENTER_DEPOT")
@@ -96,7 +96,6 @@ class Auto:
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.setTurretHeading(264.0)))
       ),
       self._robot.game.launchFuel(Target.Hub).deadlineFor(
-        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateRobot()),
         self._robot.game.agitateIntake()
       )
     ).withName("Auto:BUMP_RIGHT_LOOP")

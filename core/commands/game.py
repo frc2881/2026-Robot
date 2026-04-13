@@ -53,7 +53,6 @@ class Game:
     return (
       self.alignTurretToTargetHeading(target)
       .alongWith(
-        self._robot.drive.setInputOverride(lambda: constants.Game.Commands.SCORING_DRIVE_INPUT_OVERRIDE if target == Target.Hub else 0),
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
         .andThen(self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE)))
