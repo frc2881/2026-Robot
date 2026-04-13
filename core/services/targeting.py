@@ -36,8 +36,8 @@ class Targeting():
 
     SmartDashboard.putNumber("Robot/Targeting/DistanceMin", self._targetLaunchDistances[0])
     SmartDashboard.putNumber("Robot/Targeting/DistanceMax", self._targetLaunchDistances[-1])
-    SmartDashboard.putNumber("Robot/Targeting/HeadingMin", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitReverse)
-    SmartDashboard.putNumber("Robot/Targeting/HeadingMax", constants.Subsystems.Turret.TURRET_CONFIG.constants.motorSoftLimitForward)
+    SmartDashboard.putNumber("Robot/Targeting/HeadingMin", constants.Subsystems.Turret.ROTATION_RANGE.min)
+    SmartDashboard.putNumber("Robot/Targeting/HeadingMax", constants.Subsystems.Turret.ROTATION_RANGE.max)
 
     utils.addRobotPeriodic(self._periodic)
 
