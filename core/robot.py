@@ -78,7 +78,7 @@ class RobotCore:
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
-    self.driver.rightStick().whileTrue(self.game.alignRobotToNearestBumpHeading())
+    self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
     self.driver.leftTrigger().whileTrue(self.game.retractIntake())
     self.driver.rightTrigger().whileTrue(self.game.runIntake())
     # self.driver.leftBumper().whileTrue(cmd.none())
@@ -87,7 +87,7 @@ class RobotCore:
     # self.driver.povDown().whileTrue(cmd.none())
     # self.driver.povLeft().whileTrue(cmd.none())
     # self.driver.povRight().whileTrue(cmd.none())
-    # self.driver.a().whileTrue(cmd.none())
+    self.driver.a().whileTrue(self.game.alignRobotToNearestBumpHeading())
     # self.driver.b().whileTrue(cmd.none())
     self.driver.y().whileTrue(self.game.alignRobotToNearestBumpPose())
     # self.driver.x().whileTrue(cmd.none())
