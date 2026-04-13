@@ -67,7 +67,6 @@ class Game:
       self.alignTurretToTargetHeading(target)
       .alongWith(
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
-        # TODO: run short burst (0.2 seconds?) of reverse hopper to agitate internally when fuel load is full before running hopper for scoring?
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(
           self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE))
         )
@@ -93,6 +92,12 @@ class Game:
       .withName("Game:AgitateIntake")
     )
   
+  def agitateHopper(self) -> Command:
+    return (
+      self._robot.hopper.reverse().withTimeout(0.25)
+      .withName("Game:AgitateHopper")
+    )
+  
   def agitateRobot(self) -> Command:
     return (
       (
@@ -102,12 +107,6 @@ class Game:
       )
       .finallyDo(lambda end: self._robot.drive.reset())
       .withName("Game:AgitateRobot")
-    )
-  
-  def reverseHopper(self) -> Command:
-    return (
-      self._robot.hopper.reverse()
-      .withName("Game:ReverseHopper")
     )
 
   def getFuelLevel(self) -> FuelLevel:

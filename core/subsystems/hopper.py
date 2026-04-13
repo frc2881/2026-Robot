@@ -1,5 +1,5 @@
 from typing import Callable
-from commands2 import Subsystem, Command
+from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard
 from lib import logger, utils
 import core.constants as constants
@@ -13,29 +13,37 @@ class Hopper(Subsystem):
     self._indexer = VelocityControlModule(self._constants.INDEXER_CONFIG)
     self._elevator = VelocityControlModule(self._constants.ELEVATOR_CONFIG)
 
+    self._isReversing: bool = False
+    self._isRunning: bool = False
+
   def periodic(self) -> None:
+    self._updateState()
     self._updateTelemetry()
 
+  def _updateState(self) -> None:
+    if self._isReversing:
+      self._indexer.setSpeed(-self._constants.INDEXER_REVERSE_SPEED)
+      self._elevator.setSpeed(-self._constants.ELEVATOR_REVERSE_SPEED)
+    elif self._isRunning:
+      self._indexer.setSpeed(self._constants.INDEXER_SPEED)
+      self._elevator.setSpeed(self._constants.ELEVATOR_SPEED)
+    else:
+      self.reset()
+
   def run_(self, isEnabled: Callable[[], bool]) -> Command:
-    return self.runEnd(
-      lambda: [
-        self._indexer.setSpeed(self._constants.INDEXER_SPEED if isEnabled() else 0),
-        self._elevator.setSpeed(self._constants.ELEVATOR_SPEED if isEnabled() else 0)
-      ],
-      lambda: self.reset()
+    return cmd.runEnd(
+      lambda: setattr(self, "_isRunning", isEnabled()),
+      lambda: setattr(self, "_isRunning", False)
     )
   
   def reverse(self) -> Command:
-    return self.runEnd(
-      lambda: [
-        self._indexer.setSpeed(-self._constants.INDEXER_REVERSE_SPEED),
-        self._elevator.setSpeed(-self._constants.ELEVATOR_REVERSE_SPEED)
-      ],
-      lambda: self.reset()
+    return cmd.startEnd(
+      lambda: setattr(self, "_isReversing", True),
+      lambda: setattr(self, "_isReversing", False)
     )
-  
+
   def isRunning(self) -> bool:
-    return self._indexer.getSpeed() > 0.01 and self._elevator.getSpeed() > 0.01
+    return self._isRunning
 
   def reset(self) -> None:
     self._indexer.reset()
