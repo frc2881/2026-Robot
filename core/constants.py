@@ -146,7 +146,7 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionMaxVelocity = 6000.0, 
-      motorMotionMaxAcceleration = 6000.0,
+      motorMotionMaxAcceleration = 12000.0,
       motorVelocityConversionFactor = 3.0 / 1.0
     ))
 
@@ -246,7 +246,7 @@ class Services:
       TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.48),
       TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.56)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.03
+    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
 
