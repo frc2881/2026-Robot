@@ -337,12 +337,12 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.ShuttleLeft: Pose3d(1.400, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ShuttleRight: Pose3d(1.100, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
-          Target.BumpLeftIn: Pose3d(3.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135))),
-          Target.BumpLeftOut: Pose3d(6.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
-          Target.BumpRightIn: Pose3d(3.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(135))),
-          Target.BumpRightOut: Pose3d(6.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(45))),
+          Target.ShuttleLeft: Pose3d(1.400, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
+          Target.ShuttleRight: Pose3d(1.100, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
+          Target.BumpLeftInOut: Pose3d(3.100, 5.450, 0, Rotation3d(Rotation2d.fromDegrees(135.0))),
+          Target.BumpLeftOutIn: Pose3d(6.100, 5.450, 0, Rotation3d(Rotation2d.fromDegrees(45.0))),
+          Target.BumpRightInOut: Pose3d(3.100, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
+          Target.BumpRightOutIn: Pose3d(6.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(-45.0))),
         },
         Alliance.Red: {}
       }

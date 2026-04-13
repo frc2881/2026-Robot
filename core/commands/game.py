@@ -38,9 +38,15 @@ class Game:
       .withName(f'Game:AlignRobotToNearestTargetHeading')
     )
 
+  def alignRobotToNearestBumpPose(self) -> Command:
+    return (
+      self.alignRobotToNearestTargetPose([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn])
+      .withName(f'Game:AlignRobotToNearestBumpPose')
+    )
+
   def alignRobotToNearestBumpHeading(self) -> Command:
     return (
-      self.alignRobotToNearestTargetHeading([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
+      self.alignRobotToNearestTargetHeading([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn])
       .withName(f'Game:AlignRobotToNearestBumpHeading')
     )
 

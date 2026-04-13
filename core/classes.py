@@ -8,10 +8,10 @@ class Target(Enum):
   ShuttleRight = auto()
   ScoreLeft = auto()
   ScoreRight = auto()
-  BumpLeftIn = auto()
-  BumpLeftOut = auto()
-  BumpRightIn = auto()
-  BumpRightOut = auto()
+  BumpLeftInOut = auto()
+  BumpLeftOutIn = auto()
+  BumpRightInOut = auto()
+  BumpRightOutIn = auto()
   
 @dataclass(frozen=True, slots=True)
 class TargetLaunchMetric:
