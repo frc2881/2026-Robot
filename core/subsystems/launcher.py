@@ -21,18 +21,15 @@ class Launcher(Subsystem):
     self._launcherFollower.setIdleMode(MotorIdleMode.Coast)
     self._launcherAccelerator.setIdleMode(MotorIdleMode.Coast)
 
-    SmartDashboard.putNumber("Robot/Launcher/SpeedOverride", 0)
-
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def run_(self, getSpeed: Callable[[], units.percent]) -> Command:
     return self.runEnd(
       lambda: [
-        launcherSpeedOverride := SmartDashboard.getNumber("Robot/Launcher/SpeedOverride", 0),
-        launcherSpeed := getSpeed() if launcherSpeedOverride == 0 else launcherSpeedOverride,
-        self._launcherLeader.setSpeed(launcherSpeed),
-        self._launcherAccelerator.setSpeed(launcherSpeed)
+        speed := getSpeed(),
+        self._launcherLeader.setSpeed(speed),
+        self._launcherAccelerator.setSpeed(speed)
       ],
       lambda: self.reset()
     )

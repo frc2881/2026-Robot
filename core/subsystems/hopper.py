@@ -35,7 +35,7 @@ class Hopper(Subsystem):
     )
   
   def isRunning(self) -> bool:
-    return self._indexer.getSpeed() != 0 and self._elevator.getSpeed() != 0
+    return self._indexer.getSpeed() > 0.01 and self._elevator.getSpeed() > 0.01
 
   def reset(self) -> None:
     self._indexer.reset()

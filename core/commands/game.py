@@ -32,9 +32,16 @@ class Game:
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
 
-  def alignRobotToNearestBump(self) -> Command:
+  def alignRobotToNearestTargetHeading(self, targets: list[Target]) -> Command:
     return (
-      self.alignRobotToNearestTargetPose([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
+      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets))
+      .withName(f'Game:AlignRobotToNearestTargetHeading')
+    )
+
+  def alignRobotToNearestBumpHeading(self) -> Command:
+    return (
+      self.alignRobotToNearestTargetHeading([Target.BumpLeftIn, Target.BumpLeftOut, Target.BumpRightIn, Target.BumpRightOut])
+      .withName(f'Game:AlignRobotToNearestBumpHeading')
     )
 
   def alignTurretToTargetHeading(self, target: Target) -> Command:
@@ -54,8 +61,10 @@ class Game:
       self.alignTurretToTargetHeading(target)
       .alongWith(
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
-        cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT)
-        .andThen(self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE)))
+        # TODO: run short burst (0.2 seconds?) of reverse hopper to agitate internally when fuel load is full before running hopper for scoring?
+        cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(
+          self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE))
+        )
       )
       .withName(f'Game:LaunchFuel:{ target.name }')
     )
@@ -81,8 +90,8 @@ class Game:
   def agitateRobot(self) -> Command:
     return (
       (
-        (self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0).withTimeout(0.1))
-        .andThen((self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: 0)).withTimeout(0.1))
+        (self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0.2).withTimeout(0.1))
+        .andThen((self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: -0.2)).withTimeout(0.1))
         .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0).withTimeout(0.02))
       )
       .finallyDo(lambda end: self._robot.drive.reset())

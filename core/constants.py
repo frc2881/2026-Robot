@@ -77,8 +77,8 @@ class Subsystems:
       translationPID = PID(3.0, 0, 0),
       translationMaxVelocity = 3.0,
       translationPositionTolerance = 0.025,
-      rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 960.0,
+      rotationPID = PID(3.0, 0, 0), # TODO: check P for aggressiveness on rotation for bump heading alignment
+      rotationMaxVelocity = 720.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -130,11 +130,12 @@ class Subsystems:
 
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 1200.0
+    ARM_HARDSTOP_POSITION: float = 900.0
     ARM_AGITATE_RANGE = Range(0.2, 1.0)
     ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.6
     ARM_AGITATE_TIME: units.seconds = 1.5
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.5
+    ROLLERS_AGITATE_SPEED: units.percent = 0.3
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -227,23 +228,23 @@ class Services:
     VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
     VISION_MAX_POSE_CHANGE: units.meters = 1.5
     VISION_STDDEV_XY_COEFF: float = 0.1
-    VISION_STDDEV_Z_COEFF: float = 0.5
+    VISION_STDDEV_Z_COEFF: float = 0.3
     VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 15.0
-    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 2.5
+    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 2.0
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.40, time = 1.00),
-      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.04),
-      TargetLaunchMetric(distance = 3.0, speed = 0.46, time = 1.08),
-      TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.12),
-      TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.16),
-      TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.20),
-      TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.25),
-      TargetLaunchMetric(distance = 6.0, speed = 0.65, time = 1.35),
-      TargetLaunchMetric(distance = 7.0, speed = 0.72, time = 1.46),
-      TargetLaunchMetric(distance = 8.0, speed = 0.79, time = 1.59),
-      TargetLaunchMetric(distance = 9.0, speed = 0.86, time = 1.73)
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.00),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.04),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.08),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.12),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.16),
+      TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.20),
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.24),
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.32),
+      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.40),
+      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.48),
+      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.56)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.03
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
@@ -325,7 +326,7 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
-    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
+    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 3.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()
@@ -336,8 +337,8 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.ShuttleLeft: Pose3d(1.400, 6.600, 0, Rotation3d(Rotation2d.fromDegrees(180))),
-          Target.ShuttleRight: Pose3d(1.400, 1.400, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
+          Target.ShuttleLeft: Pose3d(1.400, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180))),
+          Target.ShuttleRight: Pose3d(1.100, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180))), 
           Target.BumpLeftIn: Pose3d(3.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135))),
           Target.BumpLeftOut: Pose3d(6.100, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-45))),
           Target.BumpRightIn: Pose3d(3.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(135))),

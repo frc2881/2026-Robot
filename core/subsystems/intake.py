@@ -26,7 +26,7 @@ class Intake(Subsystem):
   def _updateState(self) -> None:
     if self._isIntaking:
       self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
-      self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9 else 0)
+      self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self.isExtended() else 0)
     elif self._isRetracting:
       self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
       self._rollers.setSpeed(0)
@@ -64,10 +64,10 @@ class Intake(Subsystem):
     ).beforeStarting(lambda: self._agitationTimer.restart())
 
   def isExtended(self) -> bool:
-    return self._arm.getPosition() > self._constants.ARM_INTAKE_POSITION * 0.9
+    return self._arm.getPosition() > self._constants.ARM_HARDSTOP_POSITION * 0.9
   
   def isRunning(self) -> bool:
-    return self._rollers.getSpeed() != 0
+    return self._rollers.getSpeed() > 0.01
   
   def resetToHome(self) -> Command:
     return self._arm.resetToHome(self).withName("Intake:ResetToHome")

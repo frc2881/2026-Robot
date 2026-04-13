@@ -55,7 +55,7 @@ class Localization():
       self._hasValidVisionTarget = True
       self._validVisionTargetBufferTimer.restart()
     else:
-      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.1):
+      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.2):
         self._hasValidVisionTarget = False
 
   def _isResultValid(self, poseSensorResult: PoseSensorResult) -> bool:

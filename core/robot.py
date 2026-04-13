@@ -89,7 +89,7 @@ class RobotCore:
     # self.driver.povRight().whileTrue(cmd.none())
     # self.driver.a().whileTrue(cmd.none())
     # self.driver.b().whileTrue(cmd.none())
-    self.driver.y().whileTrue(self.game.alignRobotToNearestBump())
+    self.driver.y().whileTrue(self.game.alignRobotToNearestBumpHeading())
     # self.driver.x().whileTrue(cmd.none())
     # self.driver.start().whileTrue(cmd.none())
     self.driver.back().debounce(0.5).whileTrue(self.gyro.reset().ignoringDisable(True))

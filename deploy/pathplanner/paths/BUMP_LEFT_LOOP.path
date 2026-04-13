@@ -32,32 +32,32 @@
     },
     {
       "anchor": {
-        "x": 7.269912280701755,
-        "y": 5.9
+        "x": 7.3,
+        "y": 5.95
       },
       "prevControl": {
-        "x": 6.889023263702421,
-        "y": 6.1741317217965035
+        "x": 6.911089162355404,
+        "y": 6.2126271207023676
       },
       "nextControl": {
-        "x": 7.875734649122807,
-        "y": 5.463980263157894
+        "x": 7.881285714285715,
+        "y": 5.557464285714286
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.664177631578948,
-        "y": 4.4
+        "x": 7.71,
+        "y": 4.5
       },
       "prevControl": {
-        "x": 7.8051295870996364,
-        "y": 4.606476502863871
+        "x": 7.784998980328927,
+        "y": 4.73848512102356
       },
       "nextControl": {
-        "x": 7.30863812283393,
-        "y": 3.879180305626657
+        "x": 7.518485714285715,
+        "y": 3.8910142857142844
       },
       "isLocked": false,
       "linkedName": null
@@ -123,21 +123,21 @@
     },
     {
       "waypointRelativePos": 3.0982905982906024,
-      "rotationDegrees": -100.0
+      "rotationDegrees": -95.0
     },
     {
-      "waypointRelativePos": 4.2606837606837615,
+      "waypointRelativePos": 3.799145299145308,
       "rotationDegrees": 140.0
     }
   ],
   "constraintZones": [
     {
       "name": "Intake",
-      "minWaypointRelativePos": 2.0,
-      "maxWaypointRelativePos": 2.8868940754039496,
+      "minWaypointRelativePos": 1.95,
+      "maxWaypointRelativePos": 2.9,
       "constraints": {
-        "maxVelocity": 0.85,
-        "maxAcceleration": 0.85,
+        "maxVelocity": 0.75,
+        "maxAcceleration": 0.75,
         "maxAngularVelocity": 720.0,
         "maxAngularAcceleration": 540.0,
         "nominalVoltage": 12.0,
@@ -149,7 +149,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.6,
-    "maxAcceleration": 3.4,
+    "maxAcceleration": 3.2,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 960.0,
     "nominalVoltage": 12.0,
