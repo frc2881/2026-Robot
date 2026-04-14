@@ -234,17 +234,18 @@ class Services:
 
   class Targeting:
     TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 1.00),
-      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.04),
-      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.08),
-      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.12),
-      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.16),
+      TargetLaunchMetric(distance = 2.0, speed = 0.39, time = 0.95),
+      TargetLaunchMetric(distance = 2.5, speed = 0.42, time = 1.00),
+      TargetLaunchMetric(distance = 3.0, speed = 0.45, time = 1.05),
+      TargetLaunchMetric(distance = 3.5, speed = 0.48, time = 1.10),
+      TargetLaunchMetric(distance = 4.0, speed = 0.51, time = 1.15),
       TargetLaunchMetric(distance = 4.5, speed = 0.54, time = 1.20),
-      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.24),
-      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.32),
-      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.40),
-      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.48),
-      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.56)
+      TargetLaunchMetric(distance = 5.0, speed = 0.57, time = 1.25),
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.35),
+      TargetLaunchMetric(distance = 7.0, speed = 0.69, time = 1.45),
+      TargetLaunchMetric(distance = 8.0, speed = 0.75, time = 1.55),
+      TargetLaunchMetric(distance = 9.0, speed = 0.81, time = 1.65),
+      TargetLaunchMetric(distance = 10.0, speed = 0.87, time = 1.75)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1

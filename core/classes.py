@@ -24,6 +24,8 @@ class TargetLaunchInfo:
   distance: units.meters = 0
   speed: units.percent = 0
   heading: units.degrees = 0
+  isDistanceValid: bool = False
+  isHeadingValid: bool = False
 
 class FuelLevel(IntEnum):
   Empty = 0

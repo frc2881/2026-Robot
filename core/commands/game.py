@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from commands2 import Command, cmd
-from wpilib import RobotBase
+from wpilib import RobotBase, SmartDashboard
 from wpimath import units
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
@@ -69,6 +69,10 @@ class Game:
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(
           self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE))
+        ),
+        cmd.startEnd(
+          lambda: SmartDashboard.putString("Robot/Targeting/CurrentTarget", target.name),
+          lambda: SmartDashboard.putString("Robot/Targeting/CurrentTarget", "")
         )
       )
       .withName(f'Game:LaunchFuel:{ target.name }')

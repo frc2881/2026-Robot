@@ -31,9 +31,6 @@ class Turret(Subsystem):
   def isAtTargetHeading(self) -> bool:
     return self._turret.isAtTargetPosition()
   
-  def isAtSoftLimit(self) -> bool:
-    return self._turret.isAtSoftLimit()
-
   def resetToHome(self) -> Command:
     return self._turret.resetToHome(self).withName("Turret:ResetToHome")
 

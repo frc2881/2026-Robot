@@ -34,10 +34,10 @@ class Targeting():
     self._prvy: units.meters_per_second = 0
     self._prvo: units.radians_per_second = 0
 
-    SmartDashboard.putNumber("Robot/Targeting/DistanceMin", self._targetLaunchDistances[0])
-    SmartDashboard.putNumber("Robot/Targeting/DistanceMax", self._targetLaunchDistances[-1])
-    SmartDashboard.putNumber("Robot/Targeting/HeadingMin", constants.Subsystems.Turret.ROTATION_RANGE.min)
-    SmartDashboard.putNumber("Robot/Targeting/HeadingMax", constants.Subsystems.Turret.ROTATION_RANGE.max)
+    self._distanceMin = self._targetLaunchDistances[0]
+    self._distanceMax = self._targetLaunchDistances[-1]
+    self._headingMin = constants.Subsystems.Turret.ROTATION_RANGE.min
+    self._headingMax = constants.Subsystems.Turret.ROTATION_RANGE.max
 
     utils.addRobotPeriodic(self._periodic)
 
@@ -92,9 +92,12 @@ class Targeting():
         targetLaunchDistance = math.hypot((rx - vx * dtof), (ry - vy * dtof))
         targetLaunchSpeed = utils.getInterpolatedValue(targetLaunchDistance, self._targetLaunchDistances, self._targetLaunchSpeeds)
         targetLaunchRotation = Rotation2d((tt.X() - vx * dtof) - lx, (tt.Y() - vy * dtof) - ly)
+      targetLaunchHeading = utils.wrapAngle(targetLaunchRotation.degrees() - robotPose.rotation().degrees(), constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
       self._targetLaunchInfos[target].distance = targetLaunchDistance
       self._targetLaunchInfos[target].speed = targetLaunchSpeed
-      self._targetLaunchInfos[target].heading = utils.wrapAngle(targetLaunchRotation.degrees() - robotPose.rotation().degrees(), constants.Subsystems.Turret.WRAP_ANGLE_INPUT_RANGE)
+      self._targetLaunchInfos[target].heading = targetLaunchHeading
+      self._targetLaunchInfos[target].isDistanceValid = utils.isValueWithinRange(targetLaunchDistance, self._distanceMin, self._distanceMax)
+      self._targetLaunchInfos[target].isHeadingValid = utils.isValueWithinRange(targetLaunchHeading, self._headingMin, self._headingMax)
 
   def getTargetPose(self, target: Target) -> Pose3d:
     return self._targets.get(target, Pose3d(self._getRobotPose()))
@@ -114,3 +117,5 @@ class Targeting():
       SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Distance', info.distance)
       SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Speed', info.speed)
       SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Heading', info.heading)
+      SmartDashboard.putBoolean(f'Robot/Targeting/{ target.name }/IsDistanceValid', info.isDistanceValid)
+      SmartDashboard.putBoolean(f'Robot/Targeting/{ target.name }/IsHeadingValid', info.isHeadingValid)
