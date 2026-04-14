@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from commands2 import Command, cmd
-from wpilib import RobotBase, SmartDashboard
+from wpilib import RobotBase
 from wpimath import units
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
@@ -11,7 +11,7 @@ if TYPE_CHECKING: from core.robot import RobotCore
 class Game:
   def __init__(self, robot: "RobotCore") -> None:
     self._robot = robot
-
+    
   def alignRobotToTargetPose(self, target: Target) -> Command:
     return (
       self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getTargetPose(target))
@@ -66,13 +66,13 @@ class Game:
     return (
       self.alignTurretToTargetHeading(target)
       .alongWith(
+        cmd.startEnd(
+          lambda: self._robot.targeting.setActiveTarget(target),
+          lambda: self._robot.targeting.setActiveTarget(None)
+        ),
         self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
         cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(
-          self._robot.hopper.run_(lambda: utils.isValueWithinTolerance(self._robot.turret.getHeading(), self._robot.targeting.getLaunchHeading(target), constants.Game.Commands.TURRET_HEADING_LAUNCH_TOLERANCE))
-        ),
-        cmd.startEnd(
-          lambda: SmartDashboard.putString("Robot/Targeting/CurrentTarget", target.name),
-          lambda: SmartDashboard.putString("Robot/Targeting/CurrentTarget", "")
+          self._robot.hopper.run_(lambda: self._robot.targeting.isTargetLaunchHeadingValid(target))
         )
       )
       .withName(f'Game:LaunchFuel:{ target.name }')
@@ -98,7 +98,7 @@ class Game:
   
   def agitateHopper(self) -> Command:
     return (
-      self._robot.hopper.reverse().withTimeout(0.25)
+      self._robot.hopper.reverse().withTimeout(0.25) # TODO: validate proper timing to achieve effect needed
       .withName("Game:AgitateHopper")
     )
   
@@ -106,7 +106,7 @@ class Game:
     return (
       (
         (self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0.2).withTimeout(0.1))
-        .andThen((self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: -0.2)).withTimeout(0.1))
+        .andThen((self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: -0.2)).withTimeout(0.15))
         .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0).withTimeout(0.02))
       )
       .finallyDo(lambda end: self._robot.drive.reset())

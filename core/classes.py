@@ -57,3 +57,4 @@ class LightsMode(Enum):
   HubStateActiveEnding = auto()
   HubStateInactive = auto()
   HubStateInactiveEnding = auto()
+  ActiveTargetLaunchHeadingInvalid = auto()

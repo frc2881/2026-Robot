@@ -13,10 +13,12 @@ class Targeting():
   def __init__(
       self,
       getRobotPose: Callable[[], Pose2d],
-      getChassisSpeeds: Callable[[], ChassisSpeeds]
+      getChassisSpeeds: Callable[[], ChassisSpeeds],
+      getTurretHeading: Callable[[], units.degrees]
     ) -> None:
     self._getRobotPose = getRobotPose
     self._getChassisSpeeds = getChassisSpeeds
+    self._getTurretHeading = getTurretHeading
 
     self._alliance: Optional[Alliance] = None
     self._targets: dict[Target, Pose3d] = {}
@@ -30,14 +32,16 @@ class Targeting():
       Target.ShuttleRight: TargetLaunchInfo()
     }
 
-    self._prvx: units.meters_per_second = 0
-    self._prvy: units.meters_per_second = 0
-    self._prvo: units.radians_per_second = 0
-
     self._distanceMin = self._targetLaunchDistances[0]
     self._distanceMax = self._targetLaunchDistances[-1]
     self._headingMin = constants.Subsystems.Turret.ROTATION_RANGE.min
     self._headingMax = constants.Subsystems.Turret.ROTATION_RANGE.max
+
+    self._activeTarget: Optional[Target] = None
+
+    self._prvx: units.meters_per_second = 0
+    self._prvy: units.meters_per_second = 0
+    self._prvo: units.radians_per_second = 0
 
     utils.addRobotPeriodic(self._periodic)
 
@@ -111,7 +115,21 @@ class Targeting():
   def getLaunchSpeed(self, target: Target) -> units.percent:
     return self._targetLaunchInfos[target].speed
   
+  def setActiveTarget(self, target: Optional[Target]) -> None:
+    self._activeTarget = target
+
+  def isTargetLaunchHeadingValid(self, target: Target) -> bool:
+    return utils.isValueWithinTolerance(
+      self._getTurretHeading(), 
+      self.getLaunchHeading(target), 
+      constants.Services.Targeting.TURRET_HEADING_LAUNCH_TOLERANCE
+    )
+  
+  def isActiveTargetLaunchHeadingValid(self) -> bool:
+    return self.isTargetLaunchHeadingValid(self._activeTarget) if self._activeTarget is not None else True
+
   def _updateTelemetry(self) -> None:
+    SmartDashboard.putString("Robot/Targeting/ActiveTarget", self._activeTarget.name if self._activeTarget is not None else "")
     for target in self._targetLaunchInfos:
       info = self._targetLaunchInfos[target]
       SmartDashboard.putNumber(f'Robot/Targeting/{ target.name }/Distance', info.distance)

@@ -163,8 +163,8 @@ class Subsystems:
     ))
 
     INDEXER_SPEED: units.percent = 1.0
-    INDEXER_REVERSE_SPEED: units.percent = 0.5
     ELEVATOR_SPEED: units.percent = 1.0
+    INDEXER_REVERSE_SPEED: units.percent = 0.5
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
 
   class Turret:
@@ -229,7 +229,7 @@ class Services:
     VISION_MAX_POSE_CHANGE: units.meters = 1.5
     VISION_STDDEV_XY_COEFF: float = 0.1
     VISION_STDDEV_Z_COEFF: float = 0.3
-    VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 15.0
+    VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 10.0
     VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 2.0
 
   class Targeting:
@@ -250,6 +250,7 @@ class Services:
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
+    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 3.0
 
 class Sensors: 
   class Gyro:
@@ -327,7 +328,6 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
-    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 3.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()

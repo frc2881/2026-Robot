@@ -14,7 +14,8 @@ class Lights():
       hasValidVisionTarget: Callable[[], bool],
       getMatchState: Callable[[], MatchState],
       getMatchStateTime: Callable[[], units.seconds],
-      getHubState: Callable[[], HubState]
+      getHubState: Callable[[], HubState],
+      isActiveTargetLaunchHeadingValid: Callable[[], bool]
     ) -> None:
     self._isHoming = isHoming
     self._isHomed = isHomed
@@ -22,6 +23,7 @@ class Lights():
     self._getMatchState = getMatchState
     self._getMatchStateTime = getMatchStateTime
     self._getHubState = getHubState
+    self._isActiveTargetLaunchHeadingValid = isActiveTargetLaunchHeadingValid
     
     self._lightsController = LightsController()
 
@@ -47,6 +49,9 @@ class Lights():
         return
     
     if utils.getRobotState() == RobotState.Enabled:
+      if not self._isActiveTargetLaunchHeadingValid():
+        self._lightsController.setMode(LightsMode.ActiveTargetLaunchHeadingInvalid)
+        return
       if self._getMatchState() != MatchState.Stopped:
         isMatchStateEnding = self._getMatchStateTime() < 5
         self._lightsController.setMode(
