@@ -83,7 +83,7 @@ class Auto:
   def auto_BUMP_LEFT_CENTER_DEPOT(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BUMP_LEFT_CENTER).deadlineFor(
-        cmd.waitSeconds(2.5).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.setTurretHeading(190.0)))
+        cmd.waitSeconds(3.0).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.setTurretHeading(190.0)))
       ),
       self._robot.game.launchFuel(Target.Hub).deadlineFor(
         self._move(AutoPath.DEPOT_RIGHT).deadlineFor(self._robot.game.runIntake()),

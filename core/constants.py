@@ -77,7 +77,7 @@ class Subsystems:
       translationPID = PID(3.0, 0, 0),
       translationMaxVelocity = 3.0,
       translationPositionTolerance = 0.025,
-      rotationPID = PID(3.0, 0, 0), # TODO: check P for aggressiveness on rotation for bump heading alignment
+      rotationPID = PID(3.0, 0, 0),
       rotationMaxVelocity = 720.0,
       rotationPositionTolerance = 0.5
     )
@@ -104,7 +104,7 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorPID = PID(0.2, 0, 0),
-      motorOutputRange = Range(-1.0, 0.3),
+      motorOutputRange = Range(-1.0, 0.5),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
       motorMotionCruiseVelocity = 40000.0,
       motorMotionMaxAcceleration = 80000.0,
@@ -129,7 +129,7 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 1200.0
+    ARM_INTAKE_POSITION: float = 1100.0
     ARM_HARDSTOP_POSITION: float = 900.0
     ARM_AGITATE_RANGE = Range(0.2, 1.0)
     ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.6
@@ -340,10 +340,10 @@ class Game:
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
           Target.ShuttleLeft: Pose3d(1.400, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
           Target.ShuttleRight: Pose3d(1.100, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
-          Target.BumpLeftInOut: Pose3d(3.100, 5.450, 0, Rotation3d(Rotation2d.fromDegrees(135.0))),
-          Target.BumpLeftOutIn: Pose3d(6.100, 5.450, 0, Rotation3d(Rotation2d.fromDegrees(45.0))),
-          Target.BumpRightInOut: Pose3d(3.100, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
-          Target.BumpRightOutIn: Pose3d(6.100, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(-45.0))),
+          Target.BumpLeftInOut: Pose3d(2.800, 5.450, 0, Rotation3d(Rotation2d.fromDegrees(135.0))),
+          Target.BumpLeftOutIn: Pose3d(6.400, 5.450, 0, Rotation3d(Rotation2d.fromDegrees(45.0))),
+          Target.BumpRightInOut: Pose3d(2.800, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
+          Target.BumpRightOutIn: Pose3d(6.400, 2.400, 0, Rotation3d(Rotation2d.fromDegrees(-45.0))),
         },
         Alliance.Red: {}
       }
