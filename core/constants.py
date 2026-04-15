@@ -131,11 +131,11 @@ class Subsystems:
     ARM_RETRACT_POSITION: float = 0
     ARM_INTAKE_POSITION: float = 1100.0
     ARM_HARDSTOP_POSITION: float = 900.0
-    ARM_AGITATE_RANGE = Range(0.2, 1.0)
+    ARM_AGITATE_RANGE = Range(0.2, 0.9)
     ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.6
     ARM_AGITATE_TIME: units.seconds = 1.5
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.3
+    ROLLERS_AGITATE_SPEED: units.percent = 0.2
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(

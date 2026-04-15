@@ -20,8 +20,8 @@
         "y": 5.5
       },
       "prevControl": {
-        "x": 5.459380641851247,
-        "y": 5.66175370258191
+        "x": 5.459380641851246,
+        "y": 5.661753702581911
       },
       "nextControl": {
         "x": 5.845185714285716,
@@ -142,8 +142,8 @@
     },
     {
       "name": "Pause",
-      "minWaypointRelativePos": 1.9516981132075477,
-      "maxWaypointRelativePos": 2.246037735849058,
+      "minWaypointRelativePos": 1.8973584905660386,
+      "maxWaypointRelativePos": 2.2460377358490535,
       "constraints": {
         "maxVelocity": 0.1,
         "maxAcceleration": 0.1,

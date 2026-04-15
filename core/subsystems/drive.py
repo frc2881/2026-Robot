@@ -215,10 +215,10 @@ class Drive(Subsystem):
   def isAlignedToTargetPose(self) -> bool:
     return self._targetPoseAlignmentState == State.Completed
 
-  def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d]) -> Command:
+  def alignToTargetHeading(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d], isTargetHeadingFixed: bool = False) -> Command:
     return cmd.startRun(
       lambda: self._initTargetHeadingAlignment(getTargetPose()),
-      lambda: self._runTargetHeadingAlignment(getRobotPose())
+      lambda: self._runTargetHeadingAlignment(getRobotPose(), isTargetHeadingFixed)
     ).finallyDo(
       lambda end: self._endTargetHeadingAlignment()
     )
@@ -228,8 +228,8 @@ class Drive(Subsystem):
     self._targetHeadingAlignmentController.reset()
     self._targetHeadingAlignmentState = State.Running
 
-  def _runTargetHeadingAlignment(self, robotPose: Pose2d) -> None:
-    self._targetHeadingAlignmentController.setSetpoint(utils.wrapAngle(utils.getTargetHeading(robotPose, self._targetPose)))
+  def _runTargetHeadingAlignment(self, robotPose: Pose2d, isTargetHeadingFixed: bool) -> None:
+    self._targetHeadingAlignmentController.setSetpoint(utils.wrapAngle(utils.getTargetHeading(robotPose, self._targetPose) if not isTargetHeadingFixed else self._targetPose.rotation().degrees()))
     self._targetHeadingAlignmentRotationInput = self._targetHeadingAlignmentController.calculate(robotPose.rotation().degrees()) if not self._targetHeadingAlignmentController.atSetpoint() else 0
 
   def _endTargetHeadingAlignment(self) -> None:
