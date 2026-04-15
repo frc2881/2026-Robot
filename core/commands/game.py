@@ -32,9 +32,9 @@ class Game:
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
 
-  def alignRobotToNearestTargetHeading(self, targets: list[Target]) -> Command:
+  def alignRobotToNearestTargetHeading(self, targets: list[Target], isTargetHeadingFixed: bool = False) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets))
+      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets), isTargetHeadingFixed)
       .withName(f'Game:AlignRobotToNearestTargetHeading')
     )
 
@@ -46,7 +46,7 @@ class Game:
 
   def alignRobotToNearestBumpHeading(self) -> Command:
     return (
-      self.alignRobotToNearestTargetHeading([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn])
+      self.alignRobotToNearestTargetHeading([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn], isTargetHeadingFixed = True)
       .withName(f'Game:AlignRobotToNearestBumpHeading')
     )
 
