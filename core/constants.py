@@ -145,7 +145,7 @@ class Subsystems:
       motorPID = PID(0.0001, 0, 0),
       motorOutputRange = Range(-1.0, 1.0),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionMaxVelocity = 6000.0, 
+      motorMotionMaxVelocity = 12000.0, 
       motorMotionMaxAcceleration = 12000.0,
       motorVelocityConversionFactor = 3.0 / 1.0
     ))

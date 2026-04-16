@@ -12,16 +12,16 @@ class Game:
   def __init__(self, robot: "RobotCore") -> None:
     self._robot = robot
     
-  def alignRobotToTargetPose(self, target: Target) -> Command:
+  def alignRobotToTargetPose(self, target: Target, alignRotationOnly: bool = False) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getTargetPose(target))
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getTargetPose(target), alignRotationOnly)
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .withName(f'Game:AlignRobotToTargetPose:{ target.name }')
     )
 
-  def alignRobotToNearestTargetPose(self, targets: list[Target], isHeadingOnly: bool = False) -> Command:
+  def alignRobotToNearestTargetPose(self, targets: list[Target], alignRotationOnly: bool = False) -> Command:
     return (
-      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets), isHeadingOnly)
+      self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets), alignRotationOnly)
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
       .withName(f'Game:AlignRobotToNearestTargetPose')
     )
@@ -32,22 +32,10 @@ class Game:
       .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
     )
 
-  def alignRobotToNearestTargetHeading(self, targets: list[Target]) -> Command:
+  def alignRobotToNearestBumpPose(self, alignRotationOnly: bool = False) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets))
-      .withName(f'Game:AlignRobotToNearestTargetHeading')
-    )
-
-  def alignRobotToNearestBumpPose(self) -> Command:
-    return (
-      self.alignRobotToNearestTargetPose([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn])
+      self.alignRobotToNearestTargetPose([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn], alignRotationOnly)
       .withName(f'Game:AlignRobotToNearestBumpPose')
-    )
-
-  def alignRobotToNearestBumpHeading(self) -> Command:
-    return (
-      self.alignRobotToNearestTargetPose([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn], isHeadingOnly = True)
-      .withName(f'Game:AlignRobotToNearestBumpHeading')
     )
 
   def alignTurretToTargetHeading(self, target: Target) -> Command:
@@ -98,7 +86,7 @@ class Game:
   
   def agitateHopper(self) -> Command:
     return (
-      self._robot.hopper.reverse().withTimeout(0.25) # TODO: validate proper timing to achieve effect needed
+      self._robot.hopper.reverse().withTimeout(0.5)
       .withName("Game:AgitateHopper")
     )
   

@@ -183,10 +183,10 @@ class Drive(Subsystem):
       for index, module in enumerate(self._modules): 
         module.setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45 if index in { 0, 3 } else -45)))
 
-  def alignToTargetPose(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d], isHeadingOnly: bool = False) -> Command:
+  def alignToTargetPose(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d], alignRotationOnly: bool = False) -> Command:
     return self.startRun(
       lambda: self._initTargetPoseAlignment(getTargetPose()),
-      lambda: self._runTargetPoseAlignment(getRobotPose(), isHeadingOnly)
+      lambda: self._runTargetPoseAlignment(getRobotPose(), alignRotationOnly)
     ).until(
       lambda: self._targetPoseAlignmentState == State.Completed
     ).finallyDo(
@@ -197,10 +197,10 @@ class Drive(Subsystem):
     self._targetPose = targetPose.toPose2d()
     self._targetPoseAlignmentState = State.Running
 
-  def _runTargetPoseAlignment(self, robotPose: Pose2d, isHeadingOnly: bool) -> None:
+  def _runTargetPoseAlignment(self, robotPose: Pose2d, alignRotationOnly: bool) -> None:
     self._setModuleStates(
       utils.clampTranslationVelocity(
-        self._targetPoseAlignmentController.calculate(robotPose, self._targetPose if not isHeadingOnly else robotPose, 0, self._targetPose.rotation()), 
+        self._targetPoseAlignmentController.calculate(robotPose, robotPose if alignRotationOnly else self._targetPose, 0, self._targetPose.rotation()), 
         self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationMaxVelocity
       )
     )
