@@ -241,16 +241,16 @@ class Services:
       TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.15),
       TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.20),
       TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.25),
-      TargetLaunchMetric(distance = 6.0, speed = 0.65, time = 1.35),
-      TargetLaunchMetric(distance = 7.0, speed = 0.72, time = 1.45),
-      TargetLaunchMetric(distance = 8.0, speed = 0.79, time = 1.55),
-      TargetLaunchMetric(distance = 9.0, speed = 0.86, time = 1.65),
-      TargetLaunchMetric(distance = 10.0, speed = 0.93, time = 1.75)
+      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.35),
+      TargetLaunchMetric(distance = 7.0, speed = 0.68, time = 1.45),
+      TargetLaunchMetric(distance = 8.0, speed = 0.73, time = 1.55),
+      TargetLaunchMetric(distance = 9.0, speed = 0.78, time = 1.65),
+      TargetLaunchMetric(distance = 10.0, speed = 0.83, time = 1.75)
     )
     LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
     VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
     FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
-    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 3.0
+    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
 
 class Sensors: 
   class Gyro:
@@ -271,8 +271,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontRight",
         transform = Transform3d(
-        Translation3d(x = units.inchesToMeters(1.25), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-20.2), yaw = units.degreesToRadians(-90.0))
+        Translation3d(x = units.inchesToMeters(1.0), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-19.2), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
