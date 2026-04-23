@@ -185,22 +185,22 @@ class Drive(Subsystem):
 
   def alignToTargetPose(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d], alignRotationOnly: bool = False) -> Command:
     return self.startRun(
-      lambda: self._initTargetPoseAlignment(getTargetPose()),
-      lambda: self._runTargetPoseAlignment(getRobotPose(), alignRotationOnly)
+      lambda: self._initTargetPoseAlignment(getTargetPose(), getRobotPose(), alignRotationOnly),
+      lambda: self._runTargetPoseAlignment(getRobotPose())
     ).until(
       lambda: self._targetPoseAlignmentState == State.Completed
     ).finallyDo(
       lambda end: self._endTargetPoseAlignment()
     )
   
-  def _initTargetPoseAlignment(self, targetPose: Pose3d) -> None:
-    self._targetPose = targetPose.toPose2d()
+  def _initTargetPoseAlignment(self, targetPose: Pose3d, robotPose: Pose2d, alignRotationOnly: bool) -> None:
+    self._targetPose = Pose2d(robotPose.translation(), targetPose.toPose2d().rotation()) if alignRotationOnly else targetPose.toPose2d()
     self._targetPoseAlignmentState = State.Running
 
-  def _runTargetPoseAlignment(self, robotPose: Pose2d, alignRotationOnly: bool) -> None:
+  def _runTargetPoseAlignment(self, robotPose: Pose2d) -> None:
     self._setModuleStates(
       utils.clampTranslationVelocity(
-        self._targetPoseAlignmentController.calculate(robotPose, robotPose if alignRotationOnly else self._targetPose, 0, self._targetPose.rotation()), 
+        self._targetPoseAlignmentController.calculate(robotPose, self._targetPose, 0, self._targetPose.rotation()), 
         self._constants.TARGET_POSE_ALIGNMENT_CONSTANTS.translationMaxVelocity
       )
     )

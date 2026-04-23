@@ -19,7 +19,6 @@ from core.services.localization import Localization
 from core.services.targeting import Targeting
 from core.services.match import Match
 from core.services.lights import Lights
-from core.classes import Target
 import core.constants as constants
 
 class RobotCore:
@@ -40,24 +39,24 @@ class RobotCore:
     self.indexerSensor = BinarySensor(constants.Sensors.Binary.INDEXER_SENSOR_CONFIG)
 
   def _initSubsystems(self) -> None:
-    self.drive = Drive(self.gyro.getHeading)
-    self.intake = Intake()
-    self.hopper = Hopper()
+    self.drive = Drive(lambda: self.gyro.getHeading())
+    self.intake = Intake(lambda: self.hopper.getFuelLevel())
+    self.hopper = Hopper(lambda: self.hopperSensor.getDistance(), lambda: self.indexerSensor.hasTarget())
     self.turret = Turret()
     self.launcher = Launcher()
     
   def _initServices(self) -> None:
-    self.localization = Localization(self.gyro.getHeading, self.drive.getModulePositions, self.poseSensors)
-    self.targeting = Targeting(self.localization.getRobotPose, self.drive.getChassisSpeeds, self.turret.getHeading)
+    self.localization = Localization(lambda: self.gyro.getHeading(), lambda: self.drive.getModulePositions(), self.poseSensors)
+    self.targeting = Targeting(lambda: self.localization.getRobotPose(), lambda: self.drive.getChassisSpeeds(), lambda: self.turret.getHeading())
     self.match = Match()
     self.lights = Lights(
-      self.isHoming, 
-      self.isHomed, 
-      self.localization.hasValidVisionTarget, 
-      self.match.getMatchState, 
-      self.match.getMatchStateTime, 
-      self.match.getHubState,
-      self.targeting.isActiveTargetLaunchHeadingValid
+      lambda: self.isHoming(), 
+      lambda: self.isHomed(), 
+      lambda: self.localization.hasValidPoseSensorResult(), 
+      lambda: self.match.getMatchState(), 
+      lambda: self.match.getMatchStateTime(), 
+      lambda: self.match.getHubState(),
+      lambda: self.targeting.isActiveTargetInRange()
     )
 
   def _initCommands(self) -> None:
@@ -86,37 +85,37 @@ class RobotCore:
   def _setupDriver(self) -> None:
     self.drive.setDefaultCommand(self.drive.drive(self.driver.getLeftY, self.driver.getLeftX, self.driver.getRightX))
     self.driver.leftStick().whileTrue(self.drive.lockSwerveModules())
-    self.driver.rightStick().whileTrue(self.game.alignRobotToTargetHeading(Target.Hub))
-    self.driver.leftTrigger().whileTrue(self.game.retractIntake())
-    self.driver.rightTrigger().whileTrue(self.game.runIntake())
-    self.driver.leftBumper().whileTrue(self.game.alignRobotToNearestBumpPose(alignRotationOnly = True))
-    self.driver.rightBumper().whileTrue(self.game.agitateRobot())
-    # self.driver.povUp().whileTrue(cmd.none())
-    # self.driver.povDown().whileTrue(cmd.none())
-    # self.driver.povLeft().whileTrue(cmd.none())
-    # self.driver.povRight().whileTrue(cmd.none())
+    # self.driver.rightStick().whileTrue(cmd.none())
+    # self.driver.leftTrigger().whileTrue(cmd.none())
+    # self.driver.rightTrigger().whileTrue(cmd.none())
+    # self.driver.leftBumper().whileTrue(cmd.none())
+    self.driver.rightBumper().whileTrue(self.game.alignRobotRotationToNearestBump())
     # self.driver.a().whileTrue(cmd.none())
     # self.driver.b().whileTrue(cmd.none())
-    self.driver.y().whileTrue(self.game.alignRobotToNearestBumpPose())
+    # self.driver.y().whileTrue(cmd.none())
     # self.driver.x().whileTrue(cmd.none())
+    # self.driver.povLeft().whileTrue(cmd.none())
+    # self.driver.povRight().whileTrue(cmd.none())
+    # self.driver.povUp().whileTrue(cmd.none())
+    # self.driver.povDown().whileTrue(cmd.none())
     # self.driver.start().whileTrue(cmd.none())
     self.driver.back().debounce(0.5).whileTrue(self.gyro.reset().ignoringDisable(True))
 
   def _setupOperator(self) -> None:
     # self.operator.leftStick().whileTrue(cmd.none())
     # self.operator.rightStick().whileTrue(cmd.none())
-    self.operator.leftTrigger().whileTrue(self.game.agitateIntake())
-    self.operator.rightTrigger().whileTrue(self.game.launchFuel(Target.Hub))
-    self.operator.leftBumper().whileTrue(self.game.launchFuel(Target.ShuttleLeft))
-    self.operator.rightBumper().whileTrue(self.game.launchFuel(Target.ShuttleRight))
-    self.operator.povDown().debounce(0.5).whileTrue(self.intake.resetToHome())
-    self.operator.povUp().debounce(0.5).whileTrue(self.turret.resetToHome())
-    # self.operator.povRight().whileTrue(cmd.none())
-    # self.operator.povLeft().whileTrue(cmd.none())
-    self.operator.a().whileTrue(self.game.alignTurretToTargetHeading(Target.Hub))
+    self.operator.leftTrigger().whileTrue(self.game.runIntake())
+    self.operator.rightTrigger().whileTrue(self.game.launchFuel())
+    self.operator.leftBumper().whileTrue(self.game.retractIntake())
+    self.operator.rightBumper().whileTrue(self.game.agitateHopper())
+    self.operator.a().whileTrue(self.game.alignTurretToActiveTarget())
     # self.operator.b().whileTrue(cmd.none())
-    self.operator.y().whileTrue(self.game.setTurretHeading(0))
-    self.operator.x().whileTrue(self.game.agitateHopper())
+    self.operator.y().whileTrue(self.game.alignTurretToHeading(0))
+    # self.operator.x().whileTrue(cmd.none())
+    # self.operator.povLeft().whileTrue(cmd.none())
+    # self.operator.povRight().whileTrue(cmd.none())
+    self.operator.povUp().debounce(0.5).whileTrue(self.turret.resetToHome())
+    self.operator.povDown().debounce(0.5).whileTrue(self.intake.resetToHome())
     # self.operator.start().whileTrue(cmd.none())
     # self.operator.back().whileTrue(cmd.none())
 
@@ -163,4 +162,3 @@ class RobotCore:
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Status/IsHoming", self.isHoming())
     SmartDashboard.putBoolean("Robot/Status/IsHomed", self.isHomed())
-    SmartDashboard.putString("Robot/Hopper/FuelLevel", self.game.getFuelLevel().name)

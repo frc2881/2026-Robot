@@ -4,7 +4,7 @@ from wpilib import RobotBase
 from wpimath import units
 from lib import logger, utils
 from lib.classes import ControllerRumbleMode, ControllerRumblePattern
-from core.classes import Target, FuelLevel
+from core.classes import Target
 import core.constants as constants
 if TYPE_CHECKING: from core.robot import RobotCore
 
@@ -23,49 +23,27 @@ class Game:
     return (
       self._robot.drive.alignToTargetPose(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getNearestTargetPose(targets), alignRotationOnly)
       .andThen(self.rumbleControllers(ControllerRumbleMode.Driver))
-      .withName(f'Game:AlignRobotToNearestTargetPose')
+      .withName("Game:AlignRobotToNearestTargetPose")
     )
 
-  def alignRobotToTargetHeading(self, target: Target) -> Command:
+  def alignRobotRotationToNearestBump(self) -> Command:
     return (
-      self._robot.drive.alignToTargetHeading(self._robot.localization.getRobotPose, lambda: self._robot.targeting.getTargetPose(target))
-      .withName(f'Game:AlignRobotToTargetHeading:{ target.name }')
+      self.alignRobotToNearestTargetPose([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn], alignRotationOnly = True)
+      .withName("Game:RotateRobotToNearestBump")
     )
 
-  def alignRobotToNearestBumpPose(self, alignRotationOnly: bool = False) -> Command:
+  def alignTurretToActiveTarget(self) -> Command:
     return (
-      self.alignRobotToNearestTargetPose([Target.BumpLeftInOut, Target.BumpLeftOutIn, Target.BumpRightInOut, Target.BumpRightOutIn], alignRotationOnly)
-      .withName(f'Game:AlignRobotToNearestBumpPose')
-    )
-
-  def alignTurretToTargetHeading(self, target: Target) -> Command:
-    return (
-      self._robot.turret.setHeading(lambda: self._robot.targeting.getLaunchHeading(target))
-      .withName(f'Game:AlignTurretToTargetHeading:{ target.name }')
+      self._robot.turret.setHeading(lambda: self._robot.targeting.getActiveTargetInfo().heading)
+      .withName("Game:AlignTurretToActiveTarget")
     )
   
-  def setTurretHeading(self, heading: units.degrees) -> Command:
+  def alignTurretToHeading(self, heading: units.degrees) -> Command:
     return (
       self._robot.turret.setHeading(lambda: heading)
-      .withName(f'Game:SetTurretHeading:{ heading }')
+      .withName(f'Game:AlignTurretToHeading:{ heading }deg')
     )
   
-  def launchFuel(self, target: Target) -> Command:
-    return (
-      self.alignTurretToTargetHeading(target)
-      .alongWith(
-        cmd.startEnd(
-          lambda: self._robot.targeting.setActiveTarget(target),
-          lambda: self._robot.targeting.setActiveTarget(None)
-        ),
-        self._robot.launcher.run_(lambda: self._robot.targeting.getLaunchSpeed(target)),
-        cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(
-          self._robot.hopper.run_(lambda: self._robot.targeting.isTargetLaunchHeadingValid(target))
-        )
-      )
-      .withName(f'Game:LaunchFuel:{ target.name }')
-    )
-
   def runIntake(self) -> Command:
     return (
       self._robot.intake.run_()
@@ -83,33 +61,31 @@ class Game:
       self._robot.intake.agitate()
       .withName("Game:AgitateIntake")
     )
-  
+
   def agitateHopper(self) -> Command:
     return (
-      self._robot.hopper.reverse().withTimeout(0.5)
+      self._robot.hopper.reverse().withTimeout(constants.Subsystems.Hopper.AGITATION_TIMEOUT)
       .withName("Game:AgitateHopper")
     )
-  
-  def agitateRobot(self) -> Command:
-    return (
-      (
-        (self._robot.drive.drive(lambda: 0.2, lambda: 0.2, lambda: 0.2).withTimeout(0.1))
-        .andThen((self._robot.drive.drive(lambda: -0.2, lambda: -0.2, lambda: -0.2)).withTimeout(0.15))
-        .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0).withTimeout(0.02))
-      )
-      .finallyDo(lambda end: self._robot.drive.reset())
-      .withName("Game:AgitateRobot")
-    )
 
-  def getFuelLevel(self) -> FuelLevel:
-    distance = self._robot.hopperSensor.getDistance()
-    if utils.isValueWithinRange(distance, 0, 275):
-      return FuelLevel.Full
-    if utils.isValueWithinRange(distance, 0, 375): 
-      return FuelLevel.Mid
-    if utils.isValueWithinRange(distance, 0, 450) or self._robot.indexerSensor.hasTarget(): 
-      return FuelLevel.Low
-    return FuelLevel.Empty
+  def launchFuel(self) -> Command:
+    return (
+      cmd.startEnd(
+        lambda: self._robot.targeting.setIsActiveTargetEngaged(True),
+        lambda: self._robot.targeting.setIsActiveTargetEngaged(False)
+      )
+      .deadlineFor(
+        self.alignTurretToActiveTarget(),
+        self._robot.launcher.run_(lambda: self._robot.targeting.getActiveTargetInfo().speed),
+        cmd.waitUntil(lambda: self._robot.launcher.isAtTargetSpeed()).withTimeout(constants.Game.Commands.LAUNCHER_READY_TIMEOUT).andThen(
+          self._robot.hopper.run_(lambda: self._robot.targeting.isActiveTargetInRange())
+          .deadlineFor(self._robot.intake.agitate())
+        )
+      )
+      .onlyIf(lambda: self._robot.targeting.getActiveTarget() is not None)
+      .onlyWhile(lambda: self._robot.targeting.getActiveTarget() is not None)
+      .withName("Game:LaunchFuel")
+    )
 
   def rumbleControllers(
     self, 

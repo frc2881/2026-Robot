@@ -1,6 +1,6 @@
 import wpilib
 from wpimath import units
-from wpimath.geometry import Pose3d, Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
+from wpimath.geometry import Pose2d, Pose3d, Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
 from robotpy_apriltag import AprilTagFieldLayout
 from navx import AHRS
@@ -13,6 +13,7 @@ from lib.classes import (
   RobotType,
   Alliance, 
   PID,
+  Zone,
   Range,
   MotorModel,
   FeedForwardGains,
@@ -33,7 +34,7 @@ from lib.classes import (
   BinarySensorConfig,
   DistanceSensorConfig
 )
-from core.classes import Target, TargetLaunchMetric
+from core.classes import Target, LaunchMetric, FuelLevel
 import lib.constants
 
 _aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2026-rebuilt-andymark.json')
@@ -110,7 +111,7 @@ class Subsystems:
       motorMotionMaxAcceleration = 80000.0,
       motorMotionAllowedProfileError = 0.5,
       motorRelativeEncoderPositionConversionFactor = 60.0 / 1.0,
-      motorSoftLimitForward = 1200.0,
+      motorSoftLimitForward = 1100.0,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.3,
       motorHomedPosition = 0
@@ -129,13 +130,9 @@ class Subsystems:
     ))
 
     ARM_RETRACT_POSITION: float = 0
-    ARM_INTAKE_POSITION: float = 1100.0
     ARM_HARDSTOP_POSITION: float = 900.0
-    ARM_AGITATE_RANGE = Range(0.2, 0.9)
-    ARM_AGITATE_RANGE_MIN_RATIO: units.percent = 0.6
-    ARM_AGITATE_TIME: units.seconds = 1.5
+    ARM_INTAKE_HOLD_POSITION: float = 1100.0 # TOOD: tune and validate minimum viable position past hard stop to hold intake while running
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
-    ROLLERS_AGITATE_SPEED: units.percent = 0.2
 
   class Hopper:
     INDEXER_CONFIG = VelocityControlModuleConfig("Hopper/Indexer", 14, True, VelocityControlModuleConstants(
@@ -166,6 +163,14 @@ class Subsystems:
     ELEVATOR_SPEED: units.percent = 1.0
     INDEXER_REVERSE_SPEED: units.percent = 0.5
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
+
+    AGITATION_TIMEOUT: units.seconds = 0.5
+    JAM_DETECTION_TIMEOUT: units.seconds = 3.0
+    FUEL_LEVEL_SENSOR_DISTANCES: dict[FuelLevel, units.millimeters] = {
+      FuelLevel.Full: 275,
+      FuelLevel.Mid: 375,
+      FuelLevel.Low: 450
+    }
 
   class Turret:
     TURRET_CONFIG = RelativePositionControlModuleConfig("Turret", 13, False, RelativePositionControlModuleConstants(
@@ -220,37 +225,39 @@ class Subsystems:
     ))
 
     LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
+    LAUNCHER_ACCELERATOR_SPEED_RATIO: units.percent = 1.2
 
 class Services:
   class Localization:
-    VISION_MAX_TARGET_AMBIGUITY: units.percent = 0.2
-    VISION_MAX_TARGET_REPROJECTION_ERROR: float = 1.0
-    VISION_MAX_TARGET_DISTANCE: units.meters = 5.0
-    VISION_MAX_POSE_CHANGE: units.meters = 1.5
-    VISION_STDDEV_XY_COEFF: float = 0.1
-    VISION_STDDEV_Z_COEFF: float = 0.3
-    VISION_STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 10.0
-    VISION_STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 2.0
+    MAX_TARGET_AMBIGUITY: units.percent = 0.2
+    MAX_TARGET_REPROJECTION_ERROR: float = 1.0
+    MAX_TARGET_DISTANCE: units.meters = 5.0
+    MAX_POSE_CHANGE: units.meters = 1.0
+    STDDEV_XY_COEFF: float = 0.08
+    STDDEV_Z_COEFF: float = 0.1
+    STDDEV_TARGET_AMBIGUITY_SCALE_FACTOR: float = 5.0
+    STDDEV_TARGET_REPROJECTION_ERROR_SCALE_FACTOR: float = 2.5
+    VALID_POSE_SENSOR_RESULT_TIMEOUT: units.seconds = 0.3
 
   class Targeting:
-    TARGET_LAUNCH_METRICS: tuple[TargetLaunchMetric, ...] = (
-      TargetLaunchMetric(distance = 2.0, speed = 0.40, time = 0.95),
-      TargetLaunchMetric(distance = 2.5, speed = 0.43, time = 1.00),
-      TargetLaunchMetric(distance = 3.0, speed = 0.46, time = 1.05),
-      TargetLaunchMetric(distance = 3.5, speed = 0.49, time = 1.10),
-      TargetLaunchMetric(distance = 4.0, speed = 0.52, time = 1.15),
-      TargetLaunchMetric(distance = 4.5, speed = 0.55, time = 1.20),
-      TargetLaunchMetric(distance = 5.0, speed = 0.58, time = 1.25),
-      TargetLaunchMetric(distance = 6.0, speed = 0.63, time = 1.35),
-      TargetLaunchMetric(distance = 7.0, speed = 0.68, time = 1.45),
-      TargetLaunchMetric(distance = 8.0, speed = 0.73, time = 1.55),
-      TargetLaunchMetric(distance = 9.0, speed = 0.78, time = 1.65),
-      TargetLaunchMetric(distance = 10.0, speed = 0.83, time = 1.75)
+    LAUNCH_METRICS: tuple[LaunchMetric, ...] = (
+      LaunchMetric(distance = 2.0, speed = 0.39, time = 0.95),
+      LaunchMetric(distance = 2.5, speed = 0.42, time = 1.00),
+      LaunchMetric(distance = 3.0, speed = 0.45, time = 1.05),
+      LaunchMetric(distance = 3.5, speed = 0.48, time = 1.10),
+      LaunchMetric(distance = 4.0, speed = 0.51, time = 1.15),
+      LaunchMetric(distance = 4.5, speed = 0.54, time = 1.20),
+      LaunchMetric(distance = 5.0, speed = 0.57, time = 1.25),
+      LaunchMetric(distance = 6.0, speed = 0.63, time = 1.35),
+      LaunchMetric(distance = 7.0, speed = 0.69, time = 1.45),
+      LaunchMetric(distance = 8.0, speed = 0.75, time = 1.55),
+      LaunchMetric(distance = 9.0, speed = 0.81, time = 1.65),
+      LaunchMetric(distance = 10.0, speed = 0.87, time = 1.75)
     )
-    LOCALIZATION_LATENCY_COMPENSATION: units.seconds = 0.035
-    VELOCITY_COMPENSATION_THRESHOLD: units.meters_per_second = 0.1
-    FUEL_LAUNCH_DRAG_COEFFICIENT: float = 0.25
-    TURRET_HEADING_LAUNCH_TOLERANCE: units.degrees = 5.0
+    LATENCY_COMPENSATION: units.seconds = 0.05
+    VELOCITY_COMPENSATION_RANGE: Range = Range(0.1, 3.0)
+    FUEL_DRAG_COEFFICIENT: float = 0.15
+    TURRET_HEADING_TOLERANCE: units.degrees = 4.0
 
 class Sensors: 
   class Gyro:
@@ -262,8 +269,8 @@ class Sensors:
       PoseSensorConfig(
         name = "FrontLeft", 
         transform = Transform3d(
-          Translation3d(x = units.inchesToMeters(2.75), y = units.inchesToMeters(13.5), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-26.0), yaw = units.degreesToRadians(55.0))
+          Translation3d(x = units.inchesToMeters(-0.5), y = units.inchesToMeters(14.5), z = units.inchesToMeters(18.0)),
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-7.5), yaw = units.degreesToRadians(88.5))
         ),
         stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -272,7 +279,7 @@ class Sensors:
         name = "FrontRight",
         transform = Transform3d(
         Translation3d(x = units.inchesToMeters(1.0), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-19.2), yaw = units.degreesToRadians(-90.0))
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-23.5), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -328,18 +335,19 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
+    CENTER_AUTO_HOLD_TIMEOUT: units.seconds = 3.5
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()
     WIDTH = _aprilTagFieldLayout.getFieldWidth()
-    BOUNDS = (Translation2d(0, 0), Translation2d(LENGTH, WIDTH))
+    ZONE = Zone(start = Translation2d(0, 0), end = Translation2d(LENGTH, WIDTH))
 
     class Targets:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.ShuttleLeft: Pose3d(1.400, 7.000, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
-          Target.ShuttleRight: Pose3d(1.100, 1.100, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
+          Target.ShuttleLeft: Pose3d(1.600, 6.900, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
+          Target.ShuttleRight: Pose3d(1.600, 1.200, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
           Target.BumpLeftInOut: Pose3d(2.800, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
           Target.BumpLeftOutIn: Pose3d(6.400, 5.400, 0, Rotation3d(Rotation2d.fromDegrees(45.0))),
           Target.BumpRightInOut: Pose3d(2.800, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
@@ -349,5 +357,21 @@ class Game:
       }
 
       for target in TARGETS[Alliance.Blue]:
-        redTargetPose = FlippingUtil.flipFieldPose(TARGETS[Alliance.Blue][target].toPose2d())
-        TARGETS[Alliance.Red][target] = Pose3d(redTargetPose.X(), redTargetPose.Y(), TARGETS[Alliance.Blue][target].Z(), Rotation3d(redTargetPose.rotation()))
+        pose = FlippingUtil.flipFieldPose(TARGETS[Alliance.Blue][target].toPose2d())
+        TARGETS[Alliance.Red][target] = Pose3d(pose.X(), pose.Y(), TARGETS[Alliance.Blue][target].Z(), Rotation3d(pose.rotation()))
+
+      TARGET_ZONES: dict[Alliance, dict[Target, Zone]] = {
+        Alliance.Blue: {
+          Target.Hub: Zone(start = Translation2d(0.0, 0.0), end = Translation2d(4.4, 8.0)),
+          Target.ShuttleLeft: Zone(start = Translation2d(5.6, 5.0), end = Translation2d(16.5, 8.0)),
+          Target.ShuttleRight: Zone(start = Translation2d(5.6, 0.0), end = Translation2d(16.5, 3.1))
+        },
+        Alliance.Red: {}
+      }
+
+      for target in TARGET_ZONES[Alliance.Blue]:
+        zone = TARGET_ZONES[Alliance.Blue][target]
+        TARGET_ZONES[Alliance.Red][target] = Zone(
+          FlippingUtil.flipFieldPose(Pose2d(zone.end.X(), zone.end.Y(), Rotation2d())).translation(), 
+          FlippingUtil.flipFieldPose(Pose2d(zone.start.X(), zone.start.Y(), Rotation2d())).translation()
+        )

@@ -1,14 +1,22 @@
+from typing import Callable
 from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard, Timer
+from wpimath import units
 from lib import logger, utils
+from lib.classes import Range
 from lib.components.relative_position_control_module import RelativePositionControlModule
 from lib.components.velocity_control_module import VelocityControlModule
+from core.classes import FuelLevel
 import core.constants as constants
 
 class Intake(Subsystem):
-  def __init__(self) -> None:
+  def __init__(
+      self,
+      getFuelLevel: Callable[[], FuelLevel]
+    ) -> None:
     super().__init__()
     self._constants = constants.Subsystems.Intake
+    self._getFuelLevel = getFuelLevel
 
     self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
     self._rollers = VelocityControlModule(self._constants.ROLLERS_CONFIG)
@@ -25,22 +33,35 @@ class Intake(Subsystem):
 
   def _updateState(self) -> None:
     if self._isIntaking:
-      self._arm.setPosition(self._constants.ARM_INTAKE_POSITION)
+      self._arm.setPosition(self._constants.ARM_INTAKE_HOLD_POSITION)
       self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self.isExtended() else 0)
     elif self._isRetracting:
       self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
       self._rollers.setSpeed(0)
     elif self._isAgitating:
-      self._agitationTimer.advanceIfElapsed(self._constants.ARM_AGITATE_TIME)
-      self._arm.setPosition(
-        self._constants.ARM_INTAKE_POSITION * 
-        (
-          self._constants.ARM_AGITATE_RANGE.min 
-          if self._agitationTimer.get() < self._constants.ARM_AGITATE_TIME * self._constants.ARM_AGITATE_RANGE_MIN_RATIO else 
-          self._constants.ARM_AGITATE_RANGE.max
-        )
-      )
-      self._rollers.setSpeed(self._constants.ROLLERS_AGITATE_SPEED)
+      time: units.seconds = 0
+      range = Range(0, 0)
+      speed: units.percent = 0
+      match self._getFuelLevel():
+        case FuelLevel.Full: # TODO: tune and validate time and range for fuel level
+          time = 0.75
+          range = Range(0.8, 1.0)
+          speed = 0.1
+        case FuelLevel.Mid: # TODO: tune and validate time and range for fuel level
+          time = 1.0
+          range = Range(0.4, 0.7)
+          speed = 0.2
+        case FuelLevel.Low: # TODO: tune and validate time and range for fuel level
+          time = 1.25
+          range = Range(0.2, 0.5)
+          speed = 0.3
+        case FuelLevel.Empty: # TODO: tune and validate time and range for fuel level
+          time = 1.5
+          range = Range(0.1, 0.3)
+          speed = 0.1
+      self._agitationTimer.advanceIfElapsed(time)
+      self._arm.setPosition(self._constants.ARM_INTAKE_HOLD_POSITION * (range.min if self._agitationTimer.get() < time * 0.66 else range.max))
+      self._rollers.setSpeed(speed)
     else:
       if not self.isHoming():
         self.reset()

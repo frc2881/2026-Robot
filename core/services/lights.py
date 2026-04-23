@@ -11,19 +11,19 @@ class Lights():
       self,
       isHoming: Callable[[], bool],
       isHomed: Callable[[], bool],
-      hasValidVisionTarget: Callable[[], bool],
+      hasValidPoseSensorResult: Callable[[], bool],
       getMatchState: Callable[[], MatchState],
       getMatchStateTime: Callable[[], units.seconds],
       getHubState: Callable[[], HubState],
-      isActiveTargetLaunchHeadingValid: Callable[[], bool]
+      isActiveTargetInRange: Callable[[], bool]
     ) -> None:
     self._isHoming = isHoming
     self._isHomed = isHomed
-    self._hasValidVisionTarget = hasValidVisionTarget
+    self._hasValidPoseSensorResult = hasValidPoseSensorResult
     self._getMatchState = getMatchState
     self._getMatchStateTime = getMatchStateTime
     self._getHubState = getHubState
-    self._isActiveTargetLaunchHeadingValid = isActiveTargetLaunchHeadingValid
+    self._isActiveTargetInRange = isActiveTargetInRange
     
     self._lightsController = LightsController()
 
@@ -44,13 +44,13 @@ class Lights():
       if not self._isHomed():
         self._lightsController.setMode(LightsMode.RobotNotHomed)
         return
-      if not self._hasValidVisionTarget():
+      if not self._hasValidPoseSensorResult():
         self._lightsController.setMode(LightsMode.VisionNotReady)
         return
     
     if utils.getRobotState() == RobotState.Enabled:
-      if not self._isActiveTargetLaunchHeadingValid():
-        self._lightsController.setMode(LightsMode.ActiveTargetLaunchHeadingInvalid)
+      if not self._isActiveTargetInRange():
+        self._lightsController.setMode(LightsMode.ActiveTargetNotInRange)
         return
       if self._getMatchState() != MatchState.Stopped:
         isMatchStateEnding = self._getMatchStateTime() < 5

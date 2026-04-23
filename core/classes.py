@@ -6,26 +6,24 @@ class Target(Enum):
   Hub = auto()
   ShuttleLeft = auto()
   ShuttleRight = auto()
-  ScoreLeft = auto()
-  ScoreRight = auto()
   BumpLeftInOut = auto()
   BumpLeftOutIn = auto()
   BumpRightInOut = auto()
   BumpRightOutIn = auto()
-  
-@dataclass(frozen=True, slots=True)
-class TargetLaunchMetric:
-  distance: units.meters
-  speed: units.percent
-  time: units.seconds
 
 @dataclass(frozen=False, slots=True)
-class TargetLaunchInfo:
+class TargetInfo:
   distance: units.meters = 0
   speed: units.percent = 0
   heading: units.degrees = 0
   isDistanceValid: bool = False
   isHeadingValid: bool = False
+
+@dataclass(frozen=True, slots=True)
+class LaunchMetric:
+  distance: units.meters
+  speed: units.percent
+  time: units.seconds
 
 class FuelLevel(IntEnum):
   Empty = 0
@@ -57,4 +55,4 @@ class LightsMode(Enum):
   HubStateActiveEnding = auto()
   HubStateInactive = auto()
   HubStateInactiveEnding = auto()
-  ActiveTargetLaunchHeadingInvalid = auto()
+  ActiveTargetNotInRange = auto()
