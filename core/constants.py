@@ -270,7 +270,7 @@ class Sensors:
         name = "FrontLeft", 
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-0.5), y = units.inchesToMeters(14.5), z = units.inchesToMeters(18.0)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-7.5), yaw = units.degreesToRadians(88.5))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-7.5), yaw = units.degreesToRadians(88.0))
         ),
         stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -279,7 +279,7 @@ class Sensors:
         name = "FrontRight",
         transform = Transform3d(
         Translation3d(x = units.inchesToMeters(1.0), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-23.5), yaw = units.degreesToRadians(-90.0))
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-22.5), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -288,7 +288,7 @@ class Sensors:
         name = "RearLeft",
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-32.5), yaw = units.degreesToRadians(135.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-34.0), yaw = units.degreesToRadians(160.0))
         ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
