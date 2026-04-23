@@ -346,8 +346,8 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.ShuttleLeft: Pose3d(1.600, 6.900, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
-          Target.ShuttleRight: Pose3d(1.600, 1.200, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
+          Target.ShuttleLeft: Pose3d(4.100, 5.800, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
+          Target.ShuttleRight: Pose3d(4.100, 2.300, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
           Target.BumpLeftInOut: Pose3d(2.800, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
           Target.BumpLeftOutIn: Pose3d(6.400, 5.400, 0, Rotation3d(Rotation2d.fromDegrees(45.0))),
           Target.BumpRightInOut: Pose3d(2.800, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
