@@ -279,7 +279,7 @@ class Sensors:
         name = "FrontRight",
         transform = Transform3d(
         Translation3d(x = units.inchesToMeters(1.0), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-22.5), yaw = units.degreesToRadians(-90.0))
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-18.75), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
