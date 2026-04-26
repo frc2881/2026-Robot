@@ -78,8 +78,8 @@ class Subsystems:
       translationPID = PID(3.0, 0, 0),
       translationMaxVelocity = 3.0,
       translationPositionTolerance = 0.025,
-      rotationPID = PID(3.0, 0, 0),
-      rotationMaxVelocity = 720.0,
+      rotationPID = PID(4.0, 0, 0),
+      rotationMaxVelocity = 960.0,
       rotationPositionTolerance = 0.5
     )
 
@@ -104,14 +104,14 @@ class Subsystems:
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 50,
-      motorPID = PID(0.2, 0, 0),
+      motorPID = PID(0.3, 0, 0),
       motorOutputRange = Range(-1.0, 0.5),
       motorFeedForwardGains = FeedForwardGains(velocity = 12.0 / lib.constants.Motors.MOTOR_FREE_SPEEDS[MotorModel.NEOVortex]),
-      motorMotionCruiseVelocity = 40000.0,
-      motorMotionMaxAcceleration = 80000.0,
+      motorMotionCruiseVelocity = 12000.0,
+      motorMotionMaxAcceleration = 24000.0,
       motorMotionAllowedProfileError = 0.5,
-      motorRelativeEncoderPositionConversionFactor = 60.0 / 1.0,
-      motorSoftLimitForward = 1100.0,
+      motorRelativeEncoderPositionConversionFactor = 1.0,
+      motorSoftLimitForward = 39.0,
       motorSoftLimitReverse = 0,
       motorHomingSpeed = 0.3,
       motorHomedPosition = 0
@@ -129,9 +129,9 @@ class Subsystems:
       motorVelocityConversionFactor = 2.0 / 1.0 
     ))
 
-    ARM_RETRACT_POSITION: float = 0
-    ARM_HARDSTOP_POSITION: float = 900.0
-    ARM_INTAKE_HOLD_POSITION: float = 1100.0 # TOOD: tune and validate minimum viable position past hard stop to hold intake while running
+    ARM_RETRACT_POSITION: float = 3.0
+    ARM_INTAKE_HARDSTOP_POSITION: float = 37.5
+    ARM_INTAKE_HOLD_POSITION: float = 39.0
     ROLLERS_INTAKE_SPEED: units.percent = 1.0
 
   class Hopper:
@@ -167,8 +167,8 @@ class Subsystems:
     AGITATION_TIMEOUT: units.seconds = 0.5
     JAM_DETECTION_TIMEOUT: units.seconds = 3.0
     FUEL_LEVEL_SENSOR_DISTANCES: dict[FuelLevel, units.millimeters] = {
-      FuelLevel.Full: 275,
-      FuelLevel.Mid: 375,
+      FuelLevel.Full: 200,
+      FuelLevel.Mid: 325,
       FuelLevel.Low: 450
     }
 
@@ -335,7 +335,7 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
-    CENTER_AUTO_HOLD_TIMEOUT: units.seconds = 3.5
+    CENTER_AUTO_HOLD_TIMEOUT: units.seconds = 2.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()
@@ -346,8 +346,8 @@ class Game:
       TARGETS: dict[Alliance, dict[Target, Pose3d]] = {
         Alliance.Blue: {
           Target.Hub: Pose3d(4.625, 4.030, 1.263, Rotation3d(Rotation2d.fromDegrees(0))), 
-          Target.ShuttleLeft: Pose3d(4.100, 5.800, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
-          Target.ShuttleRight: Pose3d(4.100, 2.300, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
+          Target.ShuttleLeft: Pose3d(5.100, 5.800, 0, Rotation3d(Rotation2d.fromDegrees(180.0))),
+          Target.ShuttleRight: Pose3d(5.100, 2.300, 0, Rotation3d(Rotation2d.fromDegrees(180.0))), 
           Target.BumpLeftInOut: Pose3d(2.800, 5.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),
           Target.BumpLeftOutIn: Pose3d(6.400, 5.400, 0, Rotation3d(Rotation2d.fromDegrees(45.0))),
           Target.BumpRightInOut: Pose3d(2.800, 2.700, 0, Rotation3d(Rotation2d.fromDegrees(-135.0))),

@@ -21,7 +21,7 @@ class Intake(Subsystem):
     self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
     self._rollers = VelocityControlModule(self._constants.ROLLERS_CONFIG)
 
-    self._isIntaking: bool = False
+    self._isRunning: bool = False
     self._isAgitating: bool = False
     self._isRetracting: bool = False
 
@@ -32,35 +32,32 @@ class Intake(Subsystem):
     self._updateTelemetry()
 
   def _updateState(self) -> None:
-    if self._isIntaking:
-      self._arm.setPosition(self._constants.ARM_INTAKE_HOLD_POSITION)
+    if self._isRunning:
+      if self._arm.getTargetPosition() != self._constants.ARM_INTAKE_HOLD_POSITION:
+        self._arm.setPosition(self._constants.ARM_INTAKE_HOLD_POSITION)
       self._rollers.setSpeed(self._constants.ROLLERS_INTAKE_SPEED if self.isExtended() else 0)
     elif self._isRetracting:
-      self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
+      if self._arm.getTargetPosition() != self._constants.ARM_RETRACT_POSITION:
+        self._arm.setPosition(self._constants.ARM_RETRACT_POSITION)
       self._rollers.setSpeed(0)
     elif self._isAgitating:
-      time: units.seconds = 0
-      range = Range(0, 0)
-      speed: units.percent = 0
+      time: units.seconds = 1.0
+      range = Range(0.1, 1.0)
+      speed: units.percent = 0.3
       match self._getFuelLevel():
-        case FuelLevel.Full: # TODO: tune and validate time and range for fuel level
-          time = 0.75
-          range = Range(0.8, 1.0)
+        case FuelLevel.Full:
+          range = Range(0.7, 1.0)
           speed = 0.1
-        case FuelLevel.Mid: # TODO: tune and validate time and range for fuel level
-          time = 1.0
-          range = Range(0.4, 0.7)
+        case FuelLevel.Mid:
+          range = Range(0.5, 0.8)
           speed = 0.2
-        case FuelLevel.Low: # TODO: tune and validate time and range for fuel level
-          time = 1.25
-          range = Range(0.2, 0.5)
+        case _:
+          range = Range(0.1, 0.4)
           speed = 0.3
-        case FuelLevel.Empty: # TODO: tune and validate time and range for fuel level
-          time = 1.5
-          range = Range(0.1, 0.3)
-          speed = 0.1
       self._agitationTimer.advanceIfElapsed(time)
-      self._arm.setPosition(self._constants.ARM_INTAKE_HOLD_POSITION * (range.min if self._agitationTimer.get() < time * 0.66 else range.max))
+      position = self._constants.ARM_INTAKE_HARDSTOP_POSITION * (range.min if self._agitationTimer.get() < time * 0.6 else range.max)
+      if self._arm.getTargetPosition() != position:
+          self._arm.setPosition(position)  
       self._rollers.setSpeed(speed)
     else:
       if not self.isHoming():
@@ -68,8 +65,8 @@ class Intake(Subsystem):
 
   def run_(self) -> Command:
     return cmd.startEnd(
-      lambda: setattr(self, "_isIntaking", True),
-      lambda: setattr(self, "_isIntaking", False)
+      lambda: setattr(self, "_isRunning", True),
+      lambda: setattr(self, "_isRunning", False)
     )
   
   def retract(self) -> Command:
@@ -85,7 +82,7 @@ class Intake(Subsystem):
     ).beforeStarting(lambda: self._agitationTimer.restart())
 
   def isExtended(self) -> bool:
-    return self._arm.getPosition() > self._constants.ARM_HARDSTOP_POSITION * 0.9
+    return self._arm.getPosition() > self._constants.ARM_INTAKE_HARDSTOP_POSITION * 0.75
   
   def isRunning(self) -> bool:
     return self._rollers.getSpeed() > 0.01

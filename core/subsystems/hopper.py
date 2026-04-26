@@ -61,11 +61,11 @@ class Hopper(Subsystem):
 
   def getFuelLevel(self) -> FuelLevel:
     distance = self._getHopperSensorDistance()
-    if utils.isValueWithinRange(distance, 0, self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Full]):
+    if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Full]:
       return FuelLevel.Full
-    if utils.isValueWithinRange(distance, 0, self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Mid]): 
+    if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Mid]:
       return FuelLevel.Mid
-    if self._getIndexerSensorHasTarget() or utils.isValueWithinRange(distance, 0, self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Low]):
+    if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Low] or self._getIndexerSensorHasTarget():
       return FuelLevel.Low
     return FuelLevel.Empty
   

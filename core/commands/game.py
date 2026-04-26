@@ -55,17 +55,21 @@ class Game:
       self._robot.intake.retract()
       .withName("Game:RetractIntake")
     )
-  
-  def agitateIntake(self) -> Command:
-    return (
-      self._robot.intake.agitate()
-      .withName("Game:AgitateIntake")
-    )
 
   def agitateHopper(self) -> Command:
     return (
       self._robot.hopper.reverse().withTimeout(constants.Subsystems.Hopper.AGITATION_TIMEOUT)
       .withName("Game:AgitateHopper")
+    )
+  
+  def agitateRobot(self) -> Command:
+    return (
+      (
+        (self._robot.drive.drive(lambda: 0.1, lambda: 0.1, lambda: 0.1).withTimeout(0.2))
+        .andThen(self._robot.drive.drive(lambda: 0, lambda: 0, lambda: 0).withTimeout(0.02))
+      )
+      .finallyDo(lambda end: self._robot.drive.reset())
+      .withName("Game:AgitateRobot")
     )
 
   def launchFuel(self) -> Command:
