@@ -15,7 +15,7 @@ class AutoPath(Enum):
   BUMP_LEFT_CENTER_OUT = auto()
   BUMP_LEFT_CENTER_IN = auto()
   BUMP_RIGHT_LOOP = auto()
-  HUB = auto()
+  HUB_DEPOT = auto()
   CUSTOM = auto()
 
 class Auto:
@@ -37,12 +37,12 @@ class Auto:
     )
 
     self._autos = SendableChooser()
-    self._autos.setDefaultOption("0: None", cmd.none)
+    self._autos.setDefaultOption("0: None", self.auto_NONE)
     
-    self._autos.addOption("1: Bump Left > Loop", self.auto_BUMP_LEFT_LOOP)
-    self._autos.addOption("2: Bump Left > Center", self.auto_BUMP_LEFT_CENTER)
-    self._autos.addOption("3: Bump Right > Loop", self.auto_BUMP_RIGHT_LOOP)
-    self._autos.addOption("4: Hub > Depot", self.auto_HUB_DEPOT)
+    self._autos.addOption("1: Bump Left Loop", self.auto_BUMP_LEFT_LOOP)
+    self._autos.addOption("2: Bump Left Center", self.auto_BUMP_LEFT_CENTER)
+    self._autos.addOption("3: Bump Right Loop", self.auto_BUMP_RIGHT_LOOP)
+    self._autos.addOption("4: Hub Depot", self.auto_HUB_DEPOT)
     self._autos.addOption("5: Custom", self.auto_CUSTOM)
 
     self._autos.onChange(lambda auto: self.set(auto()))
@@ -66,13 +66,16 @@ class Auto:
       AutoBuilder.followPath(self._paths.get(path))
     ).deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
   
+  def auto_NONE(self) -> Command:
+    return cmd.none().withName("Auto:NONE")
+
   def auto_BUMP_LEFT_LOOP(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.BUMP_LEFT_LOOP).deadlineFor(
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(200.0)))
       ),
       self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.25).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
+        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_LEFT_LOOP")
 
@@ -85,7 +88,7 @@ class Auto:
         self._robot.game.runIntake()
       ),
       self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.25).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
+        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_LEFT_CENTER")
 
@@ -95,18 +98,16 @@ class Auto:
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(165.0)))
       ),
       self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.25).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
+        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_RIGHT_LOOP")
 
   def auto_HUB_DEPOT(self) -> Command:
     return cmd.sequence(
-      self._move(AutoPath.HUB).deadlineFor(
+      self._move(AutoPath.HUB_DEPOT).deadlineFor(
         cmd.waitSeconds(0.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(200.0)))
       ),
-      self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.25).andThen(self._robot.game.agitateHopper())
-      )
+      self._robot.game.launchFuel()
     ).withName("Auto:HUB_DEPOT")
 
   def auto_CUSTOM(self) -> Command:

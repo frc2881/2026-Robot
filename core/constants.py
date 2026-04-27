@@ -164,7 +164,7 @@ class Subsystems:
     INDEXER_REVERSE_SPEED: units.percent = 0.5
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
 
-    AGITATION_TIMEOUT: units.seconds = 0.25
+    AGITATION_TIMEOUT: units.seconds = 0.3
     JAM_DETECTION_TIMEOUT: units.seconds = 3.0
     FUEL_LEVEL_SENSOR_DISTANCES: dict[FuelLevel, units.millimeters] = {
       FuelLevel.Full: 200,
@@ -255,9 +255,9 @@ class Services:
       LaunchMetric(distance = 10.0, speed = 0.87, time = 1.75)
     )
     LATENCY_COMPENSATION: units.seconds = 0.05
-    VELOCITY_COMPENSATION_RANGE: Range = Range(0.1, 3.0)
+    VELOCITY_COMPENSATION_RANGE: Range = Range(0.1, 3.5)
     FUEL_DRAG_COEFFICIENT: float = 0.15
-    TURRET_HEADING_TOLERANCE: units.degrees = 4.0
+    TURRET_HEADING_TOLERANCE: units.degrees = 5.0
 
 class Sensors: 
   class Gyro:

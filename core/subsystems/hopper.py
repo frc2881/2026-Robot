@@ -61,12 +61,13 @@ class Hopper(Subsystem):
 
   def getFuelLevel(self) -> FuelLevel:
     distance = self._getHopperSensorDistance()
-    if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Full]:
-      return FuelLevel.Full
-    if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Mid]:
-      return FuelLevel.Mid
-    if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Low] or self._getIndexerSensorHasTarget():
-      return FuelLevel.Low
+    if distance > -1:
+      if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Full]:
+        return FuelLevel.Full
+      if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Mid]:
+        return FuelLevel.Mid
+      if distance <= self._constants.FUEL_LEVEL_SENSOR_DISTANCES[FuelLevel.Low] or self._getIndexerSensorHasTarget():
+        return FuelLevel.Low
     return FuelLevel.Empty
   
   def isJammed(self) -> bool:

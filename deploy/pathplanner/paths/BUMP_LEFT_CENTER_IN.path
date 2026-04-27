@@ -20,12 +20,12 @@
         "y": 4.255271428571428
       },
       "prevControl": {
-        "x": 8.263003934364743,
-        "y": 3.7697037798763704
+        "x": 8.247391325185411,
+        "y": 3.7693466263161977
       },
       "nextControl": {
-        "x": 8.22465,
-        "y": 4.754121428571429
+        "x": 8.237607142857144,
+        "y": 5.207621428571429
       },
       "isLocked": false,
       "linkedName": null
@@ -94,7 +94,7 @@
     {
       "name": "Intake",
       "minWaypointRelativePos": 0.5011320754716975,
-      "maxWaypointRelativePos": 0.8483018867924524,
+      "maxWaypointRelativePos": 1.2981132075471682,
       "constraints": {
         "maxVelocity": 0.75,
         "maxAcceleration": 0.75,
