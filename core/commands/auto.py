@@ -75,7 +75,7 @@ class Auto:
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(200.0)))
       ),
       self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
+        cmd.waitSeconds(2.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_LEFT_LOOP")
 
@@ -88,7 +88,7 @@ class Auto:
         self._robot.game.runIntake()
       ),
       self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
+        cmd.waitSeconds(2.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_LEFT_CENTER")
 
@@ -98,7 +98,7 @@ class Auto:
         cmd.waitSeconds(1.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(165.0)))
       ),
       self._robot.game.launchFuel().deadlineFor(
-        cmd.waitSeconds(1.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
+        cmd.waitSeconds(2.0).andThen(self._robot.game.agitateHopper().deadlineFor(self._robot.game.agitateRobot()))
       )
     ).withName("Auto:BUMP_RIGHT_LOOP")
 
