@@ -49,7 +49,7 @@ class Intake(Subsystem):
           range = Range(0.7, 1.0)
           speed = 0.1
         case FuelLevel.Mid:
-          range = Range(0.4, 0.8)
+          range = Range(0.4, 0.7)
           speed = 0.2
         case _:
           range = Range(0.1, 0.4)
