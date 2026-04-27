@@ -225,7 +225,7 @@ class Subsystems:
     ))
 
     LAUNCHER_TRANSFORM = Transform3d(units.inchesToMeters(-4.75), units.inchesToMeters(7.875), units.inchesToMeters(25.3375), Rotation3d())
-    LAUNCHER_ACCELERATOR_SPEED_RATIO: units.percent = 1.2
+    LAUNCHER_ACCELERATOR_SPEED_RATIO: units.percent = 1.0
 
 class Services:
   class Localization:
