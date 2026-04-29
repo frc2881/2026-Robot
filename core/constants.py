@@ -167,8 +167,8 @@ class Subsystems:
     AGITATION_TIMEOUT: units.seconds = 0.25
     JAM_DETECTION_TIMEOUT: units.seconds = 3.0
     FUEL_LEVEL_SENSOR_DISTANCES: dict[FuelLevel, units.millimeters] = {
-      FuelLevel.Full: 200,
-      FuelLevel.Mid: 325,
+      FuelLevel.Full: 175,
+      FuelLevel.Mid: 300,
       FuelLevel.Low: 450
     }
 
