@@ -164,7 +164,7 @@ class Subsystems:
     INDEXER_REVERSE_SPEED: units.percent = 0.5
     ELEVATOR_REVERSE_SPEED: units.percent = 0.5
 
-    AGITATION_TIMEOUT: units.seconds = 0.3
+    AGITATION_TIMEOUT: units.seconds = 0.25
     JAM_DETECTION_TIMEOUT: units.seconds = 3.0
     FUEL_LEVEL_SENSOR_DISTANCES: dict[FuelLevel, units.millimeters] = {
       FuelLevel.Full: 200,
@@ -270,7 +270,7 @@ class Sensors:
         name = "FrontLeft", 
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-0.5), y = units.inchesToMeters(14.5), z = units.inchesToMeters(18.0)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-7.5), yaw = units.degreesToRadians(88.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-6.4), yaw = units.degreesToRadians(88.0))
         ),
         stream = "http://10.28.81.6:1186/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -279,7 +279,7 @@ class Sensors:
         name = "FrontRight",
         transform = Transform3d(
         Translation3d(x = units.inchesToMeters(1.0), y = units.inchesToMeters(-14.0), z = units.inchesToMeters(8.75)),
-        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-18.75), yaw = units.degreesToRadians(-90.0))
+        Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-19.0), yaw = units.degreesToRadians(-90.0))
       ),
         stream = "http://10.28.81.7:1184/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -288,7 +288,7 @@ class Sensors:
         name = "RearLeft",
         transform = Transform3d(
           Translation3d(x = units.inchesToMeters(-9.75), y = units.inchesToMeters(12.75), z = units.inchesToMeters(10.25)),
-          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-34.0), yaw = units.degreesToRadians(160.0))
+          Rotation3d(roll = units.degreesToRadians(0), pitch = units.degreesToRadians(-34.4), yaw = units.degreesToRadians(160.0))
         ),
         stream = "http://10.28.81.6:1182/?action=stream",
         aprilTagFieldLayout = _aprilTagFieldLayout
@@ -335,7 +335,7 @@ class Game:
 
   class Commands:
     LAUNCHER_READY_TIMEOUT: units.seconds = 1.0
-    CENTER_AUTO_HOLD_TIMEOUT: units.seconds = 2.0
+    CENTER_AUTO_HOLD_TIMEOUT: units.seconds = 3.0
 
   class Field:
     LENGTH = _aprilTagFieldLayout.getFieldLength()
