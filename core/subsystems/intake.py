@@ -46,16 +46,16 @@ class Intake(Subsystem):
       speed: units.percent = 0.3
       match self._getFuelLevel():
         case FuelLevel.Full:
-          range = Range(0.6, 0.9)
+          range = Range(0.7, 1.0)
           speed = 0.1
         case FuelLevel.Mid:
           range = Range(0.3, 0.6)
           speed = 0.2
         case _:
-          range = Range(0.1, 0.3)
+          range = Range(0.1, 0.4)
           speed = 0.3
       self._agitationTimer.advanceIfElapsed(time)
-      position = self._constants.ARM_INTAKE_HARDSTOP_POSITION * (range.min if self._agitationTimer.get() < time * 0.5 else range.max)
+      position = self._constants.ARM_INTAKE_HARDSTOP_POSITION * (range.min if self._agitationTimer.get() < time * 0.6 else range.max)
       if self._arm.getTargetPosition() != position:
           self._arm.setPosition(position)  
       self._rollers.setSpeed(speed)

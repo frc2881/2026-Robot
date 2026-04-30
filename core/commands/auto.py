@@ -121,7 +121,7 @@ class Auto:
   def auto_HUB_DEPOT(self) -> Command:
     return cmd.sequence(
       self._move(AutoPath.HUB_DEPOT).deadlineFor(
-        cmd.waitSeconds(0.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(200.0)))
+        cmd.waitSeconds(0.25).andThen(self._robot.game.runIntake().deadlineFor(self._robot.game.alignTurretToHeading(100.0)))
       ),
       self._robot.game.launchFuel()
     ).withName("Auto:HUB_DEPOT")
